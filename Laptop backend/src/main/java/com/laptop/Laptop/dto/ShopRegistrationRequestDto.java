@@ -1,6 +1,10 @@
 package com.laptop.Laptop.dto;
 
+import com.laptop.Laptop.enums.ShopStatus;
+import jakarta.validation.constraints.Future;
 import lombok.*;
+
+import java.time.LocalDate;
 
 @Data
 @Setter
@@ -11,7 +15,10 @@ public class ShopRegistrationRequestDto {
 
     private String shopName;
     private String shopUniqueIdentifier;
-
     private String adminUsername;
     private String adminPassword;
+    private LocalDate registrationDate;
+    @Future(message = "Expiry date must be in the future")
+    private LocalDate expiryDate;
+    private ShopStatus shopStatus;
 }
