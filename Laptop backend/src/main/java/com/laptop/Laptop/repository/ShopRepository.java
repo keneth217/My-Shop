@@ -2,7 +2,11 @@ package com.laptop.Laptop.repository;
 
 import com.laptop.Laptop.entity.Shop;
 import com.laptop.Laptop.entity.User;
+import com.laptop.Laptop.enums.ShopStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ShopRepository  extends JpaRepository<Shop,Long> {
+    List<Shop> findByShopStatus(ShopStatus status);
 }
