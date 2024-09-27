@@ -31,9 +31,10 @@ public class JwtUtils {
     }
 
     // Include shopId in the token
-    public String generateToken(String userName, Long shopId) {
+    public String generateToken(String userName, Long shopId,String shopCode) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("shopId", shopId); // Add shopId to the token claims
+        claims.put("shopId", shopId);
+        claims.put("shopCode",shopCode);// Add shopId to the token claims
         return createToken(claims, userName);
     }
 
@@ -65,6 +66,9 @@ public class JwtUtils {
     // Extract the shopId from the token
     public Long extractShopId(String token) {
         return extractClaim(token, claims -> claims.get("shopId", Long.class));
+    }
+    public Long extractShopCode(String token) {
+        return extractClaim(token, claims -> claims.get("shopCode", Long.class));
     }
 
     // Extract the expiration date from the token
