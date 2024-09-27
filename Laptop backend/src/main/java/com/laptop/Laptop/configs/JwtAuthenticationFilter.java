@@ -2,6 +2,7 @@ package com.laptop.Laptop.configs;
 
 import com.laptop.Laptop.services.Jwt.UserService;
 import com.laptop.Laptop.util.JwtUtils;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,30 +31,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
 
-        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, "Bearer ")) {
-            // If there's no valid auth header, continue to the next filter
+        // Check if the Authorization header is missing or doesn't start with "Bearer "
+        if (StringUtils.isEmpty(authHeader) || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract JWT from the header
-        String jwt = authHeader.substring(7);
-        String userName = jwtUtils.extractUserName(jwt);  // Extract username (email)
+        String jwt = authHeader.substring(7);  // Extract the token part after "Bearer "
+        String userName;
+        try {
+            userName = jwtUtils.extractUserName(jwt);  // Extract username (email)
+        } catch (JwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // Handle invalid token
+            return;
+        }
 
-        if (StringUtils.isNotEmpty(userName) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        // Proceed if the username is not empty and no authentication is already set
+        if (!StringUtils.isEmpty(userName) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userName);
 
-            // Extract the shopId from the JWT
+            // Extract shopId and shopCode from the JWT
             Long shopId = jwtUtils.extractShopId(jwt);
+            String shopCode = jwtUtils.extractShopCode(jwt);
 
             if (jwtUtils.isTokenValid(jwt, userDetails)) {
+                // Create authentication token
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
 
-                // Attach the shopId to the request attribute
+                // Attach shopId and shopCode to request attributes
                 request.setAttribute("shopId", shopId);
+                request.setAttribute("shopCode", shopCode);
 
-                // Set authentication details in the security context
+                // Set authentication details and context
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
@@ -62,4 +72,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Continue with the filter chain
         filterChain.doFilter(request, response);
     }
+
 }
