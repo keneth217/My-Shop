@@ -32,7 +32,7 @@ public class WebSecurityConfiguration {
                 authorizeHttpRequests(request-> request
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 //                        .requestMatchers("api/auth/**","swagger-ui/index.html#/**","api/admin/**","api/customer/**").permitAll()
-                        .requestMatchers("api/auth/**","api/shops/register").permitAll()
+                        //.requestMatchers("api/v1/auth/**","api/shops/register").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .requestMatchers("api/admin/").hasAnyAuthority(Roles.ADMIN.name())
                         .requestMatchers("api/customer/").hasAnyAuthority(Roles.CASHIER.name())
@@ -49,6 +49,7 @@ public class WebSecurityConfiguration {
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
+            "api/shops/**",
             "/swagger-ui.html"
     };
     @Bean
