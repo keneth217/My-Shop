@@ -55,4 +55,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 );
         return  new ResponseEntity<>(errorResponseDto,HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleCustomerAlreadyExistException(ProductNotFoundException exception, WebRequest webRequest){
+        ErrorResponseDto errorResponseDto=new ErrorResponseDto(
+                webRequest.getDescription(false),
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage(), LocalDateTime.now()
+        );
+        return  new ResponseEntity<>(errorResponseDto,HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ShopNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleCustomerAlreadyExistException(ShopNotFoundException exception, WebRequest webRequest){
+        ErrorResponseDto errorResponseDto=new ErrorResponseDto(
+                webRequest.getDescription(false),
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage(), LocalDateTime.now()
+        );
+        return  new ResponseEntity<>(errorResponseDto,HttpStatus.BAD_REQUEST);
+    }
+
+
 }
