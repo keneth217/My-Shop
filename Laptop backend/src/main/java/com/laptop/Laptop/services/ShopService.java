@@ -106,6 +106,20 @@ public class ShopService {
     }
 
 
+    public Shop deactiveShop(Long shopId) {
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new ShopNotFoundException("Shop not found"));
+
+        // Deactivate the shop
+        shop.setShopStatus(ShopStatus.INACTIVE);
+        System.out.println("Shop status set to INACTIVE.");
+
+        // Save and return the updated shop
+        return shopRepository.save(shop);
+    }
+
+
+
     // List all registered shops
     public List<Shop> getAllShops() {
         List<Shop> shop= shopRepository.findAll(); // Fetch all shops
