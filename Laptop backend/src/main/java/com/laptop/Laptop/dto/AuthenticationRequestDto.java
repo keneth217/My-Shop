@@ -6,6 +6,6 @@ import lombok.Data;
 public class AuthenticationRequestDto {
     private String userName;
     private String password;
-    private Long shopId;
+   // private Long shopId;
     private String shopCode;
 }
