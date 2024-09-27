@@ -17,30 +17,41 @@ import java.util.function.Function;
 @Component
 public class JwtUtils {
 
+    // Secret key for signing JWT tokens
     private static final String SECRET = "DGEF7R3R9404I34R8R23U8FWQLDNQWDWQKNCLEWFNOI4R844RI4R87465TREBFDDJ";
 
-    // Create token with custom claims (including shopId)
-    public String createToken(Map<String, Object> claims, String userName) {
+    // Key expiration time (24 hours in milliseconds)
+    private static final long JWT_EXPIRATION_TIME = 1000 * 60 * 60 * 24;
+
+    // Generate token with claims including shopId and shopCode
+    public String generateToken(String username, Long shopId, String shopCode) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("shopId", shopId);
+        claims.put("shopCode", shopCode);
+        return createToken(claims, username);
+    }
+
+    // Create a JWT token
+    private String createToken(Map<String, Object> claims, String username) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userName)
+                .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_TIME)) // Expires in 24 hours
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // Include shopId in the token
-    public String generateToken(String userName, Long shopId,String shopCode) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("shopId", shopId);
-        claims.put("shopCode",shopCode);// Add shopId to the token claims
-        return createToken(claims, userName);
-    }
-
+    // Get signing key
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    // Extract specific claims from the token
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
     // Extract all claims from the token
@@ -52,12 +63,6 @@ public class JwtUtils {
                 .getBody();
     }
 
-    // Extract a specific claim from the token
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
     // Extract the username (subject) from the token
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -67,8 +72,10 @@ public class JwtUtils {
     public Long extractShopId(String token) {
         return extractClaim(token, claims -> claims.get("shopId", Long.class));
     }
-    public Long extractShopCode(String token) {
-        return extractClaim(token, claims -> claims.get("shopCode", Long.class));
+
+    // Extract the shopCode from the token
+    public String extractShopCode(String token) {
+        return extractClaim(token, claims -> claims.get("shopCode", String.class));
     }
 
     // Extract the expiration date from the token
