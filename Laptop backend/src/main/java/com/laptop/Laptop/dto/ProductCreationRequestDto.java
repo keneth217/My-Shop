@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductCreationRequestDto {
 
-
+private Long id;
     private String name;
     private double price;  // Selling price
     private double cost;   // Cost price
