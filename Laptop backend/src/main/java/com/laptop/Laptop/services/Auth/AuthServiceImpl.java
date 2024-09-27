@@ -11,14 +11,15 @@ import com.laptop.Laptop.repository.ShopRepository;
 import com.laptop.Laptop.repository.UserRepository;
 import com.laptop.Laptop.services.Jwt.UserService;
 import com.laptop.Laptop.util.JwtUtils;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -32,6 +33,9 @@ public class AuthServiceImpl implements  AuthService{
     private final ShopRepository shopRepository;
     private  final UserService userService;
     private final JwtUtils jwtUtils;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder; // For encoding passwords
 
 
     @Override
@@ -61,30 +65,58 @@ public class AuthServiceImpl implements  AuthService{
 
 
     public JWTAuthenticationResponse createAuthToken(@RequestBody AuthenticationRequestDto authenticationRequest) {
-        // Fetch user from the specified shop
-        Optional<User> optionalUser = userRepository.findByUsernameAndShopId(authenticationRequest.getUserName(), authenticationRequest.getShopId());
+        System.out.println("Received authentication request: " + authenticationRequest);
 
-        if (!optionalUser.isPresent()) {
-            throw new RuntimeException("User not found or not associated with the specified shop");
-        }
-
-        User user = optionalUser.get();
+        User user;
         try {
-            // Authenticate the user with username and password
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    authenticationRequest.getUserName(),
-                    authenticationRequest.getPassword()));
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Incorrect login credentials");
+            // Log the shopId being used
+            Long shopId = authenticationRequest.getShopId();
+            String shopCode= authenticationRequest.getShopCode();
+            System.out.println("Using shopId: " + shopId);
+
+            user = userRepository.findByUsernameAndShopId(authenticationRequest.getUserName(), shopId)
+                    .orElseThrow(() -> {
+                        System.out.println("Error: User not found for username: " + authenticationRequest.getUserName() + " and shopId: " + shopId);
+                        return new RuntimeException("User not found or not associated with the specified shop");
+                    });
+            System.out.println("Success: User found - " + user.getUsername());
+        } catch (Exception e) {
+            System.out.println("Error fetching user: " + e.getMessage());
+            throw new RuntimeException("User not found or not associated with the specified shop", e);
         }
 
-        // Load user details and generate JWT token with shopId
-        UserDetails userDetails = userService.userDetailsService().loadUserByUsername(authenticationRequest.getUserName());
-        final String jwt = jwtUtils.generateToken(userDetails.getUsername(), authenticationRequest.getShopId());
+        // Authenticate user
+        try {
+            // Check if the password matches the stored hashed password
+            if (!passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
+                System.out.println("Warning: Incorrect password for user: " + authenticationRequest.getUserName());
+                throw new RuntimeException("Incorrect login credentials");
+            }
+            System.out.println("Success: Password matches for user - " + user.getUsername());
+        } catch (Exception e) {
+            System.out.println("Error during password validation: " + e.getMessage());
+            throw new RuntimeException("Incorrect login credentials", e);
+        }
 
-        // Return the JWT token, username, role, and shopId in the response
-        return new JWTAuthenticationResponse(jwt, user.getUsername(), user.getRole().name());
+        // Load user details and generate JWT with shopId
+        UserDetails userDetails;
+        try {
+            userDetails = userService.userDetailsService().loadUserByUsername(authenticationRequest.getUserName());
+            System.out.println("Success: User details loaded for - " + userDetails.getUsername());
+        } catch (UsernameNotFoundException e) {
+            System.out.println("Error: User not found in userDetailsService: " + e.getMessage());
+            throw new RuntimeException("User not found in userDetailsService", e);
+        }
+
+        final String jwt = jwtUtils.generateToken(userDetails.getUsername(), authenticationRequest.getShopId(), authenticationRequest.getShopCode());
+        System.out.println("Success: Generated JWT token for user - " + userDetails.getUsername());
+
+        // Return JWT response with token, username, role, and shopId
+        return new JWTAuthenticationResponse(jwt, user.getUsername(), user.getRole().name(), authenticationRequest.getShopCode(), authenticationRequest.getShopId());
     }
+
+
+
 
 
 
