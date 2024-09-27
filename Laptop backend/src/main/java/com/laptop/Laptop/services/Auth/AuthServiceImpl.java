@@ -64,19 +64,18 @@ public class AuthServiceImpl implements  AuthService{
 
 
 
-    public JWTAuthenticationResponse createAuthToken(@RequestBody AuthenticationRequestDto authenticationRequest) {
+
+    public JWTAuthenticationResponse createAuthToken(AuthenticationRequestDto authenticationRequest) {
         System.out.println("Received authentication request: " + authenticationRequest);
 
         User user;
         try {
-            // Log the shopId being used
-            Long shopId = authenticationRequest.getShopId();
-            String shopCode= authenticationRequest.getShopCode();
-            System.out.println("Using shopId: " + shopId);
+            String shopCode = authenticationRequest.getShopCode();
+            System.out.println("Using shopCode: " + shopCode);
 
-            user = userRepository.findByUsernameAndShopId(authenticationRequest.getUserName(), shopId)
+            user = userRepository.findByUsernameAndShopCode(authenticationRequest.getUserName(), shopCode)
                     .orElseThrow(() -> {
-                        System.out.println("Error: User not found for username: " + authenticationRequest.getUserName() + " and shopId: " + shopId);
+                        System.out.println("Error: User not found for username: " + authenticationRequest.getUserName() + " and shopCode: " + shopCode);
                         return new RuntimeException("User not found or not associated with the specified shop");
                     });
             System.out.println("Success: User found - " + user.getUsername());
@@ -87,10 +86,10 @@ public class AuthServiceImpl implements  AuthService{
 
         // Authenticate user
         try {
-            // Check if the password matches the stored hashed password
+            // Verify the password using the password encoder
             if (!passwordEncoder.matches(authenticationRequest.getPassword(), user.getPassword())) {
                 System.out.println("Warning: Incorrect password for user: " + authenticationRequest.getUserName());
-                throw new RuntimeException("Incorrect login credentials");
+                throw new RuntimeException("Incorrect login credentials,fom the given passsword");
             }
             System.out.println("Success: Password matches for user - " + user.getUsername());
         } catch (Exception e) {
@@ -98,7 +97,7 @@ public class AuthServiceImpl implements  AuthService{
             throw new RuntimeException("Incorrect login credentials", e);
         }
 
-        // Load user details and generate JWT with shopId
+        // Load user details and generate JWT with shopCode
         UserDetails userDetails;
         try {
             userDetails = userService.userDetailsService().loadUserByUsername(authenticationRequest.getUserName());
@@ -108,12 +107,14 @@ public class AuthServiceImpl implements  AuthService{
             throw new RuntimeException("User not found in userDetailsService", e);
         }
 
-        final String jwt = jwtUtils.generateToken(userDetails.getUsername(), authenticationRequest.getShopId(), authenticationRequest.getShopCode());
+        // Generate the JWT
+        final String jwt = jwtUtils.generateToken(userDetails.getUsername(), user.getShop().getId(), authenticationRequest.getShopCode());
         System.out.println("Success: Generated JWT token for user - " + userDetails.getUsername());
 
-        // Return JWT response with token, username, role, and shopId
-        return new JWTAuthenticationResponse(jwt, user.getUsername(), user.getRole().name(), authenticationRequest.getShopCode(), authenticationRequest.getShopId());
+        // Return JWT response with token, username, role, and shopCode
+        return new JWTAuthenticationResponse(jwt, user.getUsername(), user.getRole().name(), authenticationRequest.getShopCode(), user.getShop().getId());
     }
+
 
 
 
