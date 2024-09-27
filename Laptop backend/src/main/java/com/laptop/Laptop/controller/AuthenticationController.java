@@ -39,6 +39,7 @@ public class AuthenticationController {
                 .body(new Responsedto(AuthConstants.ACCOUNT_CREATION_CODE, userName + " " + AuthConstants.ACCOUNT_CREATION));
     }
 
+    // Login endpoint to authenticate the user and return a JWT
     @PostMapping("/login")
     public ResponseEntity<JWTAuthenticationResponse> login(@RequestBody AuthenticationRequestDto authenticationRequest) {
         return ResponseEntity.ok(authService.createAuthToken(authenticationRequest));
