@@ -2,12 +2,14 @@ package com.laptop.Laptop.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.laptop.Laptop.enums.ShopStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +26,12 @@ public class Shop {
 
     private String name;
     private String owner;
-    private String uniqueNumber;
+    private String shopCode;
     private String phoneNumber;
     private String address;
+    private LocalDate registrationDate;
+    private LocalDate expiryDate;
+    private ShopStatus shopStatus;
 
 
 
