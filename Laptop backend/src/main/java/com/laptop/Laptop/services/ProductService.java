@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -24,10 +25,27 @@ public class ProductService {
     @Autowired
     private ShopRepository shopRepository;
 
-    public List<Product> getProductsForShop(Long shopId) {
-        // Fetch products only for the given shopId
-        return productRepository.findByShopId(shopId);
+//    public List<Product> getProductsForShop(Long shopId) {
+//        // Fetch products only for the given shopId
+//        List<Product> product= productRepository.findByShopId(shopId);
+//        return  product;
+//    }
+
+    public List<ProductCreationRequestDto> getProductsForShop(Long shopId) {
+        List<Product> products = productRepository.findByShopId(shopId);
+
+        // Convert Product to ProductDTO
+        return products.stream().map(product -> {
+            ProductCreationRequestDto dto = new ProductCreationRequestDto();
+            dto.setId(product.getId());
+            dto.setName(product.getName());
+            dto.setPrice(product.getPrice());
+            dto.setStock(product.getStock());
+            return dto;
+        }).collect(Collectors.toList());
     }
+
+
 
 
     public Product addProductToShop(Long shopId, ProductCreationRequestDto request) {
