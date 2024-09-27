@@ -35,6 +35,13 @@ public class ShopController {
         return ResponseEntity.ok(activatedShop);
     }
 
+    // Deactivate a shop
+    @PutMapping("/{shopId}/deactivate")
+    public ResponseEntity<Shop> deactivateShop(@PathVariable Long shopId) {
+        Shop deactivatedShop = shopService.deactiveShop(shopId);
+        return ResponseEntity.ok(deactivatedShop);
+    }
+
 
     // Get all registered shops
     @GetMapping
