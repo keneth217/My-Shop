@@ -1,6 +1,8 @@
 package com.laptop.Laptop.controller;
 
+import com.laptop.Laptop.constants.ProductConstants;
 import com.laptop.Laptop.dto.ProductCreationRequestDto;
+import com.laptop.Laptop.dto.Responsedto;
 import com.laptop.Laptop.entity.Product;
 import com.laptop.Laptop.services.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,13 +24,17 @@ public class ProductController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     @PostMapping("/add")
-    public ResponseEntity<Product> addProduct(@RequestBody ProductCreationRequestDto request, HttpServletRequest httpRequest) {
+    public ResponseEntity<Responsedto> addProduct(@RequestBody ProductCreationRequestDto request, HttpServletRequest httpRequest) {
         // Extract shopId from the request attributes set by the JWT filter
         Long shopId = (Long) httpRequest.getAttribute("shopId");
 
         // Add the new product under the same shop
         Product newProduct = productService.addProductToShop(shopId, request);
-        return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body( new Responsedto(
+                ProductConstants.PRODUCT_ADDITION,
+                ProductConstants.PRODUCT_ADDITION_CODE));
     }
 
     @GetMapping
