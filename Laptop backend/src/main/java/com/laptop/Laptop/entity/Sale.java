@@ -19,12 +19,22 @@ public class Sale {
     private LocalDate date;
     private double salePrice;
     private int quantity;
+    private String shopCode;
 
     @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;  // Track which employee made the sale
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
     // Getters and Setters
 }
