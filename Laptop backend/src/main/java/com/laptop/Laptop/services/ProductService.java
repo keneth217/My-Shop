@@ -25,12 +25,6 @@ public class ProductService {
     @Autowired
     private ShopRepository shopRepository;
 
-//    public List<Product> getProductsForShop(Long shopId) {
-//        // Fetch products only for the given shopId
-//        List<Product> product= productRepository.findByShopId(shopId);
-//        return  product;
-//    }
-
     public List<ProductCreationRequestDto> getProductsForShop(Long shopId) {
         List<Product> products = productRepository.findByShopId(shopId);
 
@@ -63,10 +57,12 @@ public class ProductService {
 
         // Use the Builder to create a new Product instance and associate it with the shop
         Product product = Product.builder()
+
                 .name(request.getName())  // Get product name from DTO
                 .price(request.getPrice()) // Get selling price from DTO
                 .cost(request.getCost())   // Get cost price from DTO
-                .stock(request.getStock())  // Get stock from DTO
+                .stock(request.getStock())
+                .shopCode(shop.getShopCode())// Get stock from DTO
                 .shop(shop)                // Associate the product with the shop
                 .build();
 
