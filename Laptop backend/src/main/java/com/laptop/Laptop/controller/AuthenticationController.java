@@ -1,10 +1,8 @@
 package com.laptop.Laptop.controller;
 import com.laptop.Laptop.configs.JwtAuthenticationFilter;
 import com.laptop.Laptop.constants.AuthConstants;
-import com.laptop.Laptop.dto.AuthenticationRequestDto;
-import com.laptop.Laptop.dto.JWTAuthenticationResponse;
-import com.laptop.Laptop.dto.Responsedto;
-import com.laptop.Laptop.dto.SignUpRequetDto;
+import com.laptop.Laptop.dto.*;
+import com.laptop.Laptop.entity.User;
 import com.laptop.Laptop.repository.UserRepository;
 import com.laptop.Laptop.services.Auth.AuthService;
 import com.laptop.Laptop.services.Jwt.UserService;
@@ -30,13 +28,21 @@ public class AuthenticationController {
     private final JwtUtils jwtUtil;
     private final UserRepository userRepository;
 
-    @PostMapping("/sign")
+    @PostMapping("/create-user")
     public ResponseEntity<Responsedto> createUser(@Valid @RequestBody SignUpRequetDto signUpRequest) {
+        // The admin creating the user is already authenticated, so no need to pass admin info
         authService.createUser(signUpRequest);
+
         String userName = signUpRequest.getUserName();
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new Responsedto(AuthConstants.ACCOUNT_CREATION_CODE, userName + " " + AuthConstants.ACCOUNT_CREATION));
+                .body(new Responsedto(AuthConstants.ACCOUNT_CREATION_CODE,
+                        userName + " " + AuthConstants.ACCOUNT_CREATION));
+    }
+    @PutMapping("/update-profile")
+    public ResponseEntity<User> updateUserDetails(@Valid @RequestBody UserUpdateRequestDto updateRequest) {
+        User updatedUser = authService.updateUserDetails(updateRequest);
+        return ResponseEntity.ok(updatedUser);
     }
 
     // Login endpoint to authenticate the user and return a JWT
