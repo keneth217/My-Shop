@@ -26,21 +26,21 @@ public class BusinessReportController {
 
     @GetMapping("/sales")
     public ResponseEntity<List<Sale>> getSalesForPeriod(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
-        List<Sale> sales = businessService.getSalesForPeriod(startDate, endDate);
+        List<Sale> sales = businessService.getSalesByDateRange(startDate, endDate);
         return ResponseEntity.ok(sales);
     }
 
     @GetMapping("/expenses")
-    public ResponseEntity<List<Expense>> getExpensesByCategory(@RequestParam ExpenseType category) {
-        List<Expense> expenses = businessService.getExpensesByCategory(category);
+    public ResponseEntity<List<Expense>> getExpensesByCategory(@RequestParam ExpenseType expenseType) {
+        List<Expense> expenses = businessService.getExpensesByExpenseType(expenseType);
         return ResponseEntity.ok(expenses);
     }
 
-    @GetMapping("/stock-flow")
-    public ResponseEntity<List<Product>> getStockFlow() {
-        List<Product> stockFlow = businessService.getStockFlow();
-        return ResponseEntity.ok(stockFlow);
-    }
+//    @GetMapping("/stock-flow")
+//    public ResponseEntity<List<Product>> getStockFlow() {
+//        List<Product> stockFlow = businessService.getStockFlow();
+//        return ResponseEntity.ok(stockFlow);
+//    }
 
     @GetMapping("/top-products")
     public ResponseEntity<List<Product>> getTopProducts() {
