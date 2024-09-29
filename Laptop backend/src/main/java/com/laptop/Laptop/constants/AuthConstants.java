@@ -7,4 +7,5 @@ public class AuthConstants {
 
     public static  final String ACCOUNT_CREATION="ACCOUNT CREATED Succesfully";
     public static  final String ACCOUNT_CREATION_CODE="201";
+
 }
