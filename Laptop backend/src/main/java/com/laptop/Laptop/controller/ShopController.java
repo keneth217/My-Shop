@@ -1,5 +1,7 @@
 package com.laptop.Laptop.controller;
 
+import com.laptop.Laptop.constants.MyConstants;
+import com.laptop.Laptop.dto.Responsedto;
 import com.laptop.Laptop.dto.ShopRegistrationRequestDto;
 import com.laptop.Laptop.entity.Shop;
 import com.laptop.Laptop.enums.ShopStatus;
@@ -20,9 +22,16 @@ public class ShopController {
     private ShopService shopService;
 
     @PostMapping("/register")
-    public ResponseEntity<Shop> registerShop(@RequestBody ShopRegistrationRequestDto request) {
+    public ResponseEntity<Responsedto> registerShop(@RequestBody ShopRegistrationRequestDto request) {
         Shop newShop = shopService.registerShop(request);
-        return new ResponseEntity<>(newShop, HttpStatus.CREATED);
+        if (newShop == null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new Responsedto(MyConstants.ERROR_REGISTER_SHOP_CODE,MyConstants.ERROR_REGISTER_SHOP_MESSAGE));
+        }
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new Responsedto(MyConstants.REGISTER_SHOP_CODE,MyConstants.REGISTER_SHOP_MESSAGE));
     }
 
     // Activate a shop
