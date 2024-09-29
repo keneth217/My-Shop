@@ -1,11 +1,14 @@
 package com.laptop.Laptop.services;
 
 import com.laptop.Laptop.dto.ShopRegistrationRequestDto;
+import com.laptop.Laptop.entity.Employee;
 import com.laptop.Laptop.entity.Shop;
 import com.laptop.Laptop.entity.User;
 import com.laptop.Laptop.enums.Roles;
 import com.laptop.Laptop.enums.ShopStatus;
+import com.laptop.Laptop.exceptions.CustomerAlreadyExistException;
 import com.laptop.Laptop.exceptions.ShopNotFoundException;
+import com.laptop.Laptop.repository.EmployeeRepository;
 import com.laptop.Laptop.repository.ShopRepository;
 import com.laptop.Laptop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -24,11 +28,18 @@ public class ShopService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder; // For encoding passwords
 
     public Shop registerShop(ShopRegistrationRequestDto request) {
+
+        Optional<User> optionalUser = userRepository.findByUsername(request.getAdminUsername());
+        if (optionalUser.isPresent()) {
+            throw new CustomerAlreadyExistException("User already registered with the given username: " + request.getAdminUsername());
+        }
         String uniqueCode = generateUniqueCode();
 
         // Create the shop
@@ -61,11 +72,25 @@ public class ShopService {
         adminUser.setPhone(shop.getPhoneNumber());
         adminUser.setShop(shop);
 
+
+
         // Add the admin user to the shop's user list
         shop.getUsers().add(adminUser);
 
-        // Save the shop and admin user
-        return shopRepository.save(shop);
+        shopRepository.save(shop);
+
+        // Create a new Employee and associate them with the same shop and user
+        Employee employee = Employee.builder()
+                .name(request.getAdminUsername())
+                .user(adminUser) // Associate the Employee with the newly created user
+                .shop(shop) // Associate the Employee with the same shop
+                .build();
+        // Save the employee to the database
+        employeeRepository.save(employee);
+
+        // Save the shop and admin user and employee
+        return  shop;
+
     }
 
     // Generate a unique 6-digit code starting with the letter 'S'
