@@ -1,9 +1,6 @@
 package com.laptop.Laptop.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,6 +14,15 @@ public class Employee {
     private Long id;
     private String name;
     private double salary;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
+
+
 
     // Getters and Setters
 }
