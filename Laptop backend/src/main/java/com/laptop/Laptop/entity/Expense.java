@@ -1,9 +1,6 @@
 package com.laptop.Laptop.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,9 +16,18 @@ public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String category;  // e.g., "Salary", "Stock Purchase", "Utilities"
+    private String expenseType;  // e.g., "Salary", "Stock Purchase", "Utilities"
     private double amount;
+    private String description;
     private LocalDate date;
+    private String shopCode;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
 
     // Getters and Setters
 }
