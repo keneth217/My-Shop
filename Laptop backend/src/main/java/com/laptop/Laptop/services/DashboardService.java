@@ -1,5 +1,6 @@
 package com.laptop.Laptop.services;
 
+import com.laptop.Laptop.dto.DashboardDTO;
 import com.laptop.Laptop.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,27 +13,27 @@ public class DashboardService {
     @Autowired
     private BusinessService businessService;
 
-    public double getTotalSales() {
-        return businessService.getTotalSales();
-    }
+    public DashboardDTO getDashboardData() {
+        double totalSales = businessService.getTotalSales();
+        double totalExpenses = businessService.getTotalExpenses();
+        double grossProfit = businessService.calculateGrossProfit();
+        double netProfit = businessService.calculateNetProfit();
+        int totalProducts=businessService.totalProducts();
+        int totalUsers= businessService.totalUsers();
+        int totalEmployees= businessService.totalEmployees();
+        List<Product> lowStockProducts = businessService.getStockAlerts();
+        List<Product> topProducts = businessService.getTopSellingProducts();
 
-    public double getTotalExpenses() {
-        return businessService.getTotalExpenses();
-    }
-
-    public double getGrossProfit() {
-        return businessService.calculateGrossProfit();
-    }
-
-    public double getNetProfit() {
-        return businessService.calculateNetProfit();
-    }
-
-    public List<Product> getStockAlerts() {
-        return businessService.getStockAlerts();
-    }
-
-    public List<Product> getTopProducts() {
-        return businessService.getTopSellingProducts();
+        return DashboardDTO.builder()
+                .totalSales(totalSales)
+                .totalExpenses(totalExpenses)
+                .grossProfit(grossProfit)
+                .netProfit(netProfit)
+                .stockAlerts(lowStockProducts)
+                .totalProducts(totalProducts)
+                .totalEmployees(totalEmployees)
+                .totalUsers(totalUsers)
+                .topProducts(topProducts)
+                .build();
     }
 }
