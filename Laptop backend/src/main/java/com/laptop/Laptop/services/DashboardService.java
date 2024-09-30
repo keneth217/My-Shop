@@ -19,7 +19,7 @@ public class DashboardService {
         double grossProfit = businessService.calculateGrossProfit();
         double netProfit = businessService.calculateNetProfit();
         int totalProducts=businessService.totalProducts();
-        int totalUsers= businessService.totalUsers();
+        long totalUsers= businessService.totalUsersByShop();
         int totalEmployees= businessService.totalEmployees();
         List<Product> lowStockProducts = businessService.getStockAlerts();
         List<Product> topProducts = businessService.getTopSellingProducts();
