@@ -27,15 +27,16 @@ public class ShopController {
         if (newShop == null) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new Responsedto(MyConstants.ERROR_REGISTER_SHOP_CODE,MyConstants.ERROR_REGISTER_SHOP_MESSAGE));
+                    .body(new Responsedto(MyConstants.ERROR_REGISTER_SHOP_CODE, MyConstants.ERROR_REGISTER_SHOP_MESSAGE));
         }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new Responsedto(MyConstants.REGISTER_SHOP_CODE,MyConstants.REGISTER_SHOP_MESSAGE));
+                .body(new Responsedto(
+                        MyConstants.REGISTER_SHOP_CODE,
+                        MyConstants.REGISTER_SHOP_MESSAGE + "\n" +
+                                "Your Unique Shop code is: " + newShop.getShopCode()));
     }
-
-    // Activate a shop
-    // Activate a shop
+        // Activate a shop
     @PostMapping("/{shopId}/activate")
     public ResponseEntity<Shop> activateShop(
             @PathVariable Long shopId,
