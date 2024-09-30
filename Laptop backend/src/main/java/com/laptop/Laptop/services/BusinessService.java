@@ -2,15 +2,14 @@ package com.laptop.Laptop.services;
 
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.enums.ExpenseType;
+import com.laptop.Laptop.exceptions.InsufficientStockException;
 import com.laptop.Laptop.exceptions.ProductNotFoundException;
 import com.laptop.Laptop.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,22 +43,36 @@ public class BusinessService {
         return (User) authentication.getPrincipal(); // Assuming your `User` implements `UserDetails`
     }
 
+    // Method to get specific details of the logged-in user
+    public User getLoggedInUserDetails() {
+        return getLoggedInUser(); // Directly return the logged-in user
+    }
+
     @Transactional
     public Sale createSale(Long productId, Sale sale) {
         User loggedInUser = getLoggedInUser();
+        String salePerson=getLoggedInUser().getUsername();
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         if (product.getStock() < sale.getQuantity()) {
-            throw new IllegalArgumentException("Insufficient stock available.");
+            throw new InsufficientStockException("Insufficient stock available.");
         }
+        // Deduct the sold quantity from the product's stock
         product.setStock(product.getStock() - sale.getQuantity());
+        //populate total amount sold to the products when ach item is sold
+        product.setPrice(product.getPrice() + (sale.getSalePrice() * sale.getQuantity()));
+        product.setQuantitySold(product.getQuantitySold()+(sale.getQuantity()));
         productRepository.save(product);
 
+        // Set the shop code and other relevant details for the sale
+        sale.setShopCode(loggedInUser.getShop().getShopCode());
         sale.setProduct(product);
-        sale.setUser(loggedInUser);
+        sale.setSalePerson(salePerson);
+        sale.setUser(loggedInUser); // Assuming the username is stored here
         sale.setShop(loggedInUser.getShop());
 
+        // Save and return the sale
         return saleRepository.save(sale);
     }
 
@@ -67,6 +80,9 @@ public class BusinessService {
         User loggedInUser = getLoggedInUser();
         expense.setShopCode(loggedInUser.getShopCode());
         expense.setUser(loggedInUser);
+        expense.setDescription(expense.getDescription());
+        expense.setExpenseType(ExpenseType.UTILITIES.name());
+        expense.setAmount(expense.getAmount());
         expense.setShop(loggedInUser.getShop());
         return expenseRepository.save(expense);
     }
@@ -77,6 +93,7 @@ public class BusinessService {
         employee.setShop(loggedInUser.getShop());
         employeeRepository.save(employee);
 
+        // Automatically track employee salary as an expense
         Expense salaryExpense = Expense.builder()
                 .expenseType(ExpenseType.SALARY.name())
                 .amount(employee.getSalary())
@@ -117,6 +134,7 @@ public class BusinessService {
         return stockPurchase;
     }
 
+    // Calculation methods for the business operations
     public double calculateGrossProfit() {
         User loggedInUser = getLoggedInUser();
         double totalRevenue = saleRepository.findByShop(loggedInUser.getShop()).stream()
@@ -144,7 +162,7 @@ public class BusinessService {
                 .mapToDouble(Expense::getAmount).sum();
     }
 
-
+    // Stock alerts for low stock products
     public List<Product> getStockAlerts() {
         User loggedInUser = getLoggedInUser();
         return productRepository.findByShop(loggedInUser.getShop()).stream()
@@ -152,11 +170,13 @@ public class BusinessService {
                 .collect(Collectors.toList());
     }
 
+    // Retrieve sales for a specific date range
     public List<Sale> getSalesByDateRange(LocalDate startDate, LocalDate endDate) {
         User loggedInUser = getLoggedInUser();
         return saleRepository.findByShopAndDateBetween(loggedInUser.getShop(), startDate, endDate);
     }
 
+    // Top-selling products logic
     public List<Product> getTopSellingProducts() {
         User loggedInUser = getLoggedInUser();
         return saleRepository.findByShop(loggedInUser.getShop()).stream()
@@ -167,11 +187,13 @@ public class BusinessService {
                 .collect(Collectors.toList());
     }
 
+    // Filter expenses by type
     public List<Expense> getExpensesByExpenseType(ExpenseType expenseType) {
         User loggedInUser = getLoggedInUser();
         return expenseRepository.findByShopAndExpenseType(loggedInUser.getShop(), expenseType.name());
     }
 
+    // Methods for calculating total sales, expenses, and profits for a specific shop
     public double getTotalSalesForShop(Long shopId, String shopCode) {
         return saleRepository.findByShopIdAndShopCode(shopId, shopCode).stream()
                 .mapToDouble(sale -> sale.getSalePrice() * sale.getQuantity()).sum();
@@ -195,16 +217,31 @@ public class BusinessService {
     public double calculateNetProfitForShop(Long shopId, String shopCode) {
         return calculateGrossProfitForShop(shopId, shopCode) - getTotalExpensesForShop(shopId, shopCode);
     }
-    public int totalProducts(){
+
+    // Count methods for the total products, employees, and users
+    public int totalProducts() {
         User loggedInUser = getLoggedInUser();
-        return (int) productRepository.count();
+        return (int) productRepository.countByShop(loggedInUser.getShop());
     }
-    public int totalEmployees(){
+
+    public int totalEmployees() {
         User loggedInUser = getLoggedInUser();
-        return (int) employeeRepository.count();
+        return (int) employeeRepository.countByShop(loggedInUser.getShop());
     }
-    public int totalUsers(){
-        User loggedInUser = getLoggedInUser();
-        return (int) userRepository.count();
+
+    public long totalUsersByShop() {
+        User loggedInUser = getLoggedInUser(); // Retrieve logged-in user
+        return userRepository.countByShop(loggedInUser.getShop()); // Return count as long
+    }
+
+    // Utility method to get the logged-in user's shop
+    private Shop getLoggedInUserShop() {
+        User loggedInUser = getLoggedInUser(); // Method to retrieve logged-in user
+        return loggedInUser.getShop();
+    }
+    // Count users for the logged-in user's shop
+    public long totalUsersForShop() {
+        Shop shop = getLoggedInUserShop();
+        return userRepository.countByShop(shop);
     }
 }

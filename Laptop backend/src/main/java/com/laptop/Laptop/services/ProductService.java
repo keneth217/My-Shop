@@ -33,6 +33,8 @@ public class ProductService {
             ProductCreationRequestDto dto = new ProductCreationRequestDto();
             dto.setId(product.getId());
             dto.setName(product.getName());
+            dto.setProductImages(product.getProductImages());
+            dto.setProductFeatures(product.getProductFeatures());
             dto.setPrice(product.getPrice());
             dto.setStock(product.getStock());
             return dto;
@@ -57,18 +59,19 @@ public class ProductService {
 
         // Use the Builder to create a new Product instance and associate it with the shop
         Product product = Product.builder()
-
-                .name(request.getName())  // Get product name from DTO
-                .price(request.getPrice()) // Get selling price from DTO
-                .cost(request.getCost())   // Get cost price from DTO
-                .stock(request.getStock())
-                .shopCode(shop.getShopCode())// Get stock from DTO
-                .shop(shop)                // Associate the product with the shop
+                .name(request.getName())  // Set product name from DTO
+                .price(request.getPrice()) // Set selling price from DTO
+                .cost(request.getCost())   // Set cost price from DTO
+                .stock(request.getStock()) // Set stock from DTO
+                .productFeatures(request.getProductFeatures()) // Set features from DTO
+                .productImages(request.getProductImages())     // Set images from DTO
+                .shopCode(shop.getShopCode()) // Associate product with the shop code
+                .shop(shop)                   // Associate product with the shop entity
                 .build();
 
-        return productRepository.save(product); // Save the product to the database
+        // Save the product to the database
+        return productRepository.save(product);
     }
-
 
 
 }

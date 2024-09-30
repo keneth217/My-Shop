@@ -11,4 +11,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByShopId(Long shopId);
     List<Product> findByShop(Shop shop);
+
+    long countByShop(Shop shop);
 }

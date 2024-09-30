@@ -78,6 +78,8 @@ public class AuthServiceImpl implements  AuthService{
 
         // Create the new User and associate them with the admin's shop and shop code
         User user = User.builder()
+                .firstName(signUpRequest.getFirstName())
+                .lastName(signUpRequest.getLastName())
                 .username(signUpRequest.getUserName())
                 .phone(signUpRequest.getPhone())
                 .password(new BCryptPasswordEncoder().encode(signUpRequest.getPassword())) // Encrypt the password
@@ -146,13 +148,16 @@ public class AuthServiceImpl implements  AuthService{
             // Check if the shop is activated
             if (user.getShop().getShopStatus() != ShopStatus.ACTIVE) {
                 System.out.println("Error: Shop is inactive for user: " + user.getUsername());
-                throw new ShopNotActivatedException("Shop is not activated. Please contact the administrator.");
+                throw new ShopNotActivatedException("Shop is not activated." +"\n" +
+                        " Please contact the Service provider administrator." + "\n" +
+                        "Name: Kenneth" + "\n" +
+                        "Phone: 0711766223");
             }
             System.out.println("Success: Shop is active for user - " + user.getUsername());
 
         } catch (Exception e) {
             System.out.println("Error fetching user or checking shop status: " + e.getMessage());
-            throw new RuntimeException("User not found or shop is inactive", e);
+            throw new UsernameNotFoundException("User not found or shop is inactive", e);
         }
 
         // Authenticate user
@@ -175,11 +180,12 @@ public class AuthServiceImpl implements  AuthService{
             System.out.println("Success: User details loaded for - " + userDetails.getUsername());
         } catch (UsernameNotFoundException e) {
             System.out.println("Error: User not found in userDetailsService: " + e.getMessage());
-            throw new RuntimeException("User not found in userDetailsService", e);
+            throw new UsernameNotFoundException("User not found in ,check Login details", e);
         }
 
         // Generate the JWT
         final String jwt = jwtUtils.generateToken(userDetails.getUsername(), user.getShop().getId(), authenticationRequest.getShopCode());
+        System.out.println("token generated is:"+ jwt);
         System.out.println("Success: Generated JWT token for user - " + userDetails.getUsername());
 
         // Return JWT response with token, username, role, and shopCode

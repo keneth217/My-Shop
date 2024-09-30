@@ -20,14 +20,12 @@ public class Sale {
     private double salePrice;
     private int quantity;
     private String shopCode;
+    private String salePerson;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;  // Track which employee made the sale
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

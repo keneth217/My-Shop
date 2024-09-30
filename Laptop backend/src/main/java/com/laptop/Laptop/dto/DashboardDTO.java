@@ -17,6 +17,6 @@ public class DashboardDTO {
     private List<Product> stockAlerts;
     private List<Product> topProducts;
     private int totalProducts;
-    private int totalUsers;
+    private long totalUsers;
     private int totalEmployees;
 }
