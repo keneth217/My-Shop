@@ -11,6 +11,7 @@ import com.laptop.Laptop.exceptions.ShopNotFoundException;
 import com.laptop.Laptop.repository.EmployeeRepository;
 import com.laptop.Laptop.repository.ShopRepository;
 import com.laptop.Laptop.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,12 +35,9 @@ public class ShopService {
     @Autowired
     private PasswordEncoder passwordEncoder; // For encoding passwords
 
+    @Transactional
     public Shop registerShop(ShopRegistrationRequestDto request) {
 
-        Optional<User> optionalUser = userRepository.findByUsername(request.getAdminUsername());
-        if (optionalUser.isPresent()) {
-            throw new CustomerAlreadyExistException("User already registered with the given username: " + request.getAdminUsername());
-        }
         String uniqueCode = generateUniqueCode();
 
         // Create the shop
@@ -47,21 +45,25 @@ public class ShopService {
         shop.setName(request.getShopName());
         shop.setShopCode(uniqueCode);
         System.out.println(uniqueCode); // Generate unique code
-        shop.setAddress("1234 nakuru");
-        shop.setOwner("keneth");
+        shop.setAddress("1234 Nakuru");
+        shop.setOwner("Kenneth");
         shop.setPhoneNumber("0711766223");
         shop.setShopStatus(ShopStatus.ACTIVE); // Initially set to ACTIVE
         LocalDate registerDate = LocalDate.now();
         shop.setRegistrationDate(registerDate);
 
-        // Set the expiry date to two weeks from registration date
+        // Set the expiry date to two weeks from the registration date
         LocalDate expiryDate = registerDate.plusWeeks(2);
         shop.setExpiryDate(expiryDate);
 
-        // Check if the current date is past the expiry date
-        if (LocalDate.now().isAfter(expiryDate)) {
-            shop.setShopStatus(ShopStatus.INACTIVE); // Set to INACTIVE if past expiry date
+        // Check if the username is already registered globally (for any shop)
+        Optional<User> optionalUser = userRepository.findByUsername(request.getAdminUsername());
+        if (optionalUser.isPresent()) {
+            throw new CustomerAlreadyExistException("This Username has already been used: " + request.getAdminUsername());
         }
+
+        // Save the shop first before creating users and employees
+        shopRepository.save(shop);
 
         // Create the admin user
         User adminUser = new User();
@@ -72,12 +74,11 @@ public class ShopService {
         adminUser.setPhone(shop.getPhoneNumber());
         adminUser.setShop(shop);
 
-
-
         // Add the admin user to the shop's user list
         shop.getUsers().add(adminUser);
 
-        shopRepository.save(shop);
+        // Save the admin user
+        userRepository.save(adminUser);
 
         // Create a new Employee and associate them with the same shop and user
         Employee employee = Employee.builder()
@@ -85,13 +86,14 @@ public class ShopService {
                 .user(adminUser) // Associate the Employee with the newly created user
                 .shop(shop) // Associate the Employee with the same shop
                 .build();
+
         // Save the employee to the database
         employeeRepository.save(employee);
 
-        // Save the shop and admin user and employee
-        return  shop;
-
+        // Return the saved shop
+        return shop;
     }
+
 
     // Generate a unique 6-digit code starting with the letter 'S'
     private String generateUniqueCode() {
@@ -136,6 +138,7 @@ public class ShopService {
                 .orElseThrow(() -> new ShopNotFoundException("Shop not found"));
 
         // Deactivate the shop
+        shop.setExpiryDate(LocalDate.now());
         shop.setShopStatus(ShopStatus.INACTIVE);
         System.out.println("Shop status set to INACTIVE.");
 
