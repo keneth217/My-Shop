@@ -15,6 +15,7 @@ public class StockPurchase {
     private Long id;
     private LocalDate purchaseDate;
     private int quantity;
+    private double itemCost;
     private double totalCost;
 
     @ManyToOne
