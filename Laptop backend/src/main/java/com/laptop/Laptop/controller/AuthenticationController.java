@@ -37,7 +37,7 @@ public class AuthenticationController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new Responsedto(AuthConstants.ACCOUNT_CREATION_CODE,
-                        userName + " " + AuthConstants.ACCOUNT_CREATION));
+                        userName + " ," + AuthConstants.ACCOUNT_CREATION));
     }
     @PutMapping("/update-profile")
     public ResponseEntity<User> updateUserDetails(@Valid @RequestBody UserUpdateRequestDto updateRequest) {
