@@ -81,8 +81,9 @@ public class AuthServiceImpl implements  AuthService{
                 .firstName(signUpRequest.getFirstName())
                 .lastName(signUpRequest.getLastName())
                 .username(signUpRequest.getUserName())
+
                 .phone(signUpRequest.getPhone())
-                .password(new BCryptPasswordEncoder().encode(signUpRequest.getPassword())) // Encrypt the password
+                .password(new BCryptPasswordEncoder().encode("password")) // Encrypt the password
                 .role(Roles.CASHIER) // Default role for new users (can be dynamic if needed)
                 .shopCode(adminShopCode) // Assign the admin's shop code to the new user
                 .shop(shop) // Associate the user with the admin's shop
@@ -94,6 +95,7 @@ public class AuthServiceImpl implements  AuthService{
         // Create a new Employee and associate them with the same shop and user
         Employee employee = Employee.builder()
                 .name(user.getUsername())
+                .phoneNumber(user.getPhone())
                 .user(user) // Associate the Employee with the newly created user
                 .shop(shop) // Associate the Employee with the same shop
                 .build();
@@ -103,7 +105,6 @@ public class AuthServiceImpl implements  AuthService{
 
         return user;
     }
-
     public User updateUserDetails(UserUpdateRequestDto updateRequest) {
         // Fetch the authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -122,7 +123,10 @@ public class AuthServiceImpl implements  AuthService{
         if (updateRequest.getNewPassword() != null && !updateRequest.getNewPassword().isEmpty()) {
             if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), user.getPassword())) {
                 throw new RuntimeException("Current password is incorrect");
+
             }
+            user.setFirstName(updateRequest.getFirstName());
+            user.setLastName(updateRequest.getLastName());
             user.setPassword(passwordEncoder.encode(updateRequest.getNewPassword()));
         }
 
