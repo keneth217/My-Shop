@@ -24,17 +24,19 @@ public class ProductController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     @PostMapping("/add")
-    public ResponseEntity<Responsedto> addProduct(@RequestBody ProductCreationRequestDto request, HttpServletRequest httpRequest) {
+    public ResponseEntity<Responsedto> addProduct(@ModelAttribute ProductCreationRequestDto request, HttpServletRequest httpRequest) {
         // Extract shopId from the request attributes set by the JWT filter
         Long shopId = (Long) httpRequest.getAttribute("shopId");
 
         // Add the new product under the same shop
         Product newProduct = productService.addProductToShop(shopId, request);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body( new Responsedto(
-                ProductConstants.PRODUCT_ADDITION,
-                ProductConstants.PRODUCT_ADDITION_CODE));
+                .body(new Responsedto(
+                        ProductConstants.PRODUCT_ADDITION,
+                        ProductConstants.PRODUCT_ADDITION_CODE
+                ));
     }
 
     @GetMapping
