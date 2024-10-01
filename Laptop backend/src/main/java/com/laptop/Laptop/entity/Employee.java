@@ -14,6 +14,7 @@ public class Employee {
     private Long id;
     private String name;
     private double salary;
+    private String phoneNumber;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
