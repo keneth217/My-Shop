@@ -10,8 +10,8 @@ import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor  // Add this
-@AllArgsConstructor //
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Product {
     @Id
@@ -20,18 +20,19 @@ public class Product {
     private String name;
     private String shopCode;
     private double price;  // Selling price
-    private double cost;   // Cost price
+    private double cost;   // costs of each product Cost price
     private int stock;
     private int quantitySold;
+
     @ElementCollection
-    private List<String> productFeatures;
+    private List<String> productFeatures;  // List of features
+
     @ElementCollection
     @Lob
     @Column(columnDefinition = "longblob")
-    private List<byte[]> productImages; // More images field
+    private List<byte[]> productImages;  // Storing images as byte arrays
+
     @ManyToOne
     @JoinColumn(name = "shop_id")
-    private Shop shop; // Each product belongs to one shop
-
-    // Getters and Setters
+    private Shop shop;  // Each product belongs to one shop
 }
