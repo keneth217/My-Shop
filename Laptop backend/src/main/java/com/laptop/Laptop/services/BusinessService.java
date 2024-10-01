@@ -1,5 +1,6 @@
 package com.laptop.Laptop.services;
 
+import com.laptop.Laptop.dto.PaymentResponseDto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.enums.ExpenseType;
 import com.laptop.Laptop.exceptions.InsufficientStockException;
@@ -21,6 +22,8 @@ public class BusinessService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @Autowired
     private SaleRepository saleRepository;
@@ -86,26 +89,55 @@ public class BusinessService {
         expense.setShop(loggedInUser.getShop());
         return expenseRepository.save(expense);
     }
-
     @Transactional
     public Employee addEmployee(Employee employee) {
+        // Get the logged-in user
         User loggedInUser = getLoggedInUser();
-        employee.setShop(loggedInUser.getShop());
-        employeeRepository.save(employee);
 
-        // Automatically track employee salary as an expense
+        // Associate employee with the logged-in user's shop
+        employee.setShop(loggedInUser.getShop());
+
+        // Save the employee
+        return employeeRepository.save(employee);
+    }
+
+    @Transactional
+    public PaymentResponseDto payEmployee(Long employeeId, double salaryAmount) {
+        // Get the logged-in user
+        User loggedInUser = getLoggedInUser();
+
+        // Fetch the employee to be paid
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new IllegalStateException("Employee not found"));
+
+        // Ensure the employee belongs to the same shop as the logged-in user
+        if (!employee.getShop().getId().equals(loggedInUser.getShop().getId())) {
+            throw new IllegalStateException("Unauthorized to pay this employee");
+        }
+
+        // Create a salary payment (for simplicity, we'll assume a Payment entity exists)
+        Payment salaryPayment = Payment.builder()
+                .employee(employee)
+                .amount(salaryAmount)
+                .paymentDate(LocalDate.now())
+                .build();
+        paymentRepository.save(salaryPayment); // Save the salary payment
+
+        // Track the salary as an expense
         Expense salaryExpense = Expense.builder()
-                .expenseType(ExpenseType.SALARY.name())
-                .amount(employee.getSalary())
+                .expenseType(ExpenseType.SALARY.name()) // Salary expense type
+                .amount(salaryAmount)
                 .date(LocalDate.now())
                 .shopCode(loggedInUser.getShopCode())
                 .user(loggedInUser)
                 .shop(loggedInUser.getShop())
                 .build();
-        expenseRepository.save(salaryExpense);
+        expenseRepository.save(salaryExpense); // Save the salary expense
 
-        return employee;
+        // Return a response confirming the payment
+        return new PaymentResponseDto("Salary payment successful", salaryAmount, employee.getName(), LocalDate.now());
     }
+
 
     @Transactional
     public StockPurchase addStockPurchase(Long productId, StockPurchase stockPurchase) {
@@ -114,7 +146,9 @@ public class BusinessService {
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         product.setStock(product.getStock() + stockPurchase.getQuantity());
+        product.setPrice(stockPurchase.getTotalCost() +(stockPurchase.getQuantity() * stockPurchase.getItemCost()));
         productRepository.save(product);
+        stockPurchase.setTotalCost(stockPurchase.getQuantity() * stockPurchase.getItemCost());
 
         stockPurchase.setProduct(product);
         stockPurchase.setUser(loggedInUser);
