@@ -83,6 +83,7 @@ public class ShopService {
         // Create a new Employee and associate them with the same shop and user
         Employee employee = Employee.builder()
                 .name(request.getAdminUsername())
+                .phoneNumber(shop.getPhoneNumber())
                 .user(adminUser) // Associate the Employee with the newly created user
                 .shop(shop) // Associate the Employee with the same shop
                 .build();
