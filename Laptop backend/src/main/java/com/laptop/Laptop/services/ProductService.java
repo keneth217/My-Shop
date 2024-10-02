@@ -81,9 +81,9 @@ public class ProductService {
         // Build the product
         Product product = Product.builder()
                 .name(request.getName())  // Set product name from DTO
-                .price(request.getPrice()) // Set selling price from DTO
-                .cost(request.getCost())   // Set cost price from DTO
-                .stock(request.getStock()) // Set stock from DTO
+                .price(0) // Set selling price from DTO
+                .cost(0)   // Set cost price from DTO
+                .stock(0) // Set stock from DTO
                 .productFeatures(request.getProductFeatures()) // Set features from DTO
                 .productImages(productImages)  // Set converted image byte arrays
                 .shopCode(shop.getShopCode())  // Associate product with the shop code
