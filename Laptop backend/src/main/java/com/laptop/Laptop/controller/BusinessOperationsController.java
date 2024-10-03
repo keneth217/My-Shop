@@ -3,15 +3,20 @@ package com.laptop.Laptop.controller;
 import com.laptop.Laptop.constants.AuthConstants;
 import com.laptop.Laptop.constants.MyConstants;
 import com.laptop.Laptop.dto.DashboardDTO;
+import com.laptop.Laptop.dto.PaginatedResponse;
+import com.laptop.Laptop.dto.PaymentResponseDto;
 import com.laptop.Laptop.dto.Responsedto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.services.BusinessService;
 import com.laptop.Laptop.services.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -38,7 +43,15 @@ public class BusinessOperationsController {
                 .status(HttpStatus.CREATED)
                 .body(new Responsedto(MyConstants.EXPENSE_CREATION,MyConstants.EXPENSE_CREATION_CODE));
     }
-
+    @GetMapping("/sales")
+    public ResponseEntity<PaginatedResponse<Sale>> getSalesByDateRange(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
+            Pageable pageable) {
+        Page<Sale> salePage = businessService.getSalesByDateRange(startDate, endDate, pageable);
+        PaginatedResponse<Sale> response = new PaginatedResponse<>(salePage);
+        return ResponseEntity.ok(response);
+    }
 
     // Add a new employee and automatically track their salary as an expense
     @PostMapping("/employees")
@@ -47,6 +60,19 @@ public class BusinessOperationsController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body( new Responsedto(MyConstants.EMPLOYEE_CREATION,MyConstants.EMPLOYEE_CREATION_CODE));// Use 201 Created
+    }
+
+    // Endpoint for paying employee salary
+    @PostMapping("/{employeeId}/pay")
+    public ResponseEntity<PaymentResponseDto> payEmployee(
+            @PathVariable Long employeeId,
+            @RequestParam double salaryAmount) {
+
+        // Call the service to handle the salary payment
+        PaymentResponseDto response = businessService.payEmployee(employeeId, salaryAmount);
+
+        // Return the response with HTTP 200 OK status
+        return ResponseEntity.ok(response);
     }
 
     // Add a new stock purchase linked to a product
@@ -58,15 +84,17 @@ public class BusinessOperationsController {
                 .body(new Responsedto(MyConstants.STOCK_PURCHASE_CODE,MyConstants.STOCK_PURCHASE_CREATION));
     }
     @GetMapping("/top-products")
-    public ResponseEntity<List<Product>> getTopProducts() {
-        List<Product> topProducts = businessService.getTopSellingProducts();
-        return ResponseEntity.ok(topProducts);
+    public ResponseEntity<PaginatedResponse<Product>> getTopProducts(Pageable pageable) {
+        Page<Product> topProductsPage = businessService.getTopSellingProducts(pageable);
+        PaginatedResponse<Product> response = new PaginatedResponse<>(topProductsPage);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/stock-alerts")
-    public ResponseEntity<List<Product>> getStockAlerts() {
-        List<Product> stockAlerts = businessService.getStockAlerts();
-        return ResponseEntity.ok(stockAlerts);
+    public ResponseEntity<PaginatedResponse<Product>> getStockAlerts( Pageable pageable) {
+        Page<Product> stockAlerts = businessService.getStockAlerts(pageable);
+        PaginatedResponse<Product> response = new PaginatedResponse<>(stockAlerts);
+        return ResponseEntity.ok(response);
     }
 
 
