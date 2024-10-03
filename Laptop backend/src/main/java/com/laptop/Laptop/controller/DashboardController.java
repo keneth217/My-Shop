@@ -3,6 +3,7 @@ package com.laptop.Laptop.controller;
 import com.laptop.Laptop.dto.DashboardDTO;
 import com.laptop.Laptop.services.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,9 +16,10 @@ public class DashboardController {
     @Autowired
     private DashboardService dashboardService;
 
-    @GetMapping
-    public ResponseEntity<DashboardDTO> getDashboardData() {
-        DashboardDTO dashboardData = dashboardService.getDashboardData();
+    @GetMapping("/dashboard")
+    public ResponseEntity<DashboardDTO> getDashboard(Pageable pageable) {
+        DashboardDTO dashboardData = dashboardService.getDashboardData(pageable);
         return ResponseEntity.ok(dashboardData);
     }
+
 }
