@@ -184,7 +184,8 @@ public class BusinessServiceImpl implements BusinessService {
                 .build();
         expenseRepository.save(salaryExpense);
 
-        return new PaymentResponseDto("Salary payment successful", salaryAmount, employee.getName(), LocalDate.now());
+        return new PaymentResponseDto("Salary payment successful",
+                salaryAmount, employee.getName(), LocalDate.now());
     }
 
     @Transactional
