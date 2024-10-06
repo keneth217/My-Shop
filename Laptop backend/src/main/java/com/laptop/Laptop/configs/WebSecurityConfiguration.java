@@ -50,6 +50,8 @@ public class WebSecurityConfiguration {
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
             "api/shops/**",
+            "api/logs",
+            "api/metrics",
             "/swagger-ui.html"
     };
     @Bean
