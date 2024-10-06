@@ -42,14 +42,16 @@ public class ShopService {
 
         // Create the shop
         Shop shop = new Shop();
-        shop.setName(request.getShopName());
+        shop.setShopName(request.getShopName());
         shop.setShopCode(uniqueCode);
         System.out.println(uniqueCode); // Generate unique code
-        shop.setAddress("1234 Nakuru");
-        shop.setOwner("Kenneth");
-        shop.setPhoneNumber("0711766223");
+        shop.setAddress(request.getAddress());
+
+        shop.setOwner(request.getOwner());
+        shop.setPhoneNumber(request.getPhoneNumber());
         shop.setShopStatus(ShopStatus.ACTIVE); // Initially set to ACTIVE
         LocalDate registerDate = LocalDate.now();
+        shop.setDescription("New Installation");
         shop.setRegistrationDate(registerDate);
 
         // Set the expiry date to two weeks from the registration date
@@ -128,6 +130,7 @@ public class ShopService {
 
         // Update the expiry date based on the request
         shop.setExpiryDate(request.getExpiryDate());
+        shop.setDescription(request.getDescription());
 
         // Save and return the updated shop
         return shopRepository.save(shop);
