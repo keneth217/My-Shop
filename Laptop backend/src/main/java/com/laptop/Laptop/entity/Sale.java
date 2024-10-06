@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor  // Add this
@@ -31,7 +33,12 @@ public class Sale {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
+    private List<SaleItem> saleItems;
+
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
+
+    private double totalPrice;  // Total price for all items in the sale
 }
