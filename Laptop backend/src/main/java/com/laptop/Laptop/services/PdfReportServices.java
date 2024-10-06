@@ -92,21 +92,23 @@ public class PdfReportServices {
 
             addHeader(document, shop, user);
 
-            document.add(new Paragraph("Sales Report"));
+            document.add(new Paragraph("Sales Report as Btw:"+ " " +LocalDate.now()));
             document.add(new Paragraph(" "));
 
-            PdfPTable table = new PdfPTable(4); // Columns: Date, Product, Quantity, Total
+            PdfPTable table = new PdfPTable(5); // Columns: Date, Product, Quantity, Total
             table.setWidthPercentage(100);
             table.addCell("Date");
             table.addCell("Product");
             table.addCell("Quantity");
+            table.addCell("itemCost");
             table.addCell("Total");
 
             for (Sale sale : sales) {
                 table.addCell(sale.getDate().toString());
                 table.addCell(sale.getProduct().getName());
                 table.addCell(String.valueOf(sale.getQuantity()));
-                table.addCell(String.valueOf(sale.getTotalPrice()));
+                table.addCell(String.valueOf(sale.getSalePrice()));
+                table.addCell(String.valueOf(sale.getSaleTotal()));
             }
 
             document.add(table);
@@ -133,17 +135,20 @@ public class PdfReportServices {
             document.add(new Paragraph("Stock Purchase Report"));
             document.add(new Paragraph(" "));
 
-            PdfPTable table = new PdfPTable(4); // Columns: Date, Supplier, Quantity, Total
+            PdfPTable table = new PdfPTable(5); // Columns: Date, Supplier, Quantity, Total
             table.setWidthPercentage(100);
             table.addCell("Date");
             table.addCell("Supplier");
             table.addCell("Quantity");
+            table.addCell("Item Cost");
             table.addCell("Total");
 
             for (StockPurchase stockPurchase : stockPurchases) {
                 table.addCell(stockPurchase.getPurchaseDate().toString());
-                table.addCell(String.valueOf(stockPurchase.getPurchaseDate()));
+                table.addCell(String.valueOf(stockPurchase.getSupplierName()));
                 table.addCell(String.valueOf(stockPurchase.getQuantity()));
+                table.addCell(String.valueOf(stockPurchase.getItemCost()));
+
                 table.addCell(String.valueOf(stockPurchase.getTotalCost()));
             }
 
