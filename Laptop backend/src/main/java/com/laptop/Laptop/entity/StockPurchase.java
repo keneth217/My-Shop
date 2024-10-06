@@ -2,12 +2,16 @@ package com.laptop.Laptop.entity;
 
 import com.laptop.Laptop.entity.Product;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 @Data
 @Builder
+@NoArgsConstructor  // Add this
+@AllArgsConstructor //
 @Entity
 public class StockPurchase {
     @Id
