@@ -2,10 +2,7 @@ package com.laptop.Laptop.controller;
 
 import com.laptop.Laptop.constants.AuthConstants;
 import com.laptop.Laptop.constants.MyConstants;
-import com.laptop.Laptop.dto.DashboardDTO;
-import com.laptop.Laptop.dto.PaginatedResponse;
-import com.laptop.Laptop.dto.PaymentResponseDto;
-import com.laptop.Laptop.dto.Responsedto;
+import com.laptop.Laptop.dto.*;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.services.BusinessService;
 import com.laptop.Laptop.services.DashboardService;
@@ -25,6 +22,12 @@ public class BusinessOperationsController {
 
     @Autowired
     private BusinessService businessService;
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createSale(@RequestBody SaleRequest saleRequest) {
+        Sale sale = businessService.createSale(saleRequest.getProductIds(), saleRequest.getQuantities(), new Sale());
+        return ResponseEntity.ok(sale);
+    }
 
     // Create a new sale linked to a product
     @PostMapping("/sales/{productId}")
@@ -62,14 +65,21 @@ public class BusinessOperationsController {
                 .body( new Responsedto(MyConstants.EMPLOYEE_CREATION,MyConstants.EMPLOYEE_CREATION_CODE));// Use 201 Created
     }
 
+    @PostMapping("/invest")
+    public ResponseEntity<Investment> addInvestement(@RequestBody Investment investment ) {
+        Investment investment1 = businessService.addInvestment(investment);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(investment1);
+    }
+
     // Endpoint for paying employee salary
     @PostMapping("/{employeeId}/pay")
     public ResponseEntity<PaymentResponseDto> payEmployee(
             @PathVariable Long employeeId,
-            @RequestParam double salaryAmount) {
+            @RequestBody SalaryDto salary) {
 
         // Call the service to handle the salary payment
-        PaymentResponseDto response = businessService.payEmployee(employeeId, salaryAmount);
+        PaymentResponseDto response = businessService.payEmployee(employeeId, salary);
 
         // Return the response with HTTP 200 OK status
         return ResponseEntity.ok(response);
