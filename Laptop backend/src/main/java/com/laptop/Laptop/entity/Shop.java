@@ -24,14 +24,16 @@ public class Shop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String shopName;
     private String owner;
     private String shopCode;
     private String phoneNumber;
     private String address;
+    private String description;
     private LocalDate registrationDate;
     private LocalDate expiryDate;
     private ShopStatus shopStatus;
+private String logo;
 
 
 
