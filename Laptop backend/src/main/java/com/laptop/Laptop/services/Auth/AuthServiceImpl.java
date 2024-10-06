@@ -193,20 +193,8 @@ public class AuthServiceImpl implements  AuthService{
         System.out.println("Success: Generated JWT token for user - " + userDetails.getUsername());
 
         // Return JWT response with token, username, role, and shopCode
-        return new JWTAuthenticationResponse(jwt, user.getUsername(), user.getRole().name(), authenticationRequest.getShopCode(), user.getShop().getId());
+        return new JWTAuthenticationResponse("login success",jwt, user.getUsername(), user.getRole().name(), authenticationRequest.getShopCode(), user.getShop().getId());
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
