@@ -1,11 +1,15 @@
 package com.laptop.Laptop.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Data
+@NoArgsConstructor  // Add this
+@AllArgsConstructor //
 @Builder
 @Entity
 public class Employee {
