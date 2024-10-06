@@ -23,7 +23,7 @@ public class Sale {
     private int quantity;
     private String shopCode;
     private String salePerson;
-
+private double saleTotal;
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
