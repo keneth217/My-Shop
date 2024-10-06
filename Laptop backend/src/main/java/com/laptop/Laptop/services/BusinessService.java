@@ -1,6 +1,7 @@
 package com.laptop.Laptop.services;
 
 import com.laptop.Laptop.dto.PaymentResponseDto;
+import com.laptop.Laptop.dto.SalaryDto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.enums.ExpenseType;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,7 @@ public interface BusinessService {
     Sale createSale(Long productId, Sale sale);
     Expense addExpense(Expense expense);
     Employee addEmployee(Employee employee);
-    PaymentResponseDto payEmployee(Long employeeId, double salaryAmount);
+    PaymentResponseDto payEmployee(Long employeeId, SalaryDto salary);
     StockPurchase addStockPurchase(Long productId, StockPurchase stockPurchase);
     double calculateGrossProfit();
     double calculateNetProfit();
@@ -30,4 +31,10 @@ public interface BusinessService {
     double calculateGrossProfitForShop(Long shopId, String shopCode);
     Page<Product> getStockAlerts(Pageable pageable);
     double getTotalInvestments();
+    Sale createSale(List<Long> productIds, List<Integer> quantities, Sale sale);
+
+    Investment addInvestment(Investment investment);
+
+    List<Sale> getSalesForShop(Long shopId, LocalDate startDate, LocalDate endDate);
+    List<StockPurchase> getStockPurchasesForShop(Long shopId, LocalDate startDate, LocalDate endDate);
 }
