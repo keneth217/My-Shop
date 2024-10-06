@@ -219,6 +219,7 @@ public class BusinessServiceImpl implements BusinessService {
         // Set the shop code and other relevant details for the sale
         sale.setShopCode(loggedInUser.getShop().getShopCode());
         sale.setProduct(product);
+        sale.setSaleTotal(sale.getQuantity() * sale.getSalePrice());
         sale.setDate(LocalDate.now());
         sale.setSalePerson(salePerson);
         sale.setUser(loggedInUser);
