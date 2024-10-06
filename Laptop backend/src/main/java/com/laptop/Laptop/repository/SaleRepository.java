@@ -16,4 +16,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByShopIdAndShopCode(Long shopId, String shopCode);
     Page<Sale> findAllByDateBetween(LocalDate startDate, LocalDate endDate, Pageable pageable);
     List<Sale> findByShop(Shop shop);
+
+    List<Sale> findByShopIdAndDateBetween(Long shopId, LocalDate startDate, LocalDate endDate);
 }
