@@ -1,5 +1,6 @@
 package com.laptop.Laptop.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +31,9 @@ public class Investment {
     private Shop shop;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JsonBackReference // Prevents recursion, indicates the back reference
     private User user;
+
+
+
 }
