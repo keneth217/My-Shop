@@ -5,13 +5,18 @@ import com.laptop.Laptop.dto.Responsedto;
 import com.laptop.Laptop.dto.ShopRegistrationRequestDto;
 import com.laptop.Laptop.entity.Shop;
 import com.laptop.Laptop.enums.ShopStatus;
+import com.laptop.Laptop.services.PdfReportServices;
 import com.laptop.Laptop.services.ShopService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -20,6 +25,8 @@ public class ShopController {
 
     @Autowired
     private ShopService shopService;
+    @Autowired
+    private PdfReportServices pdfReportServices;
 
     @PostMapping("/register")
     public ResponseEntity<Responsedto> registerShop(@RequestBody ShopRegistrationRequestDto request) {
@@ -65,5 +72,24 @@ public class ShopController {
     public ResponseEntity<List<Shop>> getAllShopsByStatus(@PathVariable ShopStatus status) {
         List<Shop> shops = shopService.getAllShopsByStatus(status);
         return ResponseEntity.ok(shops);
+    }
+
+    // Generate shop list report PDF
+    @GetMapping("/pdf/report")
+    public ResponseEntity<?> generateShopListReport() throws IOException {
+
+        // Fetch all shops
+        List<Shop> shops = shopService.getAllShops();
+
+        // Generate the PDF report
+        ByteArrayInputStream pdfStream = pdfReportServices.generateShopListReport(shops);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=shop-list-report.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfStream.readAllBytes());
     }
 }
