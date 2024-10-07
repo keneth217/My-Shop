@@ -1,7 +1,12 @@
 package com.laptop.Laptop.services;
 
 import com.itextpdf.io.source.ByteArrayOutputStream;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.IBlockElement;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -11,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +30,67 @@ public class PdfReportServices {
     @Autowired
     private ProductRepository productRepository;
 
-    // Generate PDF for sale receipt
-    public ByteArrayInputStream generateSaleReceipt(Sale sale, User loggedInUser) {
+    public void generatePdfReceipt(Sale sale) throws IOException {
+        // Use a ByteArrayOutputStream to store the PDF in memory
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        return null;
+        try {
+            // Create a Document instance
+            Document document = new Document();
+
+            // Create a PdfWriter instance to write PDF data into the ByteArrayOutputStream
+            PdfWriter.getInstance(document, baos);
+
+            // Open the document to start adding content
+            document.open();
+
+            // Add receipt title
+            document.add(new Paragraph("Receipt", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 20)));
+
+            // Add shop details
+            document.add(new Paragraph("Shop: " + sale.getShop().getShopName()));
+            document.add(new Paragraph("Shop Code: " + sale.getShopCode()));
+            document.add(new Paragraph("Date: " + sale.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+            document.add(new Paragraph("Sale Person: " + sale.getSalePerson()));
+
+            document.add(new Paragraph(" ")); // Adding space between sections
+
+            // Add product details in a table
+            PdfPTable table = new PdfPTable(4); // 4 columns
+            table.setWidths(new float[]{150F, 100F, 100F, 100F});
+
+            // Add table headers
+            table.addCell("Product Name");
+            table.addCell("Quantity");
+            table.addCell("Price per Item");
+            table.addCell("Total");
+
+            // Add product details to the table
+            table.addCell(sale.getProduct().getName());
+            table.addCell(String.valueOf(sale.getQuantity()));
+            table.addCell(String.valueOf(sale.getSalePrice()));
+            table.addCell(String.valueOf(sale.getSaleTotal()));
+
+            // Add table to the document
+            document.add(table);
+
+            // Add total amount at the bottom
+            document.add(new Paragraph("Total Amount: " + sale.getSaleTotal()));
+
+            // Close the document after adding all content
+            document.close();
+
+            // Save the PDF to a file
+            try (FileOutputStream fos = new FileOutputStream("receipt_" + sale.getId() + ".pdf")) {
+                baos.writeTo(fos); // Write the contents of the ByteArrayOutputStream to the file
+            }
+
+        } catch (DocumentException e) {
+            e.printStackTrace(); // Log the exception for debugging
+        } finally {
+            // Ensure the ByteArrayOutputStream is properly closed
+            baos.close();
+        }
     }
 
 
@@ -221,7 +285,7 @@ public class PdfReportServices {
         // Add the shop details
         Paragraph shopDetails = new Paragraph(
                 shop.getShopName() + "\n" +
-                        "Address: " + shop.getAddress() + "\n" +
+                        "Address: P.O BOX-"+ shop.getAddress() + "\n" +
                         "Phone: " + shop.getPhoneNumber(),
                 FontFactory.getFont(FontFactory.HELVETICA, 12)
         );
