@@ -34,6 +34,7 @@ public class WebSecurityConfiguration {
 //                        .requestMatchers("api/auth/**","swagger-ui/index.html#/**","api/admin/**","api/customer/**").permitAll()
                         //.requestMatchers("api/v1/auth/**","api/shops/register").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
+                      //  .requestMatchers("api/shops/").hasAnyAuthority(Roles.SUPER_USER.name())
                         .requestMatchers("api/admin/").hasAnyAuthority(Roles.ADMIN.name())
                         .requestMatchers("api/customer/").hasAnyAuthority(Roles.CASHIER.name())
                         .anyRequest().authenticated())
