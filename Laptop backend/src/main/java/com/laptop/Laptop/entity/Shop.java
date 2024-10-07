@@ -37,7 +37,7 @@ private String logo;
 
 
 
-    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     //@JsonIgnore
     @JsonManagedReference  // Add this annotation
     private List<User> users = new ArrayList<>(); // Initialize the list here
