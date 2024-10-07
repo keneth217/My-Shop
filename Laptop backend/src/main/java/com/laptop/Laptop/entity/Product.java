@@ -35,4 +35,8 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "shop_id")
     private Shop shop;  // Each product belongs to one shop
+
+
+    @OneToMany(mappedBy = "product")
+    private List<StockPurchase> stockPurchases;
 }
