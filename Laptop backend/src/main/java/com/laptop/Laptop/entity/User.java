@@ -1,6 +1,7 @@
 package com.laptop.Laptop.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.laptop.Laptop.enums.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,9 @@ public class User implements UserDetails {
     @JoinColumn(name = "shop_id")
     @JsonBackReference  // Add this annotation
     private Shop shop;  // Prevents circular reference during serialization
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<Investment> investments;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
