@@ -18,6 +18,7 @@ import com.laptop.Laptop.repository.ShopRepository;
 import com.laptop.Laptop.repository.UserRepository;
 import com.laptop.Laptop.services.Jwt.UserService;
 import com.laptop.Laptop.util.JwtUtils;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,6 +48,27 @@ public class AuthServiceImpl implements  AuthService{
     @Autowired
     private PasswordEncoder passwordEncoder; // For encoding passwords
 
+
+    @PostConstruct
+    public void createAdmin() {
+        User adminAccount = userRepository.findByRole(Roles.SUPER_USER); // Assuming Roles.ADMIN is the role
+        System.out.println(adminAccount);
+
+        if (adminAccount == null) {
+            User newAdmin = new User();
+            newAdmin.setFirstName("Keneth");
+            newAdmin.setLastName("Admin");
+            newAdmin.setPhone("0711766223");
+            newAdmin.setUsername("superuser");
+            newAdmin.setPassword(new BCryptPasswordEncoder().encode("admin"));
+            newAdmin.setRole(Roles.SUPER_USER);  // Set the correct role
+
+            userRepository.save(newAdmin);  // Save the new admin user
+            System.out.println("New admin added");
+        } else {
+            System.out.println("Admin account already exists");
+        }
+    }
 
     public User createUser(SignUpRequetDto signUpRequest) {
         // Fetch the authenticated admin user from the SecurityContextHolder
