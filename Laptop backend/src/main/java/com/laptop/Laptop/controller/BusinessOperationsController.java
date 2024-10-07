@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class BusinessOperationsController {
 
     // Create a new sale linked to a product
     @PostMapping("/sales/{productId}")
-    public ResponseEntity<Responsedto> createSale(@PathVariable Long productId, @RequestBody Sale sale) {
+    public ResponseEntity<Responsedto> createSale(@PathVariable Long productId, @RequestBody Sale sale) throws IOException {
         businessService.createSale(productId, sale);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -67,9 +68,14 @@ public class BusinessOperationsController {
 
     @PostMapping("/invest")
     public ResponseEntity<Investment> addInvestement(@RequestBody Investment investment ) {
-        Investment investment1 = businessService.addInvestment(investment);
+        Investment saveInvestement = businessService.addInvestment(investment);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(investment1);
+                .body(saveInvestement);
+    }
+    @PostMapping("/supplier")
+    public ResponseEntity<Supplier> addSupplier(@RequestBody Supplier supplier) {
+        Supplier savedSupplier = businessService.addSupplier(supplier);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedSupplier);
     }
 
     // Endpoint for paying employee salary
@@ -86,9 +92,9 @@ public class BusinessOperationsController {
     }
 
     // Add a new stock purchase linked to a product
-    @PostMapping("/stock-purchases/{productId}")
-    public ResponseEntity<Responsedto> addStockPurchase(@PathVariable Long productId, @RequestBody StockPurchase stockPurchase) {
-        StockPurchase addedStockPurchase = businessService.addStockPurchase(productId, stockPurchase);
+    @PostMapping("/stock-purchases/{productId}/{supplierId}")
+    public ResponseEntity<Responsedto> addStockPurchase(@PathVariable Long productId,@PathVariable Long supplierId, @RequestBody StockPurchase stockPurchase) {
+        StockPurchase addedStockPurchase = businessService.addStockPurchase(productId,supplierId, stockPurchase);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new Responsedto(MyConstants.STOCK_PURCHASE_CODE,MyConstants.STOCK_PURCHASE_CREATION));
