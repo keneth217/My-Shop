@@ -26,6 +26,7 @@ public class StockPurchase {
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -34,5 +35,9 @@ public class StockPurchase {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private Supplier supplier;
     // Getters and Setters
 }
