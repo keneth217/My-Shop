@@ -7,14 +7,15 @@ import com.laptop.Laptop.enums.ExpenseType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 public interface BusinessService {
-    Sale createSale(Long productId, Sale sale);
+    Sale createSale(Long productId, Sale sale) throws IOException;
     Expense addExpense(Expense expense);
     Employee addEmployee(Employee employee);
     PaymentResponseDto payEmployee(Long employeeId, SalaryDto salary);
-    StockPurchase addStockPurchase(Long productId, StockPurchase stockPurchase);
+    StockPurchase addStockPurchase(Long productId, Long supplierId, StockPurchase stockPurchase);
     double calculateGrossProfit();
     double calculateNetProfit();
     double getTotalSales();
@@ -34,6 +35,7 @@ public interface BusinessService {
     Sale createSale(List<Long> productIds, List<Integer> quantities, Sale sale);
 
     Investment addInvestment(Investment investment);
+    Supplier addSupplier(Supplier  supplier);
 
     List<Sale> getSalesForShop(Long shopId, LocalDate startDate, LocalDate endDate);
     List<StockPurchase> getStockPurchasesForShop(Long shopId, LocalDate startDate, LocalDate endDate);
