@@ -1,5 +1,6 @@
 package com.laptop.Laptop.services;
 
+import com.itextpdf.io.IOException;
 import com.laptop.Laptop.dto.PaymentResponseDto;
 import com.laptop.Laptop.dto.SalaryDto;
 import com.laptop.Laptop.entity.*;
@@ -42,6 +43,9 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SupplierRepository supplierRepository;
 
     @Autowired
     private InvestmentRepository investmentRepository;
@@ -116,32 +120,44 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Transactional
-    public StockPurchase addStockPurchase(Long productId, StockPurchase stockPurchase) {
+    public StockPurchase addStockPurchase(Long productId, Long supplierId, StockPurchase stockPurchase) {
         User loggedInUser = getLoggedInUser();
-        //check if product exist in the shop associated with user
-        //you cannot stock product not associated with your shop;
-        //stock only product you created
+
+        // Check if the product exists in the shop associated with the logged-in user
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-        //both id should be the same
-        System.out.println("product shop id:"+product.getShop().getId());
-        System.out.println("user shop id:"+loggedInUser.getShop().getId());
+
+        if (!product.getShop().getId().equals(loggedInUser.getShop().getId())) {
+            throw new IllegalArgumentException("You cannot stock a product not associated with your shop.");
+        }
+
+        // Fetch the supplier by supplierId
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new IllegalArgumentException("Supplier not found"));
+
+        // Update the product's stock and price
         product.setStock(product.getStock() + stockPurchase.getQuantity());
         product.setPrice(stockPurchase.getTotalCost() + (stockPurchase.getQuantity() * stockPurchase.getItemCost()));
         productRepository.save(product);
+
+        // Set the total cost of the stock purchase
         stockPurchase.setTotalCost(stockPurchase.getQuantity() * stockPurchase.getItemCost());
 
+        // Set relationships and other fields
         stockPurchase.setProduct(product);
-        stockPurchase.setUser(loggedInUser);
+
+        stockPurchase.setSupplierName(supplier.getSupplierName());
+        stockPurchase.setSupplier(supplier); // Set the supplier
         stockPurchase.setPurchaseDate(LocalDate.now());
         stockPurchase.setShop(loggedInUser.getShop());
         stockPurchaseRepository.save(stockPurchase);
 
+        // Log the stock purchase as an expense
         Expense stockExpense = Expense.builder()
                 .expenseType(ExpenseType.STOCKPURCHASE.name())
                 .amount(stockPurchase.getTotalCost())
                 .shopCode(loggedInUser.getShopCode())
-                .description(product.getName()+"-"+ExpenseType.STOCKPURCHASE.name())
+                .description(product.getName() + "-" + ExpenseType.STOCKPURCHASE.name())
                 .date(LocalDate.now())
                 .user(loggedInUser)
                 .shop(loggedInUser.getShop())
@@ -150,6 +166,7 @@ public class BusinessServiceImpl implements BusinessService {
 
         return stockPurchase;
     }
+
     @Override
     public long totalUsersByShop() {
         User loggedInUser = getLoggedInUser();
@@ -200,7 +217,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Transactional
-    public Sale createSale(Long productId, Sale sale) {
+    public Sale createSale(Long productId, Sale sale) throws IOException, java.io.IOException {
         User loggedInUser = getLoggedInUser();
         String salePerson = getLoggedInUser().getUsername();
         Product product = productRepository.findById(productId)
@@ -209,14 +226,16 @@ public class BusinessServiceImpl implements BusinessService {
         if (product.getStock() < sale.getQuantity()) {
             throw new InsufficientStockException("Insufficient stock available.");
         }
+
         // Deduct the sold quantity from the product's stock
         product.setStock(product.getStock() - sale.getQuantity());
-        // Populate total amount sold to the product when each item is sold
+
+        // Update product total price and quantity sold
         product.setPrice(product.getPrice() + (sale.getSalePrice() * sale.getQuantity()));
         product.setQuantitySold(product.getQuantitySold() + sale.getQuantity());
         productRepository.save(product);
 
-        // Set the shop code and other relevant details for the sale
+        // Set shop and sale details
         sale.setShopCode(loggedInUser.getShop().getShopCode());
         sale.setProduct(product);
         sale.setSaleTotal(sale.getQuantity() * sale.getSalePrice());
@@ -224,14 +243,17 @@ public class BusinessServiceImpl implements BusinessService {
         sale.setSalePerson(salePerson);
         sale.setUser(loggedInUser);
         sale.setShop(loggedInUser.getShop());
-        //generate receipt of sold products in pdf format.
-        //use itext pdf
-        //receipt contain list of products column,its features,quantity,total for product
-        // and total amount of that receipt
 
-        // Save and return the sale
-        return saleRepository.save(sale);
+        // Save the sale
+        Sale savedSale = saleRepository.save(sale);
+
+        // Generate PDF receipt
+        pdfReportServices.generatePdfReceipt(savedSale);
+
+        return savedSale;
     }
+
+
 
     public Expense addExpense(Expense expense) {
         User loggedInUser = getLoggedInUser();
@@ -381,5 +403,16 @@ public class BusinessServiceImpl implements BusinessService {
     // Method to fetch stock purchases for a shop within a date range
     public List<StockPurchase> getStockPurchasesForShop(Long shopId, LocalDate startDate, LocalDate endDate) {
         return stockPurchaseRepository.findByShopIdAndPurchaseDateBetween(shopId, startDate, endDate);
+    }
+
+
+    public Supplier addSupplier(Supplier supplier) {
+        User loggedInUser = getLoggedInUser();
+
+        // Set shop and shop code for the supplier
+        supplier.setShop(loggedInUser.getShop());
+        supplier.setShopCode(loggedInUser.getShopCode());
+
+        return supplierRepository.save(supplier);
     }
 }
