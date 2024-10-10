@@ -45,5 +45,27 @@ public class DashboardController {
     }
 
 
+    @PostMapping("/add")
+    public ResponseEntity<Cart> addToCart(@RequestParam Long productId, @RequestParam int quantity) {
+        User loggedInUser = getLoggedInUser(); // Implement this to get the logged-in user
+        Cart cart = cartService.addToCart(productId, quantity, loggedInUser);
+        return ResponseEntity.ok(cart);
+    }
+
+    @PostMapping("/checkout")
+    public ResponseEntity<Sale> checkout() {
+        User loggedInUser = getLoggedInUser(); // Implement this to get the logged-in user
+        Sale sale = cartService.checkoutCart(loggedInUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(sale);
+    }
+
+    @GetMapping
+    public ResponseEntity<Cart> getCart() {
+        User loggedInUser = getLoggedInUser(); // Implement this to get the logged-in user
+        Cart cart = cartService.getCart(loggedInUser);
+        return ResponseEntity.ok(cart);
+    }
+
+
 
 }

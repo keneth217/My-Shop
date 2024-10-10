@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +50,8 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Autowired
     private InvestmentRepository investmentRepository;
-
+    @Autowired
+    private CartRepository cartRepository;
     @Autowired
     private PdfReportServices pdfReportServices;
     private static final int LOW_STOCK_THRESHOLD = 5;
@@ -409,5 +411,85 @@ public class BusinessServiceImpl implements BusinessService {
         supplier.setShopCode(loggedInUser.getShopCode());
 
         return supplierRepository.save(supplier);
+    }
+
+    @Transactional
+    public Cart addToCart(Long productId, int quantity, User user) {
+        Cart cart = cartRepository.findByUser(user)
+                .orElse(new Cart(user)); // Fetch or create a new cart for the user
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+        // Check if product is already in the cart
+        Optional<CartItem> existingItem = cart.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(productId))
+                .findFirst();
+
+        if (existingItem.isPresent()) {
+            // Update the quantity if the product is already in the cart
+            existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
+        } else {
+            // Create a new CartItem if not already in the cart
+            CartItem cartItem = new CartItem();
+            cartItem.setProduct(product);
+            cartItem.setQuantity(quantity);
+            cartItem.setCart(cart);
+            cart.getItems().add(cartItem);
+        }
+
+        return cartRepository.save(cart);
+    }
+
+    @Transactional
+    public Sale checkoutCart(User user) {
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
+
+        double totalPrice = 0;
+        Sale sale = new Sale(); // Create new sale object
+
+        for (CartItem cartItem : cart.getItems()) {
+            Product product = cartItem.getProduct();
+            int quantity = cartItem.getQuantity();
+
+            if (product.getStock() < quantity) {
+                throw new InsufficientStockException("Insufficient stock for product: " + product.getName());
+            }
+
+            // Deduct stock and update product
+            product.setStock(product.getStock() - quantity);
+            product.setQuantitySold(product.getQuantitySold() + quantity);
+            productRepository.save(product);
+
+            // Create SaleItem for each product
+            SaleItem saleItem = new SaleItem();
+            saleItem.setProduct(product);
+            saleItem.setQuantity(quantity);
+            saleItem.setSalePrice(product.getPrice());
+            saleItem.setSale(sale);  // Set sale reference here
+
+            sale.getSaleItems().add(saleItem);
+
+            // Add to total price
+            totalPrice += product.getPrice() * quantity;
+        }
+
+        // Set other details of the sale
+        sale.setShopCode(user.getShop().getShopCode());
+        sale.setDate(LocalDate.now());
+        sale.setSalePerson(user.getUsername());
+        sale.setUser(user);
+        sale.setShop(user.getShop());
+        sale.setTotalPrice(totalPrice);
+
+        // Save the sale along with its items
+        saleRepository.save(sale);
+
+        // Clear the cart after checkout
+        cart.getItems().clear();
+        cartRepository.save(cart);
+
+        return sale;
     }
 }
