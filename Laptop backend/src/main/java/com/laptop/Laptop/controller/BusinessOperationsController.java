@@ -24,10 +24,22 @@ public class BusinessOperationsController {
     @Autowired
     private BusinessService businessService;
 
+//    @PostMapping("/create")
+//    public ResponseEntity<?> createSale(@RequestBody SaleRequest saleRequest) {
+//        Sale sale = businessService.createSale(saleRequest.getProductIds(), saleRequest.getQuantities(), new Sale());
+//        return ResponseEntity.ok(sale);
+//    }
+
     @PostMapping("/create")
-    public ResponseEntity<?> createSale(@RequestBody SaleRequest saleRequest) {
-        Sale sale = businessService.createSale(saleRequest.getProductIds(), saleRequest.getQuantities(), new Sale());
-        return ResponseEntity.ok(sale);
+    public ResponseEntity<Sale> createSale(
+            @RequestBody SaleRequest saleRequest) {
+        List<Long> productIds = saleRequest.getProductIds();
+        List<Integer> quantities = saleRequest.getQuantities();
+        Sale sale = new Sale();
+
+        Sale savedSale = businessService.createSale(productIds, quantities, sale);
+
+        return ResponseEntity.ok(savedSale);
     }
 
     // Create a new sale linked to a product
