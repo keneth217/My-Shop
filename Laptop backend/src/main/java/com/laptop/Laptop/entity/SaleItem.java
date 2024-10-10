@@ -1,5 +1,6 @@
 package com.laptop.Laptop.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class SaleItem {
 
     @ManyToOne
     @JoinColumn(name = "sale_id")
+    @JsonBackReference
     private Sale sale;
 
     @ManyToOne
@@ -29,6 +31,7 @@ public class SaleItem {
 
     private int quantity;
 
+    private double totalPrice;
     private double salePrice;
 
     // Getters and Setters
