@@ -86,7 +86,6 @@ public class BusinessServiceImpl implements BusinessService {
             // Deduct stock and update product
             product.setStock(product.getStock() - quantity);
             product.setQuantitySold(product.getQuantitySold() + quantity);
-            product.setPrice(product.getPrice() + (product.getPrice() * quantity));
             productRepository.save(product);
 
             // Create SaleItem for each product
@@ -94,12 +93,17 @@ public class BusinessServiceImpl implements BusinessService {
             saleItem.setProduct(product);
             saleItem.setQuantity(quantity);
             saleItem.setSalePrice(product.getPrice());
-            saleItem.setSale(sale);
+            saleItem.setSale(sale);  // Set sale reference here
 
             sale.getSaleItems().add(saleItem);
 
             // Add to total price
             totalPrice += product.getPrice() * quantity;
+
+            // Set the first product for the Sale entity (legacy support)
+            if (i == 0) {
+                sale.setProduct(product);  // Set first product for the Sale
+            }
         }
 
         // Set other details of the sale
@@ -110,13 +114,8 @@ public class BusinessServiceImpl implements BusinessService {
         sale.setShop(loggedInUser.getShop());
         sale.setTotalPrice(totalPrice);
 
-        // Save the sale
-        Sale savedSale = saleRepository.save(sale);
-
-        // Generate PDF receipt
-       // pdfReportServices.generateReceiptForSale(savedSale);
-
-        return savedSale;
+        // Save the sale along with its items
+        return saleRepository.save(sale);
     }
 
     @Transactional
@@ -246,10 +245,6 @@ public class BusinessServiceImpl implements BusinessService {
 
         // Save the sale
         Sale savedSale = saleRepository.save(sale);
-
-        // Generate PDF receipt
-        pdfReportServices.generatePdfReceipt(savedSale);
-
         return savedSale;
     }
 
