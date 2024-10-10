@@ -1,5 +1,6 @@
 package com.laptop.Laptop.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,7 +25,7 @@ public class Sale {
     private int quantity;
     private String shopCode;
     private String salePerson;
-private double saleTotal;
+    private double saleTotal;
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
@@ -34,11 +36,13 @@ private double saleTotal;
     private User user;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
-    private List<SaleItem> saleItems;
+    @JsonManagedReference
+    private List<SaleItem> saleItems  = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
     private double totalPrice;  // Total price for all items in the sale
+
 }
