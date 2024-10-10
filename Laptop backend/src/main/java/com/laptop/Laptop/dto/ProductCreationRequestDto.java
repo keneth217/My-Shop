@@ -23,4 +23,12 @@ private Long id;
     private List<MultipartFile> productImages;  // Cost price
     private int stock;
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class SelectedProductsForReceiptDto {
+        private Long saleId;
+        private List<Long> selectedProductIds;
+    }
 }
