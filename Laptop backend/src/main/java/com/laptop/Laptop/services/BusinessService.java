@@ -39,4 +39,8 @@ public interface BusinessService {
 
     List<Sale> getSalesForShop(Long shopId, LocalDate startDate, LocalDate endDate);
     List<StockPurchase> getStockPurchasesForShop(Long shopId, LocalDate startDate, LocalDate endDate);
+
+    Cart addToCart(Long productId, int quantity, User user);
+    Sale checkoutCart(User user, String customerName, String customerPhone) throws IOException;
+    Cart getCartItems(User user);
 }
