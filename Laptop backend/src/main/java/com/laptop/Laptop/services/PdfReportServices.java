@@ -48,9 +48,11 @@ public class PdfReportServices {
     }
 
     public ByteArrayInputStream generateReceiptForSale(Long saleId) throws IOException {
+        // Fetch sale by ID, handle case if not found
         Sale sale = saleRepository.findById(saleId)
                 .orElseThrow(() -> new ProductNotFoundException("Sale not found"));
 
+        // Create a new Document and ByteArrayOutputStream
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -58,85 +60,95 @@ public class PdfReportServices {
             PdfWriter.getInstance(document, out);
             document.open();
 
-            // Add Header
+            // Add shop and user details to the header
             addHeader(document, sale.getShop(), sale.getUser());
-            addHorizontalLine(document);
+            addHorizontalLine(document); // Add a horizontal line after the header
+
+            // Empty line for spacing
             document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            // Add Receipt Title
+
+            // Add "RECEIPT" title in bold and center-align it
             Paragraph receiptTitle = new Paragraph("RECEIPT", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 24));
             receiptTitle.setAlignment(Element.ALIGN_CENTER);
             document.add(receiptTitle);
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            addHorizontalLine(document); // Add horizontal line
 
-            // Add Receipt Information
+            // Empty line for spacing
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            addHorizontalLine(document); // Add a horizontal line below the title
+
+            // Receipt information section (receipt number, date, and salesperson)
             document.add(new Paragraph("Receipt No: " + sale.getId(), FontFactory.getFont(FontFactory.HELVETICA, 12)));
             document.add(new Paragraph("Date: " + sale.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), FontFactory.getFont(FontFactory.HELVETICA, 12)));
             document.add(new Paragraph("Sale Person: " + sale.getSalePerson(), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Empty line
+
+            // Spacing
             document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            addHorizontalLine(document); // Add horizontal line
-            // Add Received From details
+            addHorizontalLine(document); // Add another horizontal line
+
+            // Add "RECEIVED FROM" section
             document.add(new Paragraph("RECEIVED FROM", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
-            document.add(new Paragraph("Name: " + sale.getShop().getShopName(), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(new Paragraph("Phone: " + sale.getShop().getPhoneNumber(), FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            document.add(new Paragraph("Name: " + sale.getCustomerName(), FontFactory.getFont(FontFactory.HELVETICA, 12))); // Customer name
+            document.add(new Paragraph("Phone: " + sale.getCustomerPhone(), FontFactory.getFont(FontFactory.HELVETICA, 12))); // Customer phone
             document.add(new Paragraph("ID: " + sale.getUser().getId(), FontFactory.getFont(FontFactory.HELVETICA, 12))); // Assuming user has an ID
-            document.add(new Paragraph("PAID VIA: Cash", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Modify as necessary
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Empty line
+            document.add(new Paragraph("PAID VIA: Cash", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Modify as needed
 
-            // Add horizontal line
-            addHorizontalLine(document); // Add horizontal line
+            // Spacing
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            addHorizontalLine(document); // Add another horizontal line
 
-            // Convert total price to words
+            // Add total amount in words (convert to words using a utility method)
             document.add(new Paragraph("RECEIVED SUM OF " + NumberToWordsConverter.convert(sale.getTotalPrice()) + " ONLY", FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Empty line
 
-            // Create table for product details
-            PdfPTable table = new PdfPTable(4); // 4 columns: Product Name, Features, Quantity, Price
+            // Empty space before product details
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
+
+            // Create table for product details with 4 columns
+            PdfPTable table = new PdfPTable(4); // Product Name, Features, Quantity, Total
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{3, 2, 1, 1});
+            table.setWidths(new float[]{3, 2, 1, 1}); // Adjust column widths
 
-            // Table header
+            // Table headers
             table.addCell(new PdfPCell(new Phrase("PRODUCT NAME", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
             table.addCell(new PdfPCell(new Phrase("FEATURES", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
             table.addCell(new PdfPCell(new Phrase("QUANTITY", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
             table.addCell(new PdfPCell(new Phrase("TOTAL", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
 
-            // Loop through the sale items and add to the table
+            // Add each SaleItem's details to the table
             for (SaleItem item : sale.getSaleItems()) {
                 Product product = item.getProduct();
                 table.addCell(new PdfPCell(new Phrase(product.getName()))); // Product name
-                table.addCell(new PdfPCell(new Phrase(String.join(", ", product.getProductFeatures())))); // Features
+                table.addCell(new PdfPCell(new Phrase(String.join(", ", product.getProductFeatures())))); // Product features
                 table.addCell(new PdfPCell(new Phrase(String.valueOf(item.getQuantity())))); // Quantity
-                table.addCell(new PdfPCell(new Phrase(String.valueOf(item.getQuantity() * item.getSalePrice())))); // Total
+                table.addCell(new PdfPCell(new Phrase(String.valueOf(item.getQuantity() * item.getSalePrice())))); // Total price for this item
             }
 
-            // Add table to document
+            // Add the table to the document
             document.add(table);
 
-            // Add total price
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Empty line
-            document.add(new Paragraph("SUBTOTAL: " + sale.getTotalPrice(), FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
-            document.add(new Paragraph("TOTAL: " + sale.getTotalPrice(), FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Empty line
+            // Add subtotal and total price sections
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Spacing
+            document.add(new Paragraph("SUBTOTAL: " + sale.getTotalPrice(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+            document.add(new Paragraph("TOTAL: " + sale.getTotalPrice(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
 
-            // Add additional info
-            document.add(new Paragraph("If you have any questions about this invoice, please contact", FontFactory.getFont(FontFactory.HELVETICA, 12)));
-
-            document.add(new Paragraph("Contacts: " + getLoggedInUser().getShop().getPhoneNumber(), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-
-            // Modify as necessary
+            // Spacing before additional info
             document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            addHorizontalLine(document); // Add horizontal line
-            document.add(new Paragraph("Thank you for your business", FontFactory.getFont(FontFactory.HELVETICA, 12)));
 
+            // Additional information section (e.g., for inquiries)
+            document.add(new Paragraph("If you have any questions about this invoice, please contact", FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            document.add(new Paragraph("Contacts: " + sale.getShop().getPhoneNumber(), FontFactory.getFont(FontFactory.HELVETICA, 12))); // Shop's contact
+
+            // Add final message and horizontal line
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Empty space
+            addHorizontalLine(document); // Add a horizontal line
+            document.add(new Paragraph("Thank you for your business", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Thank you message
 
         } catch (DocumentException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Handle exception
         } finally {
-            document.close(); // Ensure document is closed even if an exception occurs
+            document.close(); // Ensure the document is closed
         }
 
+        // Return the generated PDF as a ByteArrayInputStream
         return new ByteArrayInputStream(out.toByteArray());
     }
 
