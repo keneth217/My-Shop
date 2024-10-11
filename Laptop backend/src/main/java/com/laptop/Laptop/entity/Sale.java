@@ -25,6 +25,9 @@ public class Sale {
     private int quantity;
     private String shopCode;
     private String salePerson;
+    private String customerName;
+    private String customerPhone;
+    private String customerAddress;
     private double saleTotal;
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
@@ -35,9 +38,9 @@ public class Sale {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<SaleItem> saleItems  = new ArrayList<>();
+    private List<SaleItem> saleItems = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = false)
