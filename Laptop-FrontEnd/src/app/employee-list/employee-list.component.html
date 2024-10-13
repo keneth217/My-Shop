@@ -1,0 +1,70 @@
+<div class="container mx-auto relative my-6">
+
+    <div class="text-white my-4 flex justify-between items-center">
+        <!-- Button for adding product -->
+        <button (click)="openAddEmployee()"
+            class="bg-green-400 p-2 rounded-md text-2xl flex items-center justify-center font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
+            type="button">
+            <span><ng-icon name="heroPlusCircle" class="mr-3 text-2xl"></ng-icon></span>Add Employee
+        </button>
+
+        <!-- Buttons for PDF and Excel, aligned to the far end -->
+        <div class="flex space-x-2">
+            <button
+                class="bg-green-400 p-2 rounded-md text-white font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
+                type="button">PDF</button>
+
+        </div>
+    </div>
+    <!-- Modal for Add product form -->
+    <div *ngIf="showAddEmployee"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-lg shadow-lg relative">
+            <app-add-employee (close)="closeAddEmployee()"></app-add-employee>
+
+            <!-- Close button for Add product modal -->
+            <button (click)="closeAddEmployee()" class="absolute top-2 right-2 text-red-500 hover:text-red-800">
+                <ng-icon name="heroXMark" class="mr-3 text-2xl text-red-600"></ng-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- Table displaying payments -->
+    <table class="table-auto border-collapse border border-slate-500 w-full">
+        <thead>
+            <tr>
+                <th class="border border-slate-600 p-2">First Name</th>
+                <th class="border border-slate-600 p-2">Last Name</th>
+                <th class="border border-slate-600 p-2">phone</th>
+                <th class="border border-slate-600 p-2">address</th>
+                <th class="border border-slate-600 p-2">Role</th>
+                <th class="border border-slate-600 p-2">Action</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <!-- <tr *ngFor="let Employee of Employees"> -->
+                <tr>
+                <td class="border border-slate-600 p-2">keneth</td>
+                <td class="border border-slate-600 p-2">kipyegon</td>
+                <td class="border border-slate-600 p-2 ">07232143</td>
+                <td class="border border-slate-600 p-2 ">300,Nakuru</td>
+                <td class="border border-slate-600 p-2 ">Sales</td>
+                <td class="border border-slate-600 p-2">
+
+                    <div class="flex justify-around">
+                        <button type="submit" class="bg-green-400 text-white p-2 
+                rounded-md font-bold hover:bg-green-500">Pay</button>
+                        <button type="submit" class="bg-red-400 text-white p-2 
+                rounded-md font-bold hover:bg-red-500">Delete</button>
+                    </div>
+                </td>
+
+            </tr>
+        </tbody>
+    </table>
+
+    <lib-toastify-toast-container></lib-toastify-toast-container>
+
+
+</div>
