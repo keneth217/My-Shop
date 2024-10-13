@@ -29,7 +29,7 @@
     </div>
   </div>
 
-   <!-- Modal for Add product form -->
+   <!-- Modal for stock product form -->
    <div *ngIf="showAStockProduct"
    class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
    <div class="bg-white p-6 rounded-lg shadow-lg relative">
@@ -37,6 +37,15 @@
 
    </div>
  </div>
+
+  <!-- Modal for stock product form -->
+  <div *ngIf="showViewProduct"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
+  <div class="bg-white p-6 rounded-lg shadow-lg relative">
+    <app-view-single-product         (close)="closeViewProduct()"></app-view-single-product>
+
+  </div>
+</div>
 <div class="shadow-sm rounded-sm bg-white p-4">
   <!-- Table displaying payments -->
   <table class="table-auto border-collapse border  border-slate-500 w-full">
@@ -62,9 +71,9 @@
             <button type="submit" class="bg-green-400 text-white p-2 
               rounded-md font-bold hover:bg-green-500" (click)="openStockProduct()">Stock</button>
               <button type="submit" class="bg-red-400 text-white p-2 
-              rounded-md font-bold hover:bg-red-500">Cart</button>
-               <button type="submit" class="bg-red-400 text-white p-2 
-              rounded-md font-bold hover:bg-red-500">View</button>
+              rounded-md font-bold hover:bg-red-500" (click)="addToCart()">Cart</button>
+               <button type="submit" class="bg-pink-400 text-white p-2 
+              rounded-md font-bold hover:bg-pink-500" (click)="openViewProduct()">View</button>
           </div>
         </td>
 
