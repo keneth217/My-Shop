@@ -1,0 +1,122 @@
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: scale(0.9); }
+    10% { opacity: 1; transform: scale(1); }
+    90% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.9); }
+  }
+  /* .pop{
+    background-color: rgba(229, 120, 233, 0.1);
+    z-index: 9990;
+    height: 100vh;
+    width: 100%;
+  } */
+  
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  
+  .popup-content {
+    position: relative;
+    background-color: white;
+    padding: 30px;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    animation: fadeInOut 2s ease-in-out;
+    padding: 30px;
+    /* background-color: teal; */
+   
+    text-align: center;
+    width: 25rem;
+    margin: auto;
+    margin-top: 300px;
+    border-radius: .5rem;
+  
+    border: 2px solid;
+   
+  }
+  
+  .popup-content.success {
+    border: 2px solid hwb(120 5% 5%);
+  }
+  
+  .popup-content.success p {
+    color: hwb(120 5% 5%);
+  }
+  
+  .popup-content.error {
+    border: 2px solid hsl(0, 100%, 50%);
+  }
+  
+  .popup-content.error p {
+    color: hsl(0, 100%, 50%);
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    cursor: pointer;
+  }
+  
+  .close-btn .bi {
+    color: black;
+    font-size: 1.5rem;
+  }
+  
+  
+  
+  *{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  .wrap{
+    background-color: rgba(245, 126, 219, 0.5);
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    position: fixed;
+  }
+  
+  .msg-body{
+    padding: 30px;
+    background-color: teal;
+    color: white;
+    /* left: 0;
+    right: 0; */
+    text-align: center;
+    width: 25rem;
+    margin: auto;
+    margin-top: 300px;
+    border-radius: .5rem;
+    /* box-shadow: 0px 0px 5px red; */
+    border: 2px solid;
+    /* font-family: ui-monospace; */
+  }
+  
+  h2{
+    font-weight: 600;
+    font-family: ui-monospace;
+    font-size: larger;
+  }
+  
+  @media only screen and (max-width: 767px) {
+  .msg-body {
+  width: 85%;
+  }
+  }
