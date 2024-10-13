@@ -63,26 +63,7 @@ public class DashboardController {
                 .body(new InputStreamResource(bis));
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Cart> addToCart(@RequestParam Long productId, @RequestParam int quantity) {
-        User loggedInUser = getLoggedInUser(); // Implement this to get the logged-in user
-        Cart cart = businessService.addToCart(productId, quantity, loggedInUser);
-        return ResponseEntity.ok(cart);
-    }
 
-    @PostMapping("/checkout")
-    public ResponseEntity<Sale> checkout(@RequestParam String customerName, @RequestParam String customerPhone) throws IOException {
-        User loggedInUser = getLoggedInUser(); // Implement this to get the logged-in user
-        Sale sale = businessService.checkoutCart(loggedInUser, customerName, customerPhone);
-        return ResponseEntity.status(HttpStatus.CREATED).body(sale);
-    }
-
-    @GetMapping
-    public ResponseEntity<Cart> getCart() {
-        User loggedInUser = getLoggedInUser(); // Implement this to get the logged-in user
-        Cart cart = businessService.getCartItems(loggedInUser);
-        return ResponseEntity.ok(cart);
-    }
 
 
 
