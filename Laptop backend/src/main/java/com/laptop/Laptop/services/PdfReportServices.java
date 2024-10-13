@@ -152,9 +152,6 @@ public class PdfReportServices {
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-
-
-
     // Method to generate product stock report
     public ByteArrayInputStream generateProductsReport(Shop shop, User user) {
         Document document = new Document();
