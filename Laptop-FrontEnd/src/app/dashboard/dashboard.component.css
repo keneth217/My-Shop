@@ -1,5 +1,6 @@
 .active {
+  width: 100%;
     color: #ffffff;
-    background-color: #1e3a8a; /* Blue background for active link */
+   /*  background-color: #1e3a8a; Blue background for active link */
     border-radius: 0.5rem;
   }
