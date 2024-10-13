@@ -1,0 +1,41 @@
+<div class="fixed inset-0 flex items-center justify-center ">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm 
+    w-full outline-none border-green-400 border-2">
+
+
+    <div>
+      <lib-toastify-toast-container></lib-toastify-toast-container>
+    </div>
+    <div class="flex justify-center mb-2 ">
+      <h2 class="text-xl font-bold text-green-500 ">Add New Employee</h2>
+    </div>
+    <div class="text-green mb-3">
+      <hr class="border-0 border-t border-green-400 mb-2">
+    </div>
+    <!-- <form [formGroup]="milkForm" (ngSubmit)="submitMilkData()"> -->
+    <form>
+      <label for="name" class="block text-gray-700 font-bold">Employee Name</label>
+      <input id="name" type="text" formControlName="name" name="name" placeholder="Enter Employee NAme"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+      <label for="phone" class="block text-gray-700 font-bold">Supplier phone</label>
+      <input id="phone" type="text" formControlName="phone" name="phone" placeholder="Enter phone"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+
+      <label for="address" class="block text-gray-700 font-bold">Employee Address</label>
+      <input id="address" type="text" formControlName="address" name="address" placeholder="Enter address"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+      <label for="location" class="block text-gray-700 font-bold">Employee Location</label>
+      <input id="location" type="text" formControlName="location" name="location" placeholder="Enter location"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+
+      <div class="flex justify-between">
+        <button type="submit" class="bg-green-400 text-white p-2 
+            rounded-md font-bold hover:bg-green-500">Register</button>
+        <button type="button" (click)="closeEForm()" class="bg-red-400 text-white p-2 
+            rounded-md font-bold hover:bg-red-500">Close</button>
+      </div>
+
+
+    </form>
+  </div>
+</div>
