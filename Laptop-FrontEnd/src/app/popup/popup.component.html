@@ -1,0 +1,11 @@
+<div *ngIf="isVisible" class="wrap">
+    <div  class="popup-overlay">
+      <div class="popup-content" [ngClass]="{'success': popupType === 'success',
+     'error': popupType === 'error'}">
+        <span class="close-btn" (click)="closePopup()">
+          <i class="bi bi-x btn"></i>
+        </span>
+        <p class="text-2xl">{{ message }}</p>
+      </div>
+    </div>
+  </div>
