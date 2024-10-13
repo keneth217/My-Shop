@@ -24,41 +24,9 @@ public class BusinessOperationsController {
     @Autowired
     private BusinessService businessService;
 
-//    @PostMapping("/create")
-//    public ResponseEntity<?> createSale(@RequestBody SaleRequest saleRequest) {
-//        Sale sale = businessService.createSale(saleRequest.getProductIds(), saleRequest.getQuantities(), new Sale());
-//        return ResponseEntity.ok(sale);
-//    }
 
-    @PostMapping("/create")
-    public ResponseEntity<Sale> createSale(
-            @RequestBody SaleRequest saleRequest) {
-        List<Long> productIds = saleRequest.getProductIds();
-        List<Integer> quantities = saleRequest.getQuantities();
-        Sale sale = new Sale();
 
-        Sale savedSale = businessService.createSale(productIds, quantities, sale);
 
-        return ResponseEntity.ok(savedSale);
-    }
-
-    // Create a new sale linked to a product
-    @PostMapping("/sales/{productId}")
-    public ResponseEntity<Responsedto> createSale(@PathVariable Long productId, @RequestBody Sale sale) throws IOException {
-        businessService.createSale(productId, sale);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new Responsedto(MyConstants.PRODUCT_SALE_CODE,MyConstants.PRODUCT_SALE_MESSAGE));
-    }
-
-    // Add a new expense
-    @PostMapping("/expenses")
-    public ResponseEntity<Responsedto> addExpense(@RequestBody Expense expense) {
-        Expense addedExpense = businessService.addExpense(expense);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new Responsedto(MyConstants.EXPENSE_CREATION,MyConstants.EXPENSE_CREATION_CODE));
-    }
     @GetMapping("/sales")
     public ResponseEntity<PaginatedResponse<Sale>> getSalesByDateRange(
             @RequestParam LocalDate startDate,
@@ -69,39 +37,12 @@ public class BusinessOperationsController {
         return ResponseEntity.ok(response);
     }
 
-    // Add a new employee and automatically track their salary as an expense
-    @PostMapping("/employees")
-    public ResponseEntity<Responsedto> addEmployee(@RequestBody Employee employee) {
-        Employee addedEmployee = businessService.addEmployee(employee);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body( new Responsedto(MyConstants.EMPLOYEE_CREATION,MyConstants.EMPLOYEE_CREATION_CODE));// Use 201 Created
-    }
 
-    @PostMapping("/invest")
-    public ResponseEntity<Investment> addInvestement(@RequestBody Investment investment ) {
-        Investment saveInvestement = businessService.addInvestment(investment);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(saveInvestement);
-    }
-    @PostMapping("/supplier")
-    public ResponseEntity<Supplier> addSupplier(@RequestBody Supplier supplier) {
-        Supplier savedSupplier = businessService.addSupplier(supplier);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedSupplier);
-    }
 
-    // Endpoint for paying employee salary
-    @PostMapping("/{employeeId}/pay")
-    public ResponseEntity<PaymentResponseDto> payEmployee(
-            @PathVariable Long employeeId,
-            @RequestBody SalaryDto salary) {
 
-        // Call the service to handle the salary payment
-        PaymentResponseDto response = businessService.payEmployee(employeeId, salary);
 
-        // Return the response with HTTP 200 OK status
-        return ResponseEntity.ok(response);
-    }
+
+
 
     // Add a new stock purchase linked to a product
     @PostMapping("/stock-purchases/{productId}/{supplierId}")
