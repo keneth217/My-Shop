@@ -1,0 +1,38 @@
+<div class="container mx-auto relative my-6">
+
+ 
+  
+    <!-- Table displaying sales -->
+    <table class="table-auto border-collapse border border-slate-500 w-full">
+      <thead>
+        <tr>
+          <th class="border border-slate-600 p-2">Product Image</th>
+          <th class="border border-slate-600 p-2">Name</th>
+          <th class="border border-slate-600 p-2">Stock</th>
+          <th class="border border-slate-600 p-2">New Balance</th>
+          <th class="border border-slate-600 p-2">Action</th>
+  
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let sale of sales">
+          <td class="border border-slate-600 p-2">product</td>
+          <td class="border border-slate-600 p-2">2</td>
+          <td class="border border-slate-600 p-2 text-right">3</td>
+          <td class="border border-slate-600 p-2 text-right">e</td>
+          <td class="border border-slate-600 p-2">
+  
+            <div class="flex justify-between">
+              <button type="submit" class="bg-green-400 text-white p-2 
+                rounded-md font-bold hover:bg-green-500">Stock</button>
+                <button type="submit" class="bg-red-400 text-white p-2 
+                rounded-md font-bold hover:bg-red-500">Cart</button>
+            </div>
+          </td>
+  
+        </tr>
+      </tbody>
+    </table>
+  
+  
+  </div>
