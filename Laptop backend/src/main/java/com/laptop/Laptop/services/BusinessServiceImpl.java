@@ -86,6 +86,7 @@ public class BusinessServiceImpl implements BusinessService {
                 .orElseThrow(() -> new IllegalArgumentException("Supplier not found"));
 
         // Update the product's stock and price
+        product.setCost(stockPurchase.getItemCost());
         product.setStock(product.getStock() + stockPurchase.getQuantity());
         product.setPrice(stockPurchase.getTotalCost() + (stockPurchase.getQuantity() * stockPurchase.getItemCost()));
         productRepository.save(product);
@@ -96,6 +97,7 @@ public class BusinessServiceImpl implements BusinessService {
         // Set relationships and other fields
         stockPurchase.setProduct(product);
         stockPurchase.setUser(loggedInUser);
+        stockPurchase.setShopCode(loggedInUser.getShopCode());
 
         stockPurchase.setSupplierName(supplier.getSupplierName());
         stockPurchase.setSupplier(supplier); // Set the supplier
@@ -161,8 +163,9 @@ public class BusinessServiceImpl implements BusinessService {
         double totalRevenue = saleRepository.findByShopIdAndShopCode(shopId, shopCode).stream()
                 .mapToDouble(sale -> sale.getSalePrice() * sale.getQuantity()).sum();
 
-        double totalStockCosts = saleRepository.findByShopIdAndShopCode(shopId, shopCode).stream()
-                .mapToDouble(sale -> sale.getProduct().getCost() * sale.getQuantity()).sum();
+        double totalStockCosts = stockPurchaseRepository.findByShopIdAndShopCode(shopId, shopCode).stream()
+                .mapToDouble(s -> s.getProduct().getCost() * s.getQuantity())
+                .sum();
 
         return totalRevenue - totalStockCosts;
     }
@@ -183,7 +186,11 @@ public class BusinessServiceImpl implements BusinessService {
         double totalRevenue = saleRepository.findByShop(loggedInUser.getShop()).stream()
                 .mapToDouble(sale -> sale.getSalePrice() * sale.getQuantity()).sum();
 
-        double totalStockCosts = saleRepository.findByShop(loggedInUser.getShop()).stream()
+//        double totalStockCosts = stockPurchaseRepository.findByShopIdAndShopCode(shopId, shopCode).stream()
+//                .mapToDouble(s -> s.getProduct().getCost() * s.getQuantity())
+//                .sum();
+
+        double totalStockCosts = stockPurchaseRepository.findByShop(loggedInUser.getShop()).stream()
                 .mapToDouble(sale -> sale.getProduct().getCost() * sale.getQuantity()).sum();
 
         return totalRevenue - totalStockCosts;
