@@ -20,11 +20,14 @@ private ExpenseServices expenseServices;
 
 
     // Add a new expense
-    @PostMapping("/all")
+    @PostMapping("/add")
     public ResponseEntity<Responsedto> addExpense(@RequestBody Expense expense) {
-        Expense addedExpense = expenseServices.addExpense(expense);
+        Expense savedExpense = expenseServices.addExpense(expense);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new Responsedto(MyConstants.EXPENSE_CREATION,MyConstants.EXPENSE_CREATION_CODE));
     }
+
+
+
 }
