@@ -22,6 +22,7 @@ public class StockPurchase {
     private double itemCost;
     private double totalCost;
     private String SupplierName;
+    private String shopCode;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
