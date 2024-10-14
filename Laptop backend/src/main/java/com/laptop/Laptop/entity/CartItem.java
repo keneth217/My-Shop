@@ -28,6 +28,7 @@ public class CartItem {
 
     private int quantity;
     private  String shopCode;
+    private double itemCosts;
 
     @ManyToOne
     @JsonIgnore
