@@ -123,8 +123,19 @@ public class SalesServices {
 
         // Update total price after adding items
         savedSale.setTotalPrice(totalPrice);
-        saleRepository.save(savedSale);  // Save sale again with updated total price
-
+        saleRepository.save(savedSale);  // Save sale again with updated total price/
+        // save receipt to database to be able to generate receipt pdf
+        ReceiptItem receiptItem= ReceiptItem.builder()
+                .shop(savedSale.getShop())
+                //save sale products
+                .product("mmm")
+                //receitptNo start from one then follows next.
+                .receiptNo(1)
+                .receiptDate(LocalDate.now())
+                .receiptTo(savedSale.getCustomerName())
+                .user(savedSale.getUser())
+                .user(savedSale.getId())
+                .build()
         // Generate and save receipt for later reference
         ByteArrayInputStream receiptStream = pdfReportServices.generateReceiptForSale(savedSale.getId());
 
