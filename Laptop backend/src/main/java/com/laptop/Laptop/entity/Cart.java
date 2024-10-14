@@ -1,19 +1,18 @@
 package com.laptop.Laptop.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.laptop.Laptop.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Builder
-
-@AllArgsConstructor //
+@AllArgsConstructor
 @Entity
 public class Cart {
 
@@ -21,6 +20,7 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String shopCode;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
@@ -28,7 +28,9 @@ public class Cart {
     @ManyToOne
     @JsonIgnore
     @JoinColumn(name = "shop_id")
-    private Shop shop;  // Each product belongs to one shop
+    private Shop shop;
+
+    private double totalCart;  // Store the total cart value
 
     @ManyToOne
     @JsonIgnore
@@ -37,11 +39,17 @@ public class Cart {
 
     public Cart(User user) {
         this.user = user;
-        this.items = new ArrayList<>(); // Initialize with an empty list
+        this.items = new ArrayList<>();
     }
 
-    // Default constructor
     public Cart() {
         this.items = new ArrayList<>();
+    }
+
+    // Recalculate the total cart value
+    public void recalculateTotal() {
+        totalCart = items.stream()
+                .mapToDouble(item -> item.getQuantity() * item.getProduct().getPrice())
+                .sum();
     }
 }
