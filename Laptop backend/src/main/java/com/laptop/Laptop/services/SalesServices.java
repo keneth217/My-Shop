@@ -6,10 +6,13 @@ import com.laptop.Laptop.exceptions.ProductNotFoundException;
 import com.laptop.Laptop.helper.AuthUser;
 import com.laptop.Laptop.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 @Service
@@ -22,124 +25,125 @@ public class SalesServices {
     private ProductRepository productRepository;
 
     @Autowired
-    private AuthUser authUser;
+    private SaleRepository saleRepository;
 
     @Autowired
-    private SaleRepository saleRepository;
+    private ReceiptRepository receiptRepository;
     @Autowired
     private PdfReportServices pdfReportServices ;
+
+
+    // Utility method to get the logged-in user's details from the authentication token
+    private User getLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (User) authentication.getPrincipal(); // Ensure User implements UserDetails
+    }
     @Transactional
     public Cart addToCart(Long productId, int quantity, User user) {
+        // Ensure the provided user is the same as the logged-in user
+        User loggedInUser = getLoggedInUser();
 
-        // Get the logged-in user (assumed to be the same as the provided user)
-        User loggedInUser = authUser.getLoggedInUserDetails();
-
-        // Find the cart for the logged-in user or create a new one
+        // Find or create a new cart for the logged-in user
         Cart cart = cartRepository.findByUser(loggedInUser)
-                .orElse(new Cart(loggedInUser)); // Create a new cart for the logged-in user if not found
+                .orElseGet(() -> {
+                    Cart newCart = new Cart(loggedInUser);
+                    newCart.setShop(loggedInUser.getShop());
+                    newCart.setShopCode(loggedInUser.getShop().getShopCode());
+                    return newCart;
+                });
 
         // Find the product by ID
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         // Check if the product is already in the cart
-        Optional<CartItem> existingItem = cart.getItems().stream()
+        CartItem cartItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
-                .findFirst();
+                .findFirst()
+                .orElseGet(() -> {
+                    CartItem newItem = new CartItem();
+                    newItem.setProduct(product);
+                    newItem.setItemCosts(product.getCost());
+                    newItem.setCart(cart);
+                    newItem.setShop(loggedInUser.getShop());
+                    newItem.setShopCode(loggedInUser.getShop().getShopCode());
+                    newItem.setUser(loggedInUser);
+                    cart.getItems().add(newItem);
+                    return newItem;
+                });
 
-        if (existingItem.isPresent()) {
-            // If the product already exists in the cart, update the quantity
-            existingItem.get().setQuantity(existingItem.get().getQuantity() + quantity);
-        } else {
-            // If the product is not in the cart, create a new CartItem
-            CartItem cartItem = new CartItem();
-            cartItem.setProduct(product);
-            cartItem.setQuantity(quantity);
-            cartItem.setCart(cart);
+        // Update the quantity of the cart item
+        cartItem.setQuantity(cartItem.getQuantity() + quantity);
 
-            // Set shop details from the logged-in user
-            cartItem.setShop(loggedInUser.getShop()); // Set the shop
-            cartItem.setShopCode(loggedInUser.getShop().getShopCode()); // Set the shop code
-
-            // Set the logged-in user for the CartItem
-            cartItem.setUser(loggedInUser);
-
-            // Add the new CartItem to the cart
-            cart.getItems().add(cartItem);
-        }
+        // Recalculate the total cart value
+        cart.recalculateTotal();
 
         // Save and return the updated cart
         return cartRepository.save(cart);
     }
     // Checkout the cart for the logged-in user, ensuring the cart belongs to their shop
     @Transactional
-    public Sale checkoutCart(User user, String customerName, String customerPhone) throws java.io.IOException {
-        User loggedInUser = authUser.getLoggedInUserDetails();
+    public Sale checkoutCart(User user, String customerName, String customerPhone) throws IOException {
+        User loggedInUser = getLoggedInUser();
 
-        // Fetch cart for the logged-in user's shop
         Cart cart = cartRepository.findByUserAndShop(user, loggedInUser.getShop())
-                .orElseThrow(() -> new IllegalArgumentException("Cart not found for the logged-in user's shop"));
+                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
 
         double totalPrice = 0;
-        Sale sale = new Sale(); // Create new sale object
-
-        // Set sale details before saving
+        Sale sale = new Sale();
         sale.setShopCode(loggedInUser.getShop().getShopCode());
         sale.setDate(LocalDate.now());
         sale.setSalePerson(loggedInUser.getUsername());
-        sale.setUser(loggedInUser);  // Associate with the logged-in user
+        sale.setUser(loggedInUser);
         sale.setShop(loggedInUser.getShop());
         sale.setCustomerName(customerName);
         sale.setCustomerPhone(customerPhone);
 
-        // Save sale before adding sale items
-        Sale savedSale = saleRepository.save(sale);
+        Sale savedSale = saleRepository.save(sale); // Save to generate ID
 
         for (CartItem cartItem : cart.getItems()) {
             Product product = cartItem.getProduct();
             int quantity = cartItem.getQuantity();
 
             if (product.getStock() < quantity) {
-                throw new InsufficientStockException("Insufficient stock for product: " + product.getName());
+                throw new InsufficientStockException("Insufficient stock for: " + product.getName());
             }
 
-            // Deduct stock and update product
+            // Update product stock and quantity sold
             product.setStock(product.getStock() - quantity);
             product.setQuantitySold(product.getQuantitySold() + quantity);
             productRepository.save(product);
 
-            // Create SaleItem for each product
+            // Create and add sale item to the sale
             SaleItem saleItem = new SaleItem();
             saleItem.setProduct(product);
             saleItem.setQuantity(quantity);
             saleItem.setSalePrice(product.getPrice());
-            saleItem.setSale(savedSale);  // Associate SaleItem with the saved sale
+            saleItem.setSale(savedSale);
+            savedSale.getSaleItems().add(saleItem);
 
-            savedSale.getSaleItems().add(saleItem);  // Add SaleItem to Sale
-
-            // Add to total price
             totalPrice += product.getPrice() * quantity;
+
+            // Create receipt for each product sold (if needed)
+            Receipt receipt = new Receipt();
+            receipt.setProduct(product);  // Ensure product is assigned here
+            receipt.setShop(savedSale.getShop());
+            receipt.setSale(savedSale);
+            receipt.setReceiptDate(LocalDate.now());
+            receipt.setReceiptTo(savedSale.getCustomerName());
+            receipt.setUser(savedSale.getUser());
+
+            int receiptNo = receiptRepository.findMaxReceiptNo().orElse(0) + 1;
+            receipt.setReceiptNo(receiptNo);
+            receiptRepository.save(receipt);  // Save receipt for each product
         }
 
-        // Update total price after adding items
+        // Set total price and save the sale
         savedSale.setTotalPrice(totalPrice);
-        saleRepository.save(savedSale);  // Save sale again with updated total price/
-        // save receipt to database to be able to generate receipt pdf
-        ReceiptItem receiptItem= ReceiptItem.builder()
-                .shop(savedSale.getShop())
-                //save sale products
-                .product("mmm")
-                //receitptNo start from one then follows next.
-                .receiptNo(1)
-                .receiptDate(LocalDate.now())
-                .receiptTo(savedSale.getCustomerName())
-                .user(savedSale.getUser())
-                .user(savedSale.getId())
-                .build()
-        // Generate and save receipt for later reference
-        ByteArrayInputStream receiptStream = pdfReportServices.generateReceiptForSale(savedSale.getId());
+        saleRepository.save(savedSale);
 
-        // Optionally, send the receipt via email or another method
+        // Generate PDF receipt
+        pdfReportServices.generateReceiptForSale(savedSale.getId());
 
         // Clear the cart after checkout
         cart.getItems().clear();
@@ -150,7 +154,7 @@ public class SalesServices {
     // Fetch cart items for the logged-in user specific to their shop
     @Transactional(readOnly = true)
     public Cart getCartItems(User user) {
-        User loggedInUser = authUser.getLoggedInUserDetails();
+        User loggedInUser = getLoggedInUser();
 
         // Ensure the cart returned is specific to the logged-in user's shop
         return cartRepository.findByUserAndShop(user, loggedInUser.getShop())
