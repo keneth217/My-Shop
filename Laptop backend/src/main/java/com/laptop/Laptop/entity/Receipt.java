@@ -22,10 +22,6 @@ public class Receipt {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
-
     private LocalDate receiptDate;
     private int receiptNo;
     private String receiptTo;

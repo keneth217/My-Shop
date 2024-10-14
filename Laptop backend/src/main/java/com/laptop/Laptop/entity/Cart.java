@@ -23,6 +23,7 @@ public class Cart {
     private String shopCode;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<CartItem> items = new ArrayList<>();
 
     @ManyToOne

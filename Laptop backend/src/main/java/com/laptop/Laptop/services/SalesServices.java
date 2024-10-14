@@ -86,10 +86,13 @@ public class SalesServices {
     public Sale checkoutCart(User user, String customerName, String customerPhone) throws IOException {
         User loggedInUser = getLoggedInUser();
 
+        // Find the user's cart associated with the current shop
         Cart cart = cartRepository.findByUserAndShop(user, loggedInUser.getShop())
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
 
         double totalPrice = 0;
+
+        // Create the Sale object
         Sale sale = new Sale();
         sale.setShopCode(loggedInUser.getShop().getShopCode());
         sale.setDate(LocalDate.now());
@@ -99,8 +102,10 @@ public class SalesServices {
         sale.setCustomerName(customerName);
         sale.setCustomerPhone(customerPhone);
 
-        Sale savedSale = saleRepository.save(sale); // Save to generate ID
+        // Save the sale to generate an ID
+        Sale savedSale = saleRepository.save(sale);
 
+        // Process each cart item
         for (CartItem cartItem : cart.getItems()) {
             Product product = cartItem.getProduct();
             int quantity = cartItem.getQuantity();
@@ -114,7 +119,7 @@ public class SalesServices {
             product.setQuantitySold(product.getQuantitySold() + quantity);
             productRepository.save(product);
 
-            // Create and add sale item to the sale
+            // Create and associate a SaleItem with the Sale
             SaleItem saleItem = new SaleItem();
             saleItem.setProduct(product);
             saleItem.setQuantity(quantity);
@@ -123,34 +128,37 @@ public class SalesServices {
             savedSale.getSaleItems().add(saleItem);
 
             totalPrice += product.getPrice() * quantity;
-
-            // Create receipt for each product sold (if needed)
-            Receipt receipt = new Receipt();
-            receipt.setProduct(product);  // Ensure product is assigned here
-            receipt.setShop(savedSale.getShop());
-            receipt.setSale(savedSale);
-            receipt.setReceiptDate(LocalDate.now());
-            receipt.setReceiptTo(savedSale.getCustomerName());
-            receipt.setUser(savedSale.getUser());
-
-            int receiptNo = receiptRepository.findMaxReceiptNo().orElse(0) + 1;
-            receipt.setReceiptNo(receiptNo);
-            receiptRepository.save(receipt);  // Save receipt for each product
         }
 
-        // Set total price and save the sale
+        // Set the total price and save the Sale
         savedSale.setTotalPrice(totalPrice);
         saleRepository.save(savedSale);
 
-        // Generate PDF receipt
+        // Create a single Receipt for the entire sale
+        Receipt receipt = new Receipt();
+        receipt.setShop(savedSale.getShop());
+        receipt.setSale(savedSale);
+        receipt.setReceiptDate(LocalDate.now());
+        receipt.setReceiptTo(savedSale.getCustomerName());
+        receipt.setUser(savedSale.getUser());
+
+        // Generate a new receipt number
+        int receiptNo = receiptRepository.findMaxReceiptNo().orElse(0) + 1;
+        receipt.setReceiptNo(receiptNo);
+
+        // Save the Receipt
+        receiptRepository.save(receipt);
+
+        // Generate the PDF receipt for the Sale
         pdfReportServices.generateReceiptForSale(savedSale.getId());
 
-        // Clear the cart after checkout
+        // Clear the cart and save the changes
         cart.getItems().clear();
         cartRepository.save(cart);
 
         return savedSale;
     }
+
     // Fetch cart items for the logged-in user specific to their shop
     @Transactional(readOnly = true)
     public Cart getCartItems(User user) {
