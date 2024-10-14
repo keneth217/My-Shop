@@ -29,9 +29,9 @@ public class Sale {
     private String customerPhone;
     private String customerAddress;
     private double saleTotal;
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+//    @ManyToOne
+//    @JoinColumn(name = "product_id", nullable = false)
+//    private Product product;
 
 
     @ManyToOne
