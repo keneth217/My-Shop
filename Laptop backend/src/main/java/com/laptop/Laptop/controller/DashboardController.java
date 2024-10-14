@@ -1,9 +1,7 @@
 package com.laptop.Laptop.controller;
 
 import com.laptop.Laptop.dto.DashboardDTO;
-import com.laptop.Laptop.dto.ProductCreationRequestDto;
-import com.laptop.Laptop.entity.Cart;
-import com.laptop.Laptop.entity.Sale;
+
 import com.laptop.Laptop.entity.User;
 import com.laptop.Laptop.services.BusinessService;
 import com.laptop.Laptop.services.DashboardService;
