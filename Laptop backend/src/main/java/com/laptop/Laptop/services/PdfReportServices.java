@@ -220,14 +220,14 @@ public class PdfReportServices {
             PdfPTable table = new PdfPTable(5); // Columns: Date, Product, Quantity, Total
             table.setWidthPercentage(100);
             table.addCell("Date");
-            table.addCell("Product");
+           // table.addCell("Product");
             table.addCell("Quantity");
             table.addCell("itemCost");
             table.addCell("Total");
 
             for (Sale sale : sales) {
                 table.addCell(sale.getDate().toString());
-                table.addCell(sale.getProduct().getName());
+               // table.addCell(sale.getProduct().getName());
                 table.addCell(String.valueOf(sale.getQuantity()));
                 table.addCell(String.valueOf(sale.getSalePrice()));
                 table.addCell(String.valueOf(sale.getSaleTotal()));
