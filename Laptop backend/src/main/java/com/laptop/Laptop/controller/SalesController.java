@@ -1,13 +1,9 @@
 package com.laptop.Laptop.controller;
 
-import com.laptop.Laptop.constants.MyConstants;
-import com.laptop.Laptop.dto.Responsedto;
-import com.laptop.Laptop.dto.SaleRequest;
 import com.laptop.Laptop.entity.Cart;
 import com.laptop.Laptop.entity.Sale;
 import com.laptop.Laptop.entity.User;
 import com.laptop.Laptop.exceptions.ProductNotFoundException;
-import com.laptop.Laptop.helper.AuthUser;
 import com.laptop.Laptop.repository.SaleRepository;
 import com.laptop.Laptop.services.PdfReportServices;
 import com.laptop.Laptop.services.SalesServices;
@@ -21,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/sales")
