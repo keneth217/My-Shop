@@ -57,31 +57,33 @@ public class PdfReportController {
     }
 
     // Generate sales report PDF
+
     @GetMapping("/sales")
     public ResponseEntity<?> generateSalesReport(
-
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @AuthenticationPrincipal User loggedInUser) throws IOException {
-// Fetch the shop details using the shopId from the logged-in user's token
-        Long shopId = loggedInUser.getShop().getId(); // Extract the shopId from the logged-in user's token
+            @AuthenticationPrincipal User loggedInUser) {
+
+        // Extract shop details from the logged-in user's token
+        Long shopId = loggedInUser.getShop().getId();
         Shop shop = shopRepository.findById(shopId)
-                .orElseThrow(() -> new IllegalArgumentException("Shop not found"));  // Ensure shop exists
+                .orElseThrow(() -> new IllegalArgumentException("Shop not found"));
+
         // Fetch sales for the shop within the date range
-        List<Sale> sales = businessService.getSalesForShop(shopId, startDate, endDate);
+        List<Sale> sales = businessService.getSalesForShop( startDate, endDate);
 
         // Generate the PDF report
-        ByteArrayInputStream pdfStream = pdfReportServices.generateSalesReport(sales, loggedInUser.getShop(), loggedInUser);
+        ByteArrayInputStream pdfStream = pdfReportServices.generateSalesReport(sales,startDate, endDate, shop, loggedInUser);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=sales-report.pdf");
 
+        // Use InputStreamResource to handle streaming the PDF
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(pdfStream.readAllBytes());
+                .body(new InputStreamResource(pdfStream));
     }
-
     // Generate stock purchase report PDF
     @GetMapping("/stock-purchases")
     public ResponseEntity<?> generateStockPurchaseReport(
@@ -94,7 +96,7 @@ public class PdfReportController {
         Shop shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new IllegalArgumentException("Shop not found"));  // Ensure shop exists
         // Fetch stock purchases for the shop within the date range
-        List<StockPurchase> stockPurchases = businessService.getStockPurchasesForShop(shopId, startDate, endDate);
+        List<StockPurchase> stockPurchases = businessService.getStockPurchasesForShop(startDate, endDate);
 
         // Generate the PDF report
         ByteArrayInputStream pdfStream = pdfReportServices.generateStockPurchaseReport(stockPurchases, loggedInUser.getShop(), loggedInUser);
