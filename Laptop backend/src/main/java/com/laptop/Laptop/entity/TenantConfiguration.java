@@ -21,12 +21,11 @@ public class TenantConfiguration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long shopId; // This could also be a foreign key to a Shop entity
+    private Long shopId;
+    private String shopCode;// This could also be a foreign key to a Shop entity
     private String theme;
     private String logoUrl;
     private boolean featureXEnabled; // Example feature toggle
     // Add other configuration fields as needed
 
-    // Getters and Setters
-    // ...
 }
