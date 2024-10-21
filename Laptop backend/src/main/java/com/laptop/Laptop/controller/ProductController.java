@@ -2,7 +2,7 @@ package com.laptop.Laptop.controller;
 
 import com.laptop.Laptop.constants.ProductConstants;
 import com.laptop.Laptop.dto.ProductCreationRequestDto;
-import com.laptop.Laptop.dto.Responsedto;
+import com.laptop.Laptop.dto.Responses.Responsedto;
 import com.laptop.Laptop.entity.Product;
 import com.laptop.Laptop.services.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
