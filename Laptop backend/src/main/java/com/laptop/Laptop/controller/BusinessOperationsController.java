@@ -1,11 +1,10 @@
 package com.laptop.Laptop.controller;
 
-import com.laptop.Laptop.constants.AuthConstants;
 import com.laptop.Laptop.constants.MyConstants;
 import com.laptop.Laptop.dto.*;
+import com.laptop.Laptop.dto.Responses.Responsedto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.services.BusinessService;
-import com.laptop.Laptop.services.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/business")
@@ -37,7 +34,7 @@ public class BusinessOperationsController {
 
     // Add a new stock purchase linked to a product
     @PostMapping("/stock-purchases/{productId}/{supplierId}")
-    public ResponseEntity<Responsedto> addStockPurchase(@PathVariable Long productId,@PathVariable Long supplierId, @RequestBody StockPurchase stockPurchase) {
+    public ResponseEntity<Responsedto> addStockPurchase(@PathVariable Long productId, @PathVariable Long supplierId, @RequestBody StockPurchase stockPurchase) {
         StockPurchase addedStockPurchase = businessService.addStockPurchase(productId,supplierId, stockPurchase);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
