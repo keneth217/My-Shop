@@ -2,7 +2,7 @@ package com.laptop.Laptop.exceptions;
 
 
 
-import com.laptop.Laptop.dto.ErrorResponseDto;
+import com.laptop.Laptop.dto.Responses.ErrorResponseDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
