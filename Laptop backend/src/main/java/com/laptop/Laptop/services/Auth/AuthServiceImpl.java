@@ -1,7 +1,7 @@
 package com.laptop.Laptop.services.Auth;
 
 import com.laptop.Laptop.dto.AuthenticationRequestDto;
-import com.laptop.Laptop.dto.JWTAuthenticationResponse;
+import com.laptop.Laptop.dto.Responses.JWTAuthenticationResponse;
 import com.laptop.Laptop.dto.SignUpRequetDto;
 import com.laptop.Laptop.dto.UserUpdateRequestDto;
 import com.laptop.Laptop.entity.Employee;
@@ -11,7 +11,6 @@ import com.laptop.Laptop.enums.Roles;
 import com.laptop.Laptop.enums.ShopStatus;
 import com.laptop.Laptop.exceptions.CustomerAlreadyExistException;
 import com.laptop.Laptop.exceptions.ShopNotActivatedException;
-import com.laptop.Laptop.exceptions.ShopNotFoundException;
 import com.laptop.Laptop.exceptions.UnauthorizedActionException;
 import com.laptop.Laptop.repository.EmployeeRepository;
 import com.laptop.Laptop.repository.ShopRepository;
@@ -31,7 +30,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
 
@@ -215,7 +213,15 @@ public class AuthServiceImpl implements  AuthService{
         System.out.println("Success: Generated JWT token for user - " + userDetails.getUsername());
 
         // Return JWT response with token, username, role, and shopCode
-        return new JWTAuthenticationResponse("login success",jwt, user.getUsername(), user.getRole().name(), authenticationRequest.getShopCode(), user.getShop().getId());
+        JWTAuthenticationResponse jwtAuthenticationResponse= JWTAuthenticationResponse.builder()
+                .message("Login success")
+                .token(jwt)
+                .shopId(user.getShop().getId())
+                .shopCode(authenticationRequest.getShopCode())
+                .role( user.getRole().name())
+                .username(user.getUsername())
+                .build();
+        return jwtAuthenticationResponse;
     }
 
 
