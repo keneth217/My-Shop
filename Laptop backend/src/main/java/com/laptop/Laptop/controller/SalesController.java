@@ -6,15 +6,20 @@ import com.laptop.Laptop.dto.SaleRequest;
 import com.laptop.Laptop.entity.Cart;
 import com.laptop.Laptop.entity.Sale;
 import com.laptop.Laptop.entity.User;
+import com.laptop.Laptop.exceptions.ProductNotFoundException;
 import com.laptop.Laptop.helper.AuthUser;
+import com.laptop.Laptop.repository.SaleRepository;
+import com.laptop.Laptop.services.PdfReportServices;
 import com.laptop.Laptop.services.SalesServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -23,6 +28,12 @@ import java.util.List;
 public class SalesController {
     @Autowired
     private SalesServices salesServices;
+
+    @Autowired
+    private SaleRepository saleRepository;
+
+    @Autowired
+    private PdfReportServices pdfReportServices;
 
     // Utility method to get the logged-in user's details from the authentication token
     private User getLoggedInUser() {
@@ -49,5 +60,39 @@ public class SalesController {
         User loggedInUser = getLoggedInUser();
         Cart cart = salesServices.getCartItems(loggedInUser);
         return ResponseEntity.ok(cart);
+    }
+
+
+    /**
+     * Generate and download the receipt in PDF format for a given Sale ID.
+     *
+     * @param saleId The ID of the sale for which the receipt will be generated.
+     * @return ResponseEntity containing the receipt PDF as a stream.
+     */
+    @GetMapping("/generate/{saleId}")
+    public ResponseEntity<byte[]> generateReceipt(@PathVariable Long saleId) {
+        try {
+            // Generate PDF receipt from sale ID
+            ByteArrayInputStream bis = pdfReportServices.generateReceiptForSale(saleId);
+
+            // Set HTTP headers for file download
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", "attachment; filename=receipt_" + saleId + ".pdf");
+
+            // Return the PDF as a byte array in the response
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                    .body(bis.readAllBytes());
+        } catch (IOException e) {
+            // Handle IOException if PDF generation fails
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(("Error generating receipt: " + e.getMessage()).getBytes());
+        } catch (ProductNotFoundException e) {
+            // Handle case where the sale is not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(("Sale not found: " + e.getMessage()).getBytes());
+        }
     }
 }
