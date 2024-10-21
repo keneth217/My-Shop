@@ -18,4 +18,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findByShopAndExpenseType(Shop shop, String name);
 
     Page<Expense> findAllByExpenseType(String name, Pageable pageable);
+
+    Page<Expense> findAllByShopAndExpenseType(Shop shop, String name, Pageable pageable);
 }
