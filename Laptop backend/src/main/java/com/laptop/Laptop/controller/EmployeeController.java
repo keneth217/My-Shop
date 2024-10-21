@@ -2,7 +2,7 @@ package com.laptop.Laptop.controller;
 
 import com.laptop.Laptop.constants.MyConstants;
 import com.laptop.Laptop.dto.PaymentResponseDto;
-import com.laptop.Laptop.dto.Responsedto;
+import com.laptop.Laptop.dto.Responses.Responsedto;
 import com.laptop.Laptop.dto.SalaryDto;
 import com.laptop.Laptop.entity.Employee;
 import com.laptop.Laptop.services.EmployeeService;
