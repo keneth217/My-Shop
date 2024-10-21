@@ -1,7 +1,7 @@
 package com.laptop.Laptop.controller;
 
 import com.laptop.Laptop.constants.MyConstants;
-import com.laptop.Laptop.dto.Responsedto;
+import com.laptop.Laptop.dto.Responses.Responsedto;
 import com.laptop.Laptop.dto.ShopRegistrationRequestDto;
 import com.laptop.Laptop.entity.Shop;
 import com.laptop.Laptop.enums.ShopStatus;
