@@ -40,8 +40,8 @@ public class ShopController {
                 .status(HttpStatus.CREATED)
                 .body(new Responsedto(
                         MyConstants.REGISTER_SHOP_CODE,
-                        MyConstants.REGISTER_SHOP_MESSAGE + "" + "\n" +
-                                "Your Unique Shop code is: " +"" + newShop.getShopCode()));
+                        MyConstants.REGISTER_SHOP_MESSAGE +
+                                "\nYour Unique Shop code is: " +"\n" + newShop.getShopCode()));
     }
         // Activate a shop
     @PostMapping("/{shopId}/activate")
