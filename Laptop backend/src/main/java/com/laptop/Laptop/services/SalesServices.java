@@ -55,7 +55,9 @@ public class SalesServices {
         // Find the product by ID
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
-
+        if (product.getStock() < quantity) {
+            throw new InsufficientStockException("Insufficient stock for: " + product.getName());
+        }
         // Check if the product is already in the cart
         CartItem cartItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
@@ -81,7 +83,6 @@ public class SalesServices {
         // Save and return the updated cart
         return cartRepository.save(cart);
     }
-    // Checkout the cart for the logged-in user, ensuring the cart belongs to their shop
     @Transactional
     public Sale checkoutCart(User user, String customerName, String customerPhone) throws IOException {
         User loggedInUser = getLoggedInUser();
@@ -134,7 +135,7 @@ public class SalesServices {
         savedSale.setTotalPrice(totalPrice);
         saleRepository.save(savedSale);
 
-        // Create a single Receipt for the entire sale
+        // Create a Receipt for the entire sale
         Receipt receipt = new Receipt();
         receipt.setShop(savedSale.getShop());
         receipt.setSale(savedSale);
@@ -149,11 +150,13 @@ public class SalesServices {
         // Save the Receipt
         receiptRepository.save(receipt);
 
-        // Generate the PDF receipt for the Sale
+        // Generate the PDF receipt
         pdfReportServices.generateReceiptForSale(savedSale.getId());
 
-        // Clear the cart and save the changes
+        // Clear the cart for the logged-in user and shop
+        // Clear the cart_item for the logged-in user and shop
         cart.getItems().clear();
+
         cartRepository.save(cart);
 
         return savedSale;
