@@ -69,10 +69,12 @@ export class TokenService {
   get getUserRole(): string {
     try {
       const user = this.getUser;
-      return user ? user.role : '';
+      return user?.role || ''; 
+      // Use optional chaining for safety
+       console.error(' user role:', user.role);
     } catch (error) {
-      console.error(error);
-      return 'error';
+      console.error('Error fetching user role:', error);
+      return 'error'; // Return a meaningful fallback value if needed
     }
   }
 
