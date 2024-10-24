@@ -38,7 +38,7 @@
       <hr class="border-0 border-t border-white mb-2">
     </div>
     <ul class="space-y-4  w-full ml-4">
-      <li *ngFor="let link of userLinks" class="text-2xl flex flex-col" [routerLink]="link.route"
+      <li *ngFor="let link of links" class="text-2xl flex flex-col" [routerLink]="link.route"
         routerLinkActive="active">
         <div class="flex items-center cursor-pointer  hover:bg-gray-200" (click)="handleLinkClick(link)">
           <ng-icon [name]="link.icon" class="mr-3"></ng-icon>
