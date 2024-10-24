@@ -2,7 +2,8 @@ package com.laptop.Laptop.services.Auth;
 
 import com.laptop.Laptop.dto.AuthenticationRequestDto;
 import com.laptop.Laptop.dto.Responses.JWTAuthenticationResponse;
-import com.laptop.Laptop.dto.SignUpRequetDto;
+import com.laptop.Laptop.dto.Responses.UserResponse;
+import com.laptop.Laptop.dto.SignUpRequestDto;
 import com.laptop.Laptop.dto.UserUpdateRequestDto;
 import com.laptop.Laptop.entity.Employee;
 import com.laptop.Laptop.entity.Shop;
@@ -68,7 +69,7 @@ public class AuthServiceImpl implements  AuthService{
         }
     }
 
-    public User createUser(SignUpRequetDto signUpRequest) {
+    public User createUser(SignUpRequestDto signUpRequest) {
         // Fetch the authenticated admin user from the SecurityContextHolder
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -216,10 +217,12 @@ public class AuthServiceImpl implements  AuthService{
         JWTAuthenticationResponse jwtAuthenticationResponse= JWTAuthenticationResponse.builder()
                 .message("Login success")
                 .token(jwt)
-                .shopId(user.getShop().getId())
-                .shopCode(authenticationRequest.getShopCode())
-                .role( user.getRole().name())
-                .username(user.getUsername())
+                .user(UserResponse.builder()
+                        .shopId(user.getShop().getId())
+                        .shopCode(authenticationRequest.getShopCode())
+                        .role( user.getRole().name())
+                        .username(user.getUsername())
+                        .build())
                 .build();
         return jwtAuthenticationResponse;
     }
