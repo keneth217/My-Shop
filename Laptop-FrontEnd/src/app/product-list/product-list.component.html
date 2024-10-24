@@ -1,87 +1,73 @@
 <div class="container mx-auto relative my-6">
-
   <div class="text-white my-4 flex justify-between items-center">
-    <!-- Button for adding product -->
     <button (click)="openAddProduct()"
       class="bg-green-400 p-2 rounded-md text-2xl flex items-center justify-center font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
       type="button">
       <span><ng-icon name="heroPlusCircle" class="mr-3 text-2xl"></ng-icon></span>Add Product
     </button>
 
-    <!-- Buttons for PDF and Excel, aligned to the far end -->
     <div class="flex space-x-2">
       <button
         class="bg-green-400 p-2 rounded-md text-white font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
         type="button">PDF</button>
-
     </div>
   </div>
+
   <!-- Modal for Add product form -->
-  <div *ngIf="showAddProduct"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
+  <div *ngIf="showAddProduct" class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
     <div class="bg-white p-6 rounded-lg shadow-lg relative">
       <app-addproduct (close)="closeAddProduct()"></app-addproduct>
-
-      <!-- Close button for Add product modal -->
       <button (click)="closeAddProduct()" class="absolute top-2 right-2 text-red-500 hover:text-red-800">
         <ng-icon name="heroXMark" class="mr-3 text-2xl text-red-600"></ng-icon>
       </button>
     </div>
   </div>
 
-   <!-- Modal for stock product form -->
-   <div *ngIf="showAStockProduct"
-   class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
-   <div class="bg-white p-6 rounded-lg shadow-lg relative">
-     <app-add-product-stock          (close)="closeStockProduct()"></app-add-product-stock>
-
-   </div>
- </div>
-
   <!-- Modal for stock product form -->
-  <div *ngIf="showViewProduct"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
-  <div class="bg-white p-6 rounded-lg shadow-lg relative">
-    <app-view-single-product         (close)="closeViewProduct()"></app-view-single-product>
-
+  <div *ngIf="showAStockProduct" class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
+    <div class="bg-white p-6 rounded-lg shadow-lg relative">
+      <app-add-product-stock (close)="closeStockProduct()"></app-add-product-stock>
+    </div>
   </div>
-</div>
-<div class="shadow-sm rounded-sm bg-white p-4">
-  <!-- Table displaying payments -->
-  <table class="table-auto border-collapse border  border-slate-500 w-full">
-    <thead>
-      <tr>
-        <th class="border border-slate-600 text-left p-2">Product Image</th>
-        <th class="border border-slate-600 text-left p-2">Name</th>
-        <th class="border border-slate-600 text-left p-2">Stock</th>
-        <th class="border border-slate-600 text-left p-2">Features</th>
-        <th class="border border-slate-600 text-left p-2">Action</th>
 
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="border border-slate-600 p-2">product image</td>
-        <td class="border border-slate-600 p-2">laptop 1</td>
-        <td class="border border-slate-600 p-2 text-left">10</td>
-        <td class="border border-slate-600 p-2 text-left">hp,silver</td>
-        <td class="border border-slate-600 p-2">
+  <!-- Modal for view product form -->
+  <div *ngIf="showViewProduct" class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
+    <div class="bg-white p-6 rounded-lg shadow-lg relative">
+      <app-view-single-product (close)="closeViewProduct()"></app-view-single-product>
+    </div>
+  </div>
 
-          <div class="flex justify-between">
-            <button type="submit" class="bg-green-400 text-white p-2 
-              rounded-md font-bold hover:bg-green-500" (click)="openStockProduct()">Stock</button>
-              <button type="submit" class="bg-red-400 text-white p-2 
-              rounded-md font-bold hover:bg-red-500" (click)="addToCart()">Cart</button>
-               <button type="submit" class="bg-pink-400 text-white p-2 
-              rounded-md font-bold hover:bg-pink-500" (click)="openViewProduct()">View</button>
-          </div>
-        </td>
+  <div class="shadow-sm rounded-sm bg-white p-4">
+    <!-- Table displaying products -->
+    <table class="table-auto border-collapse border border-slate-500 w-full">
+      <thead>
+        <tr>
+          <th class="border border-slate-600 text-left p-2">Product Image</th>
+          <th class="border border-slate-600 text-left p-2">Name</th>
+          <th class="border border-slate-600 text-left p-2">Stock</th>
+          <th class="border border-slate-600 text-left p-2">Features</th>
+          <th class="border border-slate-600 text-left p-2">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products"> <!-- Iterate through products -->
+          <td class="border border-slate-600 p-2">
+            <img [src]="product.imageUrl" alt="Product Image" class="w-16 h-16 object-cover"> <!-- Replace 'imageUrl' with the actual field from your product data -->
+          </td>
+          <td class="border border-slate-600 p-2">{{ product.name }}</td>
+          <td class="border border-slate-600 p-2 text-left">{{ product.stock }}</td>
+          <td class="border border-slate-600 p-2 text-left">{{ product.features.join(', ') }}</td> <!-- Assuming features is an array -->
+          <td class="border border-slate-600 p-2">
+            <div class="flex justify-between">
+              <button type="button" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500" (click)="openStockProduct()">Stock</button>
+              <button type="button" class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500" (click)="addToCart()">Cart</button>
+              <button type="button" class="bg-pink-400 text-white p-2 rounded-md font-bold hover:bg-pink-500" (click)="openViewProduct()">View</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-      </tr>
-    </tbody>
-  </table>
-</div>
   <lib-toastify-toast-container></lib-toastify-toast-container>
-
-
 </div>
