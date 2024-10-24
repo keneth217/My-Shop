@@ -31,7 +31,7 @@ public class AuthenticationController {
     private final UserRepository userRepository;
 
     @PostMapping("/create-user")
-    public ResponseEntity<Responsedto> createUser(@Valid @RequestBody SignUpRequetDto signUpRequest) {
+    public ResponseEntity<Responsedto> createUser(@Valid @RequestBody SignUpRequestDto signUpRequest) {
         // The admin creating the user is already authenticated, so no need to pass admin info
         authService.createUser(signUpRequest);
 
