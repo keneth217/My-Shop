@@ -1,12 +1,12 @@
 package com.laptop.Laptop.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
-@NoArgsConstructor
+@Setter
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserUpdateRequestDto {
 
     private String firstName;
