@@ -1,39 +1,87 @@
+<div class="fixed inset-0 flex items-center justify-center">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full outline-none border-green-400 border-2">
+    <lib-toastify-toast-container></lib-toastify-toast-container>
 
-<div class="fixed inset-0 flex items-center justify-center ">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm 
-    w-full outline-none border-green-400 border-2">
-  
-  
-      <div>
-        <lib-toastify-toast-container></lib-toastify-toast-container>
-      </div>
-      <div class="flex justify-center mb-2 ">
-        <h2 class="text-xl font-bold text-green-500 ">Upload New Product</h2>
-      </div>
-      <div class="text-green mb-3">
-        <hr class="border-0 border-t border-green-400 mb-2">
-      </div>
-      <!-- <form [formGroup]="milkForm" (ngSubmit)="submitMilkData()"> -->
-      <form>
-        <label for="shopCode" class="block text-gray-700 font-bold">Product Image</label>
-        <input id="shopCode" type="file" formControlName="image" name="image" placeholder="Select image"
-          class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
-        <label for="name" class="block text-gray-700 font-bold">Product Name</label>
-        <input id="name" type="text" formControlName="name" name="name" placeholder="Enter name"
-          class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
-  
-        <label for="features" class="block text-gray-700 font-bold">Features</label>
-        <input id="features" type="text" formControlName="features" name="features" placeholder="Enter features"
-          class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
-  
-        <div class="flex justify-between">
-          <button type="submit" class="bg-green-400 text-white p-2 
-            rounded-md font-bold hover:bg-green-500">Upload</button>
-            <button type="button" (click)="closePForm()" class="bg-red-400 text-white p-2 
-            rounded-md font-bold hover:bg-red-500">Close</button>
-        </div>
-  
-      
-      </form>
+    <div class="flex justify-center mb-2">
+      <h2 class="text-xl font-bold text-green-500">Upload New Product</h2>
     </div>
+
+    <hr class="border-0 border-t border-green-400 mb-4">
+
+    <form [formGroup]="productForm" (ngSubmit)="submitProduct()">
+      <!-- Product Images -->
+      <label class="block text-gray-700 font-bold mb-2">Product Images</label>
+      <input 
+        type="file" 
+        (change)="onImageSelect($event)" 
+        multiple 
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+      >
+
+      <!-- Image Preview Section -->
+      <div *ngIf="selectedImages.length > 0" class="grid grid-cols-3 gap-2 mb-4">
+        <div *ngFor="let img of selectedImages; let i = index" class="relative">
+          <img [src]="img.preview" class="w-full h-24 object-cover rounded-md">
+          <button 
+            type="button" 
+            (click)="removeImage(i)" 
+            class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- Product Name -->
+      <label for="name" class="block text-gray-700 font-bold mb-2">Product Name</label>
+      <input 
+        id="name" 
+        type="text" 
+        formControlName="name" 
+        placeholder="Enter name"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+      >
+
+      <!-- Features (Dynamic) -->
+      <label class="block text-gray-700 font-bold mb-2">Features</label>
+      <div formArrayName="features">
+        <div *ngFor="let feature of features.controls; let i = index" [formGroupName]="i" class="flex items-center mb-2">
+          <input 
+            formControlName="feature"  
+            placeholder="Enter feature"
+            class="border p-2 w-full mr-2 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+          >
+          <button 
+            type="button" 
+            (click)="removeFeature(i)" 
+            class="bg-red-400 text-white p-2 rounded-md hover:bg-red-500"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+
+      <button 
+        type="button" 
+        (click)="addFeature()" 
+        class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500 mb-4"
+      >
+        Add Feature
+      </button>
+
+      <!-- Submit and Close Buttons -->
+      <div class="flex justify-between">
+        <button type="submit" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
+          Upload
+        </button>
+        <button 
+          type="button" 
+          (click)="closePForm()" 
+          class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+        >
+          Close
+        </button>
+      </div>
+    </form>
   </div>
+</div>
