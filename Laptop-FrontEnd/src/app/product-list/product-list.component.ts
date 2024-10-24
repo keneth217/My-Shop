@@ -1,34 +1,45 @@
+// src/app/product-list/product-list.component.ts
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgIconsModule } from '@ng-icons/core';
 import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { AddproductComponent } from "../addproduct/addproduct.component";
 import { AddProductStockComponent } from "../add-product-stock/add-product-stock.component";
 import { ViewSingleProductComponent } from "../view-single-product/view-single-product.component";
+import { ProductsService } from '../Services/products.service';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [AngularToastifyModule, CommonModule, AngularToastifyModule, NgIconsModule, AddproductComponent, AddProductStockComponent, ViewSingleProductComponent],
+  imports: [AngularToastifyModule, CommonModule, NgIconsModule, AddproductComponent, AddProductStockComponent, ViewSingleProductComponent],
   templateUrl: './product-list.component.html',
-  styleUrl: './product-list.component.css'
+  styleUrls: ['./product-list.component.css'] // Note the corrected property here
 })
-export class ProductListComponent {
-
-
-
-  products: any;
-  showAddProduct: Boolean = false;
-  showAStockProduct: Boolean = false;
-  showViewProduct:Boolean=false;
-
+export class ProductListComponent implements OnInit {
+  products: any[] = []; // Initialize as an empty array
+  showAddProduct: boolean = false;
+  showAStockProduct: boolean = false;
+  showViewProduct: boolean = false;
 
   constructor(
- 
+    private productService: ProductsService, // Inject the ProductService
     private toastService: ToastService,
-  ) { }
+  ) {}
 
+  ngOnInit(): void {
+    this.fetchProducts(); // Call the fetchProducts method on component initialization
+  }
 
+  fetchProducts(): void {
+    this.productService.getProducts().subscribe({
+      next: (data) => {
+        this.products = data; // Set the products from the API response
+      },
+      error: (error) => {
+        console.error('Error fetching products:', error);
+      }
+    });
+  }
 
   openStockProduct() {
     this.showAStockProduct = true;
@@ -41,16 +52,16 @@ export class ProductListComponent {
     this.showAddProduct = true;
   }
   closeAddProduct(): void {
-    this.showAddProduct = false
+    this.showAddProduct = false;
   }
   closeViewProduct() {
-    this.showViewProduct=false;
+    this.showViewProduct = false;
   }
   openViewProduct() {
-  this.showViewProduct=true;
+    this.showViewProduct = true;
   }
 
   addToCart() {
-    this.toastService.success("product added to cart succesfully")
-    }
+    this.toastService.success("Product added to cart successfully");
+  }
 }
