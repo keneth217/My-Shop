@@ -1,37 +1,62 @@
 <div class="fixed inset-0 flex items-center justify-center h-screen bg-slate-400">
-  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm 
-  w-full outline-none border-green-400 border-2">
-
-
-    <div><app-popup #popup></app-popup>
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full outline-none border-green-400 border-2">
+    
+    <div>
+      <app-popup #popup></app-popup>
       <lib-toastify-toast-container></lib-toastify-toast-container>
     </div>
-    <div class="flex justify-center mb-2 ">
-      <h2 class="text-xl font-bold text-green-500 ">Login Here !</h2>
+
+    <div class="flex justify-center mb-2">
+      <h2 class="text-xl font-bold text-green-500">Login Here!</h2>
     </div>
+
     <div class="text-green mb-3">
       <hr class="border-0 border-t border-green-400 mb-2">
     </div>
-    <!-- <form [formGroup]="milkForm" (ngSubmit)="submitMilkData()"> -->
-    <form>
+
+    <!-- FormGroup bound to loginForm -->
+    <form [formGroup]="loginForm" (ngSubmit)="submitLogin()">
       <label for="shopCode" class="block text-gray-700 font-bold">Shop Code</label>
-      <input id="shopCode" type="text" formControlName="shopCode" name="shopCode" placeholder="Enter Shop Code"
+      <input id="shopCode" type="text" formControlName="shopCode" name="shopCode"
+        placeholder="Enter Shop Code"
         class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+
       <label for="username" class="block text-gray-700 font-bold">Username</label>
-      <input id="username" type="text" formControlName="username" name="username" placeholder="Enter Username"
+      <input id="userName" type="text" formControlName="userName" name="userName"
+        placeholder="Enter Username"
         class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
 
-      <label for="password" class="block text-gray-700 font-bold">password</label>
-      <input id="password" type="text" formControlName="password" name="password" placeholder="Enter password"
-        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
-
-      <div class="flex justify-center">
-        <button type="submit" class="bg-green-400 text-white p-2 
-          rounded-md font-bold hover:bg-green-500">Login</button>
+        <label for="password" class="block text-gray-700 font-bold">Password</label>
+        <input 
+          id="password" 
+          [type]="hidePassword ? 'password' : 'text'" 
+          formControlName="password" 
+          name="password" 
+          placeholder="Enter Password"
+          class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+        
+        <div class="flex justify-end mb-2">
+          <button type="button" (click)="togglePassword()" 
+            class="text-sm text-blue-500">
+            {{ hidePassword ? 'Show' : 'Hide' }} Password
+          </button>
+        </div>
+      <div class="flex justify-center mb-4">
+        <button type="submit" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
+          Login
+        </button>
       </div>
 
-      <button (click)="showSu()">Show Success</button>
-      <button (click)="showEr()">Show Error</button>
+      <div class="flex justify-around">
+        <button type="button" (click)="showSu()"
+          class="bg-blue-400 text-white px-4 py-2 rounded-md hover:bg-blue-500">
+          Show Success
+        </button>
+        <button type="button" (click)="showEr()"
+          class="bg-red-400 text-white px-4 py-2 rounded-md hover:bg-red-500">
+          Show Error
+        </button>
+      </div>
     </form>
   </div>
 </div>
