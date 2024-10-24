@@ -1,30 +1,61 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { NgIconComponent } from '@ng-icons/core';
-import { LoginComponent } from "../login/login.component";
+import { LoginComponent } from '../login/login.component';
+import { TokenService } from '../Services/token.service';
 
-// Define interface for links
+// Interface for defining links
 interface Link {
   label: string;
   icon: string;
   route?: string;
-  children?: Link[];  // Nested links for dropdown functionality
-  isOpen?: boolean;   // Track dropdown open/close state
+  children?: Link[];
+  isOpen?: boolean;  // Dropdown open/close state
 }
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, RouterModule, NgIconComponent, LoginComponent],
+  imports: [
+    RouterOutlet,
+    CommonModule,
+    RouterModule,
+    NgIconComponent,
+    LoginComponent,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   isSidebarCollapsed = false;
   isUserDropdownOpen = false;
+  userRole: string = ''; // Initialize with an empty string to avoid issues
+  links: Link[] = []; // Holds the active links based on role
 
-  // Define arrays of links with nested children for dropdowns
+  constructor(private tokenService: TokenService) {}
+
+  // Fetch the user role after initialization
+  ngOnInit(): void {
+    this.userRole = this.tokenService.getUserRole;
+    this.links = this.getUserLinks(); // Set links based on the role
+  }
+
+  // Define the links for different roles
+  private getUserLinks(): Link[] {
+    switch (this.userRole) {
+      case 'SUPER_USER':
+        return this.superUserLinks;
+      case 'CASHIER':
+        return this.cashierLinks;
+      case 'ADMIN':
+        return this.adminLinks;
+      default:
+        return [];
+    }
+  }
+
+  // Super User Links
   superUserLinks: Link[] = [
     { label: 'Dashboard', icon: 'heroSquares2x2', route: '/dash' },
     { label: 'Shops', icon: 'heroUsers', route: '/shop' },
@@ -32,14 +63,15 @@ export class DashboardComponent {
       label: 'Reports',
       icon: 'heroDocument',
       children: [
-        { label: 'Shops Report',icon: 'heroSquares2x2', route: '/shops' },
-        { label: 'Payments Report',icon: 'heroSquares2x2', route: '/reports/payments' },
-        { label: 'Status Report',icon: 'heroSquares2x2', route: '/reports/status' },
+        { label: 'Shops Report', icon: 'heroSquares2x2', route: '/shops' },
+        { label: 'Payments Report', icon: 'heroSquares2x2', route: '/reports/payments' },
+        { label: 'Status Report', icon: 'heroSquares2x2', route: '/reports/status' },
       ],
     },
     { label: 'Settings', icon: 'heroCog6Tooth', route: '/settings' },
   ];
 
+  // Cashier Links
   cashierLinks: Link[] = [
     { label: 'Analytics', icon: 'heroPlusCircle', route: '/dash' },
     { label: 'Product', icon: 'heroPlusCircle', route: '/dash/product' },
@@ -47,55 +79,42 @@ export class DashboardComponent {
     { label: 'Employee', icon: 'heroPercentBadge', route: '/dash/employee' },
     { label: 'Sales', icon: 'heroPercentBadge', route: '/dash/sale' },
     { label: 'Expense', icon: 'heroPercentBadge', route: '/dash/expense' },
-     {
-      label: 'Reports',
-      icon: 'heroDocument',
-      children: [
-        { label: 'sales', icon: 'heroSquares2x2', route: '/reports/daily' },
-        { label: 'Monthly Report',icon: 'heroSquares2x2', route: '/reports/monthly' },
-      ],
-    },
-    { label: 'Settings', icon: 'heroCog6Tooth', route: '/settings' },
-  ];
-
-  adminLinks: Link[] = [
     {
       label: 'Reports',
       icon: 'heroDocument',
       children: [
-        { label: 'sales', icon: 'heroSquares2x2', route: '/reports/daily' },
-        { label: 'Monthly Report',icon: 'heroSquares2x2', route: '/reports/monthly' },
+        { label: 'Sales', icon: 'heroSquares2x2', route: '/reports/daily' },
+        { label: 'Monthly Report', icon: 'heroSquares2x2', route: '/reports/monthly' },
       ],
     },
     { label: 'Settings', icon: 'heroCog6Tooth', route: '/settings' },
   ];
 
-  // Set the user's role (could come from authentication logic)
-  userRole: 'superuser' | 'cashier' | 'admin' = 'cashier'; 
+  // Admin Links
+  adminLinks: Link[] = [
+    
+    { label: 'Product', icon: 'heroPlusCircle', route: '/dash/product' },
+      {label: 'Reports',
+      icon: 'heroDocument',
+      children: [
+        { label: 'Sales', icon: 'heroSquares2x2', route: '/reports/daily' },
+        { label: 'Monthly Report', icon: 'heroSquares2x2', route: '/reports/monthly' },
+      ],
+    },
+    { label: 'Settings', icon: 'heroCog6Tooth', route: '/settings' },
+  ];
 
-  // Get links based on user role
-  get userLinks(): Link[] {
-    switch (this.userRole) {
-      case 'superuser':
-        return this.superUserLinks;
-      case 'cashier':
-        return this.cashierLinks;
-      case 'admin':
-        return this.adminLinks;
-      default:
-        return [];
-    }
-  }
-
+  // Sidebar toggle functionality
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
 
+  // User dropdown toggle functionality
   toggleUserDropdown() {
     this.isUserDropdownOpen = !this.isUserDropdownOpen;
   }
 
-  // Handle link clicks to toggle dropdowns for links with children
+  // Handle link clicks to toggle dropdowns with children
   handleLinkClick(link: Link) {
     if (link.children) {
       link.isOpen = !link.isOpen;
