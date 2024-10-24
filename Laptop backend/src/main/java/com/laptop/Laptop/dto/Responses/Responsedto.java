@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class Responsedto {
     private String responseCode;
     private String responseMessage;
-private ProductDto products;
+
 }
