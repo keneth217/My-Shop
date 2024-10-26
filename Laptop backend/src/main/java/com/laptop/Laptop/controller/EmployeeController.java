@@ -5,11 +5,14 @@ import com.laptop.Laptop.dto.PaymentResponseDto;
 import com.laptop.Laptop.dto.Responses.Responsedto;
 import com.laptop.Laptop.dto.SalaryDto;
 import com.laptop.Laptop.entity.Employee;
+import com.laptop.Laptop.entity.Supplier;
 import com.laptop.Laptop.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/employee")
@@ -37,5 +40,14 @@ public class EmployeeController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body( new Responsedto(MyConstants.EMPLOYEE_CREATION,MyConstants.EMPLOYEE_CREATION_CODE));// Use 201 Created
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Employee>> getSuppliers(){
+        List<Employee> employees=employeeService.getExpenseForShop();
+        if (employees.isEmpty()){
+            return  ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(employees);
     }
 }

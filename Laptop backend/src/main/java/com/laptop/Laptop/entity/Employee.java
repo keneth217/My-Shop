@@ -26,8 +26,5 @@ public class Employee {
     @ManyToOne
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
-
-
-
     // Getters and Setters
 }

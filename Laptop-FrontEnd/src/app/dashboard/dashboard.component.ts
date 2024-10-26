@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { NgIconComponent } from '@ng-icons/core';
 import { LoginComponent } from '../login/login.component';
 import { TokenService } from '../Services/token.service';
@@ -30,15 +30,32 @@ interface Link {
 export class DashboardComponent implements OnInit {
   isSidebarCollapsed = false;
   isUserDropdownOpen = false;
+  shopDetailsData: any; 
+  userDetailsData: any; 
   userRole: string = ''; // Initialize with an empty string to avoid issues
   links: Link[] = []; // Holds the active links based on role
 
-  constructor(private tokenService: TokenService) {}
+  constructor(private tokenService: TokenService,private router:Router) { }
 
   // Fetch the user role after initialization
   ngOnInit(): void {
     this.userRole = this.tokenService.getUserRole;
     this.links = this.getUserLinks(); // Set links based on the role
+    this.shopDetails();
+    this.userDetails();
+  }
+
+  logout(): void {
+    this.tokenService.removeToken();
+    this.router.navigateByUrl('/');
+    
+  }
+  shopDetails(): void{
+   this.shopDetailsData= this.tokenService.getShopDetails
+  }
+
+  userDetails(): void{
+    this.userDetailsData=this.tokenService.getUser
   }
 
   // Define the links for different roles
@@ -72,7 +89,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   // Cashier Links
-  cashierLinks: Link[] = [
+  adminLinks: Link[] = [
     { label: 'Analytics', icon: 'heroPlusCircle', route: '/dash' },
     { label: 'Product', icon: 'heroPlusCircle', route: '/dash/product' },
     { label: 'Supplier', icon: 'heroPercentBadge', route: '/dash/supplier' },
@@ -91,10 +108,11 @@ export class DashboardComponent implements OnInit {
   ];
 
   // Admin Links
-  adminLinks: Link[] = [
-    
+  cashierLinks: Link[] = [
+
     { label: 'Product', icon: 'heroPlusCircle', route: '/dash/product' },
-      {label: 'Reports',
+    {
+      label: 'Reports',
       icon: 'heroDocument',
       children: [
         { label: 'Sales', icon: 'heroSquares2x2', route: '/reports/daily' },

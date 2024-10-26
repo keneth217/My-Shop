@@ -42,11 +42,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr >
-          <td class="border border-slate-600 p-2">keneth</td>
-          <td class="border border-slate-600 p-2">072132324</td>
-          <td class="border border-slate-600 p-2 ">300,Nakuru</td>
-          <td class="border border-slate-600 p-2 ">Nakuru</td>
+        <tr *ngIf="suppliers.length === 0">
+          <td colspan="4" class="border border-slate-600 p-4 text-center">
+            No supplier found .
+          </td>
+        </tr>
+        <tr *ngFor="let supplier of suppliers">
+          <td class="border border-slate-600 p-2">{{supplier.supplierName}}</td>
+          <td class="border border-slate-600 p-2">{{supplier.supplierPhone}}</td>
+          <td class="border border-slate-600 p-2 ">{{supplier.supplierAddress}}</td>
+          <td class="border border-slate-600 p-2 ">{{supplier.supplierLocation}}</td>
           <td class="border border-slate-600 p-2">
   
             <div class="flex justify-around">

@@ -55,11 +55,28 @@ export class TokenService {
       console.warn('LocalStorage is not available');
     }
   }
-
   get getUser(): any {
     if (this.localStorageAvailable()) {
       const userData = localStorage.getItem('user');
       return userData ? JSON.parse(userData) : null;
+    } else {
+      console.warn('LocalStorage is not available');
+      return null;
+    }
+  }
+
+  set saveShop(shop: any) {
+    if (this.localStorageAvailable()) {
+      localStorage.setItem('shop', JSON.stringify(shop));
+    } else {
+      console.warn('LocalStorage is not available');
+    }
+  }
+
+  get getShopDetails(): any {
+    if (this.localStorageAvailable()) {
+      const shopData = localStorage.getItem('shop');
+      return shopData ? JSON.parse(shopData) : null;
     } else {
       console.warn('LocalStorage is not available');
       return null;
@@ -112,6 +129,7 @@ export class TokenService {
     if (this.localStorageAvailable()) {
       localStorage.removeItem('token');
       localStorage.removeItem('user')
+      localStorage.removeItem('shop')
     } else {
       console.warn('LocalStorage is not available');
     }

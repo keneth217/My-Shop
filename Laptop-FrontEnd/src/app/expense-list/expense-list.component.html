@@ -34,7 +34,7 @@
       <thead>
         <tr>
           <th class="border border-slate-600 text-left p-2">Expense Date</th>
-          <th class="border border-slate-600 text-left p-2">Amoun</th>
+          <th class="border border-slate-600 text-left p-2">Amount</th>
           <th class="border border-slate-600 text-left p-2">Description</th>
         
           <th class="border border-slate-600 text-left p-2">Action</th>
@@ -42,10 +42,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td class="border border-slate-600 p-2">2024-10-10</td>
-          <td class="border border-slate-600 p-2">10000</td>
-          <td class="border border-slate-600 p-2 text-left">Office renovation</td>
+
+        <tr *ngIf="expenses.length === 0">
+          <td colspan="4" class="border border-slate-600 p-4 text-center">
+            No expense found .
+          </td>
+        </tr>
+        <tr *ngFor="let expense of expenses">
+          <td class="border border-slate-600 p-2">{{expense.date}}</td>
+          <td class="border border-slate-600 p-2">{{expense.amount}}</td>
+          <td class="border border-slate-600 p-2 text-left">{{expense.description}}</td>
           
           <td class="border border-slate-600 p-2">
   

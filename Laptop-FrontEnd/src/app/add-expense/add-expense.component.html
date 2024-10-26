@@ -14,7 +14,7 @@
       <hr class="border-0 border-t border-green-400 mb-2">
     </div>
     <!-- <form [formGroup]="milkForm" (ngSubmit)="submitMilkData()"> -->
-    <form>
+    <form [formGroup]="expenseForm" (ngSubmit)="submitExpenseData()">
       <label for="date" class="block text-gray-700 font-bold">Expense date</label>
       <input id="date" type="date" formControlName="date" name="date" placeholder="Select Expense date"
         class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">

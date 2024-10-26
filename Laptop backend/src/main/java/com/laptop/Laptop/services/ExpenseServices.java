@@ -1,6 +1,8 @@
 package com.laptop.Laptop.services;
 
 import com.laptop.Laptop.entity.Expense;
+import com.laptop.Laptop.entity.Shop;
+import com.laptop.Laptop.entity.Supplier;
 import com.laptop.Laptop.entity.User;
 import com.laptop.Laptop.enums.ExpenseType;
 import com.laptop.Laptop.repository.ExpenseRepository;
@@ -22,6 +24,9 @@ public class ExpenseServices {
     private User getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal(); // Ensure User implements UserDetails
+    }
+    private Shop getUserShop() {
+        return getLoggedInUser().getShop();
     }
 
     /**
@@ -48,5 +53,10 @@ public class ExpenseServices {
         return expenseRepository.findByShopAndExpenseType(
                 loggedInUser.getShop(), expenseType.name()
         );
+    }
+
+    public List<Expense> getExpenseForShop() {
+        Shop shop = getUserShop();  // Get the logged-in user's shop
+        return expenseRepository.findByShop(shop);
     }
 }

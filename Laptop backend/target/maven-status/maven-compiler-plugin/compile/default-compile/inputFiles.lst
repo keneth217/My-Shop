@@ -30,11 +30,13 @@
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/Responses/ErrorResponseDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/Responses/JWTAuthenticationResponse.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/Responses/Responsedto.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/Responses/ShopResponse.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/Responses/UserResponse.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/SalaryDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/SaleRequest.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/ShopRegistrationRequestDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/SignInRequestDto.java
-/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/SignUpRequetDto.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/SignUpRequestDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/UserDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/UserUpdateRequestDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/entity/Cart.java

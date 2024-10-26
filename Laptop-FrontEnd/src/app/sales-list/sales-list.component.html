@@ -1,38 +1,67 @@
 <div class="container mx-auto relative my-6">
+  <h2 class="text-xl font-bold mb-4">Filter Sales</h2>
 
- 
-  
+  <div class=" mb-4 items-center justify-center">
+    <!-- Form to filter sales -->
+    <form
+      class="w-80 shadow-lg shadow-gray-200 rounded-sm outline-none border-green-400 p-4 m-4 bg-white"
+      (ngSubmit)="fetchSales()"
+    >
+      <label for="startDate" class="block text-gray-700 font-bold mb-2">Start Date</label>
+      <input
+        id="startDate"
+        type="date"
+        [(ngModel)]="startDate"
+        name="startDate"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+      />
+
+      <label for="endDate" class="block text-gray-700 font-bold mb-2">End Date</label>
+      <input
+        id="endDate"
+        type="date"
+        [(ngModel)]="endDate"
+        name="endDate"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+      />
+
+      <button type="submit" class="bg-green-500 text-white p-2 rounded-md w-full">
+        Fetch Sales
+      </button>
+    </form>
+
     <!-- Table displaying sales -->
     <table class="table-auto border-collapse border border-slate-500 w-full">
       <thead>
         <tr>
-          <th class="border border-slate-600 p-2">Product Image</th>
-          <th class="border border-slate-600 p-2">Name</th>
-          <th class="border border-slate-600 p-2">Stock</th>
-          <th class="border border-slate-600 p-2">New Balance</th>
+          <th class="border border-slate-600 p-2">Date</th>
+          <th class="border border-slate-600 p-2">Seller</th>
+          <th class="border border-slate-600 p-2">Total</th>
           <th class="border border-slate-600 p-2">Action</th>
-  
         </tr>
       </thead>
       <tbody>
+        <tr *ngIf="sales.length === 0">
+          <td colspan="4" class="border border-slate-600 p-4 text-center">
+            No sales found for the selected date range.
+          </td>
+        </tr>
         <tr *ngFor="let sale of sales">
-          <td class="border border-slate-600 p-2">product</td>
-          <td class="border border-slate-600 p-2">2</td>
-          <td class="border border-slate-600 p-2 text-right">3</td>
-          <td class="border border-slate-600 p-2 text-right">e</td>
+          <td class="border border-slate-600 p-2">{{ sale.date }}</td>
+          <td class="border border-slate-600 p-2">{{ sale.salesperson }}</td>
+          <td class="border border-slate-600 p-2 text-right">{{ sale.total }}</td>
           <td class="border border-slate-600 p-2">
-  
             <div class="flex justify-between">
-              <button type="submit" class="bg-green-400 text-white p-2 
-                rounded-md font-bold hover:bg-green-500">Stock</button>
-                <button type="submit" class="bg-red-400 text-white p-2 
-                rounded-md font-bold hover:bg-red-500">Cart</button>
+              <button class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
+                Receipt
+              </button>
+              <button class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500">
+                View
+              </button>
             </div>
           </td>
-  
         </tr>
       </tbody>
     </table>
-  
-  
   </div>
+</div>

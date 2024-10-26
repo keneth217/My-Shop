@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class JWTAuthenticationResponse {
-    private String message;
-    private String token;
-   private UserResponse user;
-   private ShopResponse shop;
+public class ShopResponse {
+    private String shopName;
+    private String shopAddress;
+    private String shopCode;
+    private String shopPhone;
+    private String shopLogo;
 }

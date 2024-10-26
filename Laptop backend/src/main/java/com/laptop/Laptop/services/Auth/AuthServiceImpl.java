@@ -2,6 +2,7 @@ package com.laptop.Laptop.services.Auth;
 
 import com.laptop.Laptop.dto.AuthenticationRequestDto;
 import com.laptop.Laptop.dto.Responses.JWTAuthenticationResponse;
+import com.laptop.Laptop.dto.Responses.ShopResponse;
 import com.laptop.Laptop.dto.Responses.UserResponse;
 import com.laptop.Laptop.dto.SignUpRequestDto;
 import com.laptop.Laptop.dto.UserUpdateRequestDto;
@@ -222,6 +223,12 @@ public class AuthServiceImpl implements  AuthService{
                         .shopCode(authenticationRequest.getShopCode())
                         .role( user.getRole().name())
                         .username(user.getUsername())
+                        .build())
+                .shop(ShopResponse.builder()
+                        .shopName(user.getShop().getShopName())
+                        .shopAddress(user.getShop().getAddress())
+                        .shopLogo(user.getShop().getLogo())
+                        .shopPhone(user.getShop().getPhoneNumber())
                         .build())
                 .build();
         return jwtAuthenticationResponse;

@@ -11,22 +11,15 @@
     <form [formGroup]="productForm" (ngSubmit)="submitProduct()">
       <!-- Product Images -->
       <label class="block text-gray-700 font-bold mb-2">Product Images</label>
-      <input 
-        type="file" 
-        (change)="onImageSelect($event)" 
-        multiple 
-        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-      >
+      <input type="file" (change)="onImageSelect($event)" multiple
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
 
       <!-- Image Preview Section -->
       <div *ngIf="selectedImages.length > 0" class="grid grid-cols-3 gap-2 mb-4">
         <div *ngFor="let img of selectedImages; let i = index" class="relative">
           <img [src]="img.preview" class="w-full h-24 object-cover rounded-md">
-          <button 
-            type="button" 
-            (click)="removeImage(i)" 
-            class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-          >
+          <button type="button" (click)="removeImage(i)"
+            class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">
             ✕
           </button>
         </div>
@@ -34,51 +27,42 @@
 
       <!-- Product Name -->
       <label for="name" class="block text-gray-700 font-bold mb-2">Product Name</label>
-      <input 
-        id="name" 
-        type="text" 
-        formControlName="name" 
-        placeholder="Enter name"
-        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-      >
+      <input id="name" type="text" formControlName="name" placeholder="Enter name"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
 
-      <!-- Features (Dynamic) -->
-      <label class="block text-gray-700 font-bold mb-2">Features</label>
-      <div formArrayName="features">
-        <div *ngFor="let feature of features.controls; let i = index" [formGroupName]="i" class="flex items-center mb-2">
-          <input 
-            formControlName="feature"  
-            placeholder="Enter feature"
-            class="border p-2 w-full mr-2 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-          >
-          <button 
-            type="button" 
-            (click)="removeFeature(i)" 
-            class="bg-red-400 text-white p-2 rounded-md hover:bg-red-500"
-          >
-            ✕
-          </button>
-        </div>
+      <!-- Add Feature Input -->
+      <label class="block text-gray-700 font-bold mb-2">Add a Feature</label>
+      <div class="flex items-center mb-4">
+        <input type="text" [formControl]="newFeature" placeholder="Enter feature"
+          class="border p-2 w-full mr-2 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+        <button type="button" (click)="addFeature()" [disabled]="newFeature.invalid || !newFeature.value?.trim()"
+          class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
+          Add
+        </button>
       </div>
 
-      <button 
-        type="button" 
-        (click)="addFeature()" 
-        class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500 mb-4"
-      >
-        Add Feature
-      </button>
+      <!-- Features List -->
+      <div *ngIf="features.length > 0" class="mb-4">
+        <h3 class="font-semibold text-gray-700">Added Features:</h3>
+        <ul class="space-y-2">
+          <li *ngFor="let featureControl of features.controls; let i = index" class="flex items-center">
+            <span class="w-full">{{ featureControl.get('featureName')?.value }}</span>
+            <button type="button" (click)="removeFeature(i)"
+              class="bg-red-400 text-white p-1 rounded-md hover:bg-red-500 ml-2">
+              ✕
+            </button>
+          </li>
+        </ul>
+      </div>
 
       <!-- Submit and Close Buttons -->
       <div class="flex justify-between">
-        <button type="submit" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
+        <button type="submit" [disabled]="productForm.invalid || features.length === 0"
+          class="bg-green-400 cursor-pointer text-white p-2 rounded-md font-bold hover:bg-green-500">
           Upload
         </button>
-        <button 
-          type="button" 
-          (click)="closePForm()" 
-          class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
-        >
+        <button type="button" (click)="closePForm()"
+          class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500">
           Close
         </button>
       </div>

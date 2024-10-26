@@ -49,18 +49,28 @@ export class LoginComponent implements OnInit {
   }
 
   submitLogin(): void {
-    if (this.loginForm.invalid) return;
-
+    // Check if the form is invalid
+    if (this.loginForm.invalid) {
+      this.toastService.warn('Fill all fields to log in');
+      return; // Exit if the form is invalid
+    }
+  
+    // Call the login method from AuthService
     this.authService.login(this.loginForm.value).subscribe(
       (response: any) => {
         if (response) {
-          // Store token and user details using setter
-        this.tokenService.saveToken = response.token;
-        this.tokenService.saveUser = response.user;
 
-          this.showSuccess(response.responseDto?.statusMessage || 'Login successful');
-          this.toastService.success('Login success');
-
+         
+          // Store token and user details using TokenService
+          this.tokenService.saveToken=response.token; // Save token
+          this.tokenService.saveUser=response.user;   // Save user details
+          this.tokenService.saveShop=response.shop;    // Save shop details
+  
+          // Determine success message based on response
+          const successMessage = response.responseDto?.statusMessage || 'Login successful';
+          this.showSuccess(successMessage);
+          this.toastService.success(successMessage); // Show success message only once
+  
           // Navigate based on user role after 2 seconds
           setTimeout(() => {
             const userRole = response.user.role;
@@ -82,17 +92,12 @@ export class LoginComponent implements OnInit {
       },
       (error: any) => {
         console.error('Login Error:', error);
-        this.showError(error.error?.errorMessage || 'Invalid login details');
-        this.toastService.error('Login failed');
+        const errorMessage = error.error?.errorMessage || 'Invalid login details';
+        this.showError(errorMessage);
+        this.toastService.error(errorMessage); // Show error message only once
       }
     );
   }
 
-  showSu(): void {
-    this.toastService.success('Operation successful!');
-  }
-
-  showEr(): void {
-    this.toastService.error('Operation failed!');
-  }
+ 
 }

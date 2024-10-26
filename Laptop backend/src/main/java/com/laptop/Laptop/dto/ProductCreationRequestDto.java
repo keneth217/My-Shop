@@ -20,7 +20,7 @@ private Long id;
     private double cost;
     private List<String> productFeatures;
     private List<String> productImagesList;
-    private List<MultipartFile> productImages;  // Cost price
+    private List<MultipartFile> productImages;  
     private int stock;
 
     @Data

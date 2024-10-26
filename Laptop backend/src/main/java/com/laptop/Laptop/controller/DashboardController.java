@@ -42,7 +42,7 @@ public class DashboardController {
     public User getLoggedInUserDetails() {
         return getLoggedInUser(); // Directly return the logged-in user
     }
-    @GetMapping("/dashboard")
+    @GetMapping
     public ResponseEntity<DashboardDTO> getDashboard(Pageable pageable) {
         DashboardDTO dashboardData = dashboardService.getDashboardData(pageable);
         return ResponseEntity.ok(dashboardData);

@@ -2,10 +2,7 @@ package com.laptop.Laptop.services;
 
 import com.laptop.Laptop.dto.PaymentResponseDto;
 import com.laptop.Laptop.dto.SalaryDto;
-import com.laptop.Laptop.entity.Employee;
-import com.laptop.Laptop.entity.Expense;
-import com.laptop.Laptop.entity.Payment;
-import com.laptop.Laptop.entity.User;
+import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.enums.ExpenseType;
 import com.laptop.Laptop.helper.AuthUser;
 import com.laptop.Laptop.repository.EmployeeRepository;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class EmployeeService {
@@ -30,18 +28,26 @@ public class EmployeeService {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    @Autowired
-    private AuthUser authUser;
 
+
+
+    // Utility method to get the logged-in user's details from the authentication token
+    private User getLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (User) authentication.getPrincipal(); // Ensure User implements UserDetails
+    }
+    private Shop getUserShop() {
+        return getLoggedInUser().getShop();
+    }
     @Transactional
     public Employee addEmployee(Employee employee) {
-        User loggedInUser = authUser.getLoggedInUserDetails();
+        User loggedInUser = getLoggedInUser();
         employee.setShop(loggedInUser.getShop());
         return employeeRepository.save(employee);
     }
     @Transactional
     public PaymentResponseDto payEmployee(Long employeeId, SalaryDto salary) {
-        User loggedInUser = authUser.getLoggedInUserDetails();
+        User loggedInUser = getLoggedInUser();
 
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new IllegalStateException("Employee not found"));
@@ -69,6 +75,13 @@ public class EmployeeService {
 
         return new PaymentResponseDto("Salary payment successful",
                 salary.getSalaryAmount(), employee.getName(), LocalDate.now());
+    }
+
+
+
+    public List<Employee> getExpenseForShop() {
+        Shop shop = getUserShop();  // Get the logged-in user's shop
+        return employeeRepository.findByShop(shop);
     }
 
 }

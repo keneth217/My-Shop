@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { 
+  FormBuilder, FormGroup, FormArray, Validators, FormControl, 
+  FormsModule, ReactiveFormsModule 
+} from '@angular/forms';
 import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { ProductsService } from '../Services/products.service';
-
 
 interface PreviewImage {
   file: File;
@@ -21,55 +23,71 @@ export class AddproductComponent {
   @Output() close = new EventEmitter<void>();
 
   productForm: FormGroup;
+  newFeature = new FormControl('', Validators.required); // New feature input
   selectedImages: PreviewImage[] = [];
+  maxImageSize = 10 * 1024 * 1024; // Maximum image size: 10 MB
 
   constructor(
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private toastService: ToastService,
-    private productsService: ProductsService // Inject service
+    private productsService: ProductsService
   ) {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
-      features: this.fb.array([this.createFeature()]) // Initialize with one feature input
+      productFeatures: this.fb.array([], Validators.required), // Ensure features array is required
     });
   }
 
-  // Getter for features FormArray
+  // Getter for the FormArray of features
   get features(): FormArray {
-    return this.productForm.get('features') as FormArray;
+    return this.productForm.get('productFeatures') as FormArray; // Changed 'features' to 'productFeatures'
   }
 
-  // Create a FormGroup for a new feature with additional properties
-  createFeature(): FormGroup {
+  // Create a new FormGroup for a feature
+  private createFeature(featureName: string): FormGroup {
     return this.fb.group({
-      featureName: ['', Validators.required],  // Name of the feature
-      featureDescription: ['', Validators.required]  // Description of the feature
+      featureName: [featureName, Validators.required]
     });
   }
 
   // Add a new feature to the array
   addFeature(): void {
-    this.features.push(this.createFeature());
+    // Check if newFeature is not null and has a valid value
+    if (this.newFeature && this.newFeature.valid && this.newFeature.value?.trim()) {
+      this.features.push(this.createFeature(this.newFeature.value.trim()));
+      this.newFeature.reset();
+    } else {
+      this.toastService.error('Feature cannot be empty.');
+    }
   }
 
   // Remove a feature from the array
   removeFeature(index: number): void {
-    this.features.removeAt(index);
+    if (this.features.length > 1) {
+      this.features.removeAt(index);
+    } else {
+      this.toastService.error('At least one feature is required.');
+    }
   }
 
   // Handle image selection and generate previews
   async onImageSelect(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
-    if (input.files) {
-      const files = Array.from(input.files);
+    if (input.files && input.files.length > 0) {
+      const files = Array.from(input.files).filter(file => file.size > 0);
       for (const file of files) {
+        // Check if the file size exceeds the limit
+        if (file.size > this.maxImageSize) {
+          this.toastService.error('Image size exceeds the limit of 10 MB.');
+          continue; // Skip adding this file to the preview
+        }
         const preview = await this.generateImagePreview(file);
         this.selectedImages.push({ file, preview });
       }
     }
   }
 
-  // Generate a preview URL for the selected image
+  // Generate a preview for an image
   private generateImagePreview(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -86,34 +104,36 @@ export class AddproductComponent {
 
   // Submit the product form using FormData
   submitProduct(): void {
-    if (this.productForm.valid) {
+    if (this.productForm.valid && this.features.length > 0) {
       const formData = new FormData();
       formData.append('name', this.productForm.get('name')?.value);
+
+      // Append productFeatures to FormData
       this.features.controls.forEach((control, index) => {
-        formData.append(`features[${index}][featureName]`, control.get('featureName')?.value);
-        formData.append(`features[${index}][featureDescription]`, control.get('featureDescription')?.value);
-      });
-      this.selectedImages.forEach((image, index) => {
-        formData.append('images', image.file);
+        formData.append(`productFeatures[${index}][featureName]`, control.get('featureName')?.value);
       });
 
-      // Call the service to submit the product
+      // Append productImages to FormData
+      this.selectedImages.forEach((image) => {
+        formData.append('productImages', image.file);
+      });
+
       this.productsService.addProduct(formData).subscribe({
         next: () => {
           this.toastService.success('Product uploaded successfully!');
-          this.closePForm(); // Close the form on successful submission
+          this.closePForm(); // Uncomment to close the form after successful submission
         },
         error: () => {
           this.toastService.error('Failed to upload product.');
         }
       });
     } else {
-      this.toastService.error('Please fill all required fields.');
+      this.toastService.error('Please fill all required fields and add at least one feature.');
     }
   }
 
   // Close the form
-  closePForm() {
+  closePForm(): void {
     this.close.emit();
   }
 }
