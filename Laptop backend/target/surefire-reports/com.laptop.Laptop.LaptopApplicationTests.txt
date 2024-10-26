@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.laptop.Laptop.LaptopApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 141.8 s -- in com.laptop.Laptop.LaptopApplicationTests
