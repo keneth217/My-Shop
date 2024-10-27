@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -85,7 +87,7 @@ public class BusinessServiceImpl implements BusinessService {
 
         // Log stock purchase as expense
         Expense expense = new Expense();
-        expense.setExpenseType(ExpenseType.STOCKPURCHASE.name());
+        expense.setType(ExpenseType.STOCKPURCHASE);
         expense.setAmount(stockPurchase.getTotalCost());
         expense.setDescription(product.getName() + " - Stock Purchase");
         expense.setDate(LocalDate.now());
@@ -172,9 +174,9 @@ public class BusinessServiceImpl implements BusinessService {
         return saleRepository.findAllByShopAndDateBetween(shop, startDate, endDate, pageable);
     }
 
-    public Page<Expense> getExpensesByType(ExpenseType expenseType, Pageable pageable) {
+    public Page<Expense> getExpensesByType(ExpenseType type, Pageable pageable) {
         Shop shop = getUserShop();  // Get the logged-in user's shop
-        return expenseRepository.findAllByShopAndExpenseType(shop, expenseType.name(), pageable);
+        return expenseRepository.findAllByType(shop, type, pageable);
     }
 
     public List<Sale> getSalesForShop(LocalDate startDate, LocalDate endDate) {
@@ -240,4 +242,5 @@ public class BusinessServiceImpl implements BusinessService {
         // Fetch top-selling products for this shop
         return productRepository.findTopSellingProductsByShop(shop.getId(), limitedPageable);
     }
+
 }
