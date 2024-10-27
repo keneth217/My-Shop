@@ -1,5 +1,6 @@
 package com.laptop.Laptop.entity;
 
+import com.laptop.Laptop.enums.ExpenseType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +17,9 @@ public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String expenseType;  // e.g., "Salary", "Stock Purchase", "Utilities"
+
+    @Enumerated(EnumType.STRING)
+    private ExpenseType type;  // e.g., "Salary", "Stock Purchase", "Utilities"
     private double amount;
     private String description;
     private LocalDate date;
