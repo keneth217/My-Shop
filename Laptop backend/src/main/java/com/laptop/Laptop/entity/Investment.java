@@ -31,8 +31,12 @@ public class Investment {
     private Shop shop;
 
     @ManyToOne
-    @JsonBackReference // Prevents recursion, indicates the back reference
+    @JoinColumn(name = "user_id")
     private User user;
+
+//    @ManyToOne
+//    @JsonBackReference // Prevents recursion, indicates the back reference
+//    private User user;
 
 
 
