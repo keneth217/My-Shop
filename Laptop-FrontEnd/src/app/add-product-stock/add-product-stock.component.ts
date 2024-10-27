@@ -29,7 +29,7 @@ export class AddProductStockComponent implements OnInit, OnChanges {
     private toastService: ToastService
   ) {
     this.stockForm = this.fb.group({
-      stock: ['', [Validators.required, Validators.min(1)]],
+      quantity: ['', [Validators.required, Validators.min(1)]],
       itemCost: ['', [Validators.required, Validators.min(0)]],
       supplier: ['', Validators.required],
     });
