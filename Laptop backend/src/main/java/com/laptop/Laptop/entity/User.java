@@ -15,31 +15,37 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-
 @Data
 @Builder
-@NoArgsConstructor  // Add this
-@AllArgsConstructor //
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "users")
 @Entity
 public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String firstName;
-    private  String lastName;
+    private String lastName;
     private String username;
     private String password;
     private String phone;
     private String shopCode;
+
+    @Enumerated(EnumType.STRING)
     private Roles role;
 
     @ManyToOne
-    @JoinColumn(name = "shop_id")
-    @JsonBackReference  // Add this annotation
-    private Shop shop;  // Prevents circular reference during serialization
+    @JoinColumn(name = "shop_id") // Ensure non-nullable FK
+    @JsonBackReference  // Prevent circular references during serialization
+    private Shop shop;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Investment> investments;
+//    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @JsonManagedReference  // To correctly serialize investments
+//    private List<Investment> investments;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
