@@ -1,6 +1,8 @@
 package com.laptop.Laptop.services;
 
+import com.laptop.Laptop.dto.Responses.CartResponse;
 import com.laptop.Laptop.entity.*;
+import com.laptop.Laptop.enums.CartStatus;
 import com.laptop.Laptop.exceptions.InsufficientStockException;
 import com.laptop.Laptop.exceptions.ProductNotFoundException;
 import com.laptop.Laptop.helper.AuthUser;
@@ -14,7 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class SalesServices {
     @Autowired
@@ -48,6 +53,7 @@ public class SalesServices {
                 .orElseGet(() -> {
                     Cart newCart = new Cart(loggedInUser);
                     newCart.setShop(loggedInUser.getShop());
+                    newCart.setStatus(CartStatus.IN_CART); // Set status to IN_CART
                     newCart.setShopCode(loggedInUser.getShop().getShopCode());
                     return newCart;
                 });
@@ -55,9 +61,12 @@ public class SalesServices {
         // Find the product by ID
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+        // Check if there's enough stock
         if (product.getStock() < quantity) {
             throw new InsufficientStockException("Insufficient stock for: " + product.getName());
         }
+
         // Check if the product is already in the cart
         CartItem cartItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(productId))
@@ -67,6 +76,7 @@ public class SalesServices {
                     newItem.setProduct(product);
                     newItem.setItemCosts(product.getCost());
                     newItem.setCart(cart);
+                    newItem.setStatus(CartStatus.IN_CART); // Set status to IN_CART
                     newItem.setShop(loggedInUser.getShop());
                     newItem.setShopCode(loggedInUser.getShop().getShopCode());
                     newItem.setUser(loggedInUser);
@@ -77,12 +87,17 @@ public class SalesServices {
         // Update the quantity of the cart item
         cartItem.setQuantity(cartItem.getQuantity() + quantity);
 
+        // Update the status of the cart and cart item to IN_CART
+        cart.setStatus(CartStatus.IN_CART);
+        cartItem.setStatus(CartStatus.IN_CART);
+
         // Recalculate the total cart value
         cart.recalculateTotal();
 
         // Save and return the updated cart
         return cartRepository.save(cart);
     }
+
     @Transactional
     public Sale checkoutCart(User user, String customerName, String customerPhone) throws IOException {
         User loggedInUser = getLoggedInUser();
@@ -110,10 +125,6 @@ public class SalesServices {
         for (CartItem cartItem : cart.getItems()) {
             Product product = cartItem.getProduct();
             int quantity = cartItem.getQuantity();
-
-            if (product.getStock() < quantity) {
-                throw new InsufficientStockException("Insufficient stock for: " + product.getName());
-            }
 
             // Update product stock and quantity sold
             product.setStock(product.getStock() - quantity);
@@ -153,22 +164,60 @@ public class SalesServices {
         // Generate the PDF receipt
         pdfReportServices.generateReceiptForSale(savedSale.getId());
 
-        // Clear the cart for the logged-in user and shop
-        // Clear the cart_item for the logged-in user and shop
-        cart.getItems().clear();
+        // Update the cart status to SOLD
+        cart.setStatus(CartStatus.SOLD);
+        cartRepository.save(cart); // Save the cart with updated status
 
-        cartRepository.save(cart);
+        // Update each cart item's status to SOLD
+        for (CartItem cartItem : cart.getItems()) {
+            cartItem.setStatus(CartStatus.SOLD); // Update each cart item status to SOLD
+        }
+        cartItemRepository.saveAll(cart.getItems()); // Save all updated cart items
 
         return savedSale;
     }
-
-    // Fetch cart items for the logged-in user specific to their shop
     @Transactional(readOnly = true)
-    public Cart getCartItems(User user) {
+    public List<Sale> getSalesForShop(User user) {
         User loggedInUser = getLoggedInUser();
 
-        // Ensure the cart returned is specific to the logged-in user's shop
-        return cartRepository.findByUserAndShop(user, loggedInUser.getShop())
-                .orElse(new Cart(loggedInUser));  // If no cart exists for the user, return an empty cart
+        // Retrieve sales based on user and shop
+        return saleRepository.findByUserAndShop(loggedInUser, loggedInUser.getShop());
     }
+
+    @Transactional(readOnly = true)
+    public CartResponse getCartItems(User user) {
+        User loggedInUser = getLoggedInUser();
+
+        // Find the cart for the logged-in user in the specific shop
+        Cart cart = cartRepository.findByUserAndShop(user, loggedInUser.getShop())
+                .orElse(new Cart(loggedInUser));  // Return an empty cart if none exists
+
+        // Filter items that are in the cart and calculate the total price
+        List<CartItem> itemsInCart = cart.getItems().stream()
+                .filter(item -> CartStatus.IN_CART.equals(item.getStatus())) // Filter items whose status is IN_CART
+                .collect(Collectors.toList());
+
+        double total = itemsInCart.stream()
+                .mapToDouble(item -> item.getItemCosts() * item.getQuantity()) // assuming itemCosts is the price per item
+                .sum();
+
+        // Return the list of cart items and the total price
+        return new CartResponse(itemsInCart, total);
+    }
+
+
+    @Transactional(readOnly = true)
+    public int getCartItemCount(User user) {
+        User loggedInUser = getLoggedInUser();
+
+        // Find the cart for the logged-in user in the specific shop
+        Cart cart = cartRepository.findByUserAndShop(user, loggedInUser.getShop())
+                .orElse(new Cart(loggedInUser));  // Return an empty cart if none exists
+
+        // Return the count of items in the cart whose status is IN_CART
+        return (int) cart.getItems().stream()
+                .filter(item -> CartStatus.IN_CART.equals(item.getStatus())) // Filter items whose status is IN_CART
+                .count();
+    }
+
 }
