@@ -1,6 +1,7 @@
 package com.laptop.Laptop.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.laptop.Laptop.enums.CartStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,8 @@ public class CartItem {
     private int quantity;
     private  String shopCode;
     private double itemCosts;
+    @Enumerated(EnumType.STRING)
+    private CartStatus status;
 
     @ManyToOne
     @JsonIgnore
