@@ -52,4 +52,10 @@ public class AuthenticationController {
     public ResponseEntity<JWTAuthenticationResponse> login(@RequestBody AuthenticationRequestDto authenticationRequest) {
         return ResponseEntity.ok(authService.createAuthToken(authenticationRequest));
     }
+
+
+    @PostMapping("/super/login")
+    public ResponseEntity<JWTAuthenticationResponse> loginSuper(@RequestBody SignInRequestDto login) {
+        return ResponseEntity.ok(authService.createSuperAuthToken(login));
+    }
 }
