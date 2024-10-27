@@ -26,6 +26,14 @@ export class ExpenseService {
     );
   }
 
+   // Fetch products from the API
+   getPExpensesTotals(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.apiUrl}/totals`,
+      { headers: this.createAuthorizationHeaders() }
+    );
+  }
+
    // Create authorization headers
    private createAuthorizationHeaders(): HttpHeaders {
     const token = this.tokenService.getToken;
