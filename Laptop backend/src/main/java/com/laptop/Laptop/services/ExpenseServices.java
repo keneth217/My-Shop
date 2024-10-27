@@ -12,7 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ExpenseServices {
@@ -25,6 +27,7 @@ public class ExpenseServices {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal(); // Ensure User implements UserDetails
     }
+
     private Shop getUserShop() {
         return getLoggedInUser().getShop();
     }
@@ -48,15 +51,29 @@ public class ExpenseServices {
     /**
      * Find expenses by type for the logged-in user's shop.
      */
-    public List<Expense> findExpensesByType(ExpenseType expenseType) {
+    public List<Expense> findExpensesByType(ExpenseType type ) {
         User loggedInUser = getLoggedInUser(); // Fetch user dynamically
-        return expenseRepository.findByShopAndExpenseType(
-                loggedInUser.getShop(), expenseType.name()
+        return expenseRepository.findByShopAndType(
+                loggedInUser.getShop(), type
         );
     }
 
     public List<Expense> getExpenseForShop() {
         Shop shop = getUserShop();  // Get the logged-in user's shop
         return expenseRepository.findByShop(shop);
+    }
+
+    public Map<ExpenseType, Double> getExpenseTotal() {
+        Map<ExpenseType, Double> expenseTotals = new HashMap<>();
+        Shop shop = getUserShop(); // Assuming you have a method to get the current user's shop
+
+        // Loop through the ExpenseType enum values
+        for (ExpenseType type : ExpenseType.values()) {
+            Double total = expenseRepository.sumAmountByTypeAndShop(type, shop);
+            // Handle null values
+            expenseTotals.put(type, (total != null) ? total : 0.0);
+        }
+
+        return expenseTotals;
     }
 }
