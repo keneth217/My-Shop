@@ -64,7 +64,7 @@ public class EmployeeService {
         paymentRepository.save(salaryPayment);
 
         Expense salaryExpense = Expense.builder()
-                .expenseType(ExpenseType.SALARY.name())
+                .type(ExpenseType.SALARY)
                 .amount(salary.getSalaryAmount())
                 .date(LocalDate.now())
                 .shopCode(loggedInUser.getShopCode())
