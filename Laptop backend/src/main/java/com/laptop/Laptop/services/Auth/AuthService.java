@@ -5,6 +5,7 @@ package com.laptop.Laptop.services.Auth;
 
 import com.laptop.Laptop.dto.AuthenticationRequestDto;
 import com.laptop.Laptop.dto.Responses.JWTAuthenticationResponse;
+import com.laptop.Laptop.dto.SignInRequestDto;
 import com.laptop.Laptop.dto.SignUpRequestDto;
 import com.laptop.Laptop.dto.UserUpdateRequestDto;
 
@@ -20,4 +21,5 @@ public interface AuthService {
 
 //    Boolean hasCustomerWithPhone(String phone);
    JWTAuthenticationResponse createAuthToken(@RequestBody AuthenticationRequestDto authenticationRequest);
+    public JWTAuthenticationResponse createSuperAuthToken(SignInRequestDto sign);
 }
