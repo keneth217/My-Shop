@@ -1,6 +1,8 @@
 package com.laptop.Laptop.controller;
 
+import com.laptop.Laptop.dto.Responses.CartResponse;
 import com.laptop.Laptop.entity.Cart;
+import com.laptop.Laptop.entity.CartItem;
 import com.laptop.Laptop.entity.Sale;
 import com.laptop.Laptop.entity.User;
 import com.laptop.Laptop.exceptions.ProductNotFoundException;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/sales")
@@ -50,11 +53,20 @@ public class SalesController {
         return ResponseEntity.status(HttpStatus.CREATED).body(sale);
     }
 
-    @GetMapping
-    public ResponseEntity<Cart> getCart() {
+    // Get the list of cart items and the total price for the logged-in user
+    @GetMapping("/items")
+    public ResponseEntity<CartResponse> getCartItems() {
         User loggedInUser = getLoggedInUser();
-        Cart cart = salesServices.getCartItems(loggedInUser);
-        return ResponseEntity.ok(cart);
+        CartResponse cartResponse = salesServices.getCartItems(loggedInUser);
+        return ResponseEntity.ok(cartResponse);
+    }
+
+    // Get list of sales for the logged-in user and shop
+    @GetMapping
+    public ResponseEntity<List<Sale>> getSalesForShop() {
+        User loggedInUser = getLoggedInUser();
+        List<Sale> sales = salesServices.getSalesForShop(loggedInUser);
+        return ResponseEntity.ok(sales);
     }
 
 
