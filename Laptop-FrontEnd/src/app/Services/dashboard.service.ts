@@ -22,6 +22,8 @@ export class DashboardService {
     );
   }
 
+  
+
   // Create authorization headers
   private createAuthorizationHeaders(): HttpHeaders {
     const token = this.tokenService.getToken;
