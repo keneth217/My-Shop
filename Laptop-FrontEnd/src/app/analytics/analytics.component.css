@@ -1,0 +1,8 @@
+
+@media (max-width: 640px) {
+    .h-64 {
+      height: 12rem; /* Reduce height for small screens */
+    }
+  }
+  
+  
