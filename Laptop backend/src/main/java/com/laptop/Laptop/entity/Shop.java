@@ -32,8 +32,9 @@ public class Shop {
     private String description;
     private LocalDate registrationDate;
     private LocalDate expiryDate;
+    @Enumerated(EnumType.STRING)
     private ShopStatus shopStatus;
-private String logo;
+    private String logo;
 
 
 
