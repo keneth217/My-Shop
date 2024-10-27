@@ -31,6 +31,13 @@ public class JwtUtils {
         return createToken(claims, username);
     }
 
+
+    public String generateSuperToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+
+        return createToken(claims, username);
+    }
+
     // Create a JWT token
     private String createToken(Map<String, Object> claims, String username) {
         return Jwts.builder()
