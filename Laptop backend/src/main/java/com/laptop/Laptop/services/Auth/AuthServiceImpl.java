@@ -4,6 +4,7 @@ import com.laptop.Laptop.dto.AuthenticationRequestDto;
 import com.laptop.Laptop.dto.Responses.JWTAuthenticationResponse;
 import com.laptop.Laptop.dto.Responses.ShopResponse;
 import com.laptop.Laptop.dto.Responses.UserResponse;
+import com.laptop.Laptop.dto.SignInRequestDto;
 import com.laptop.Laptop.dto.SignUpRequestDto;
 import com.laptop.Laptop.dto.UserUpdateRequestDto;
 import com.laptop.Laptop.entity.Employee;
@@ -19,6 +20,7 @@ import com.laptop.Laptop.repository.ShopRepository;
 import com.laptop.Laptop.repository.UserRepository;
 import com.laptop.Laptop.services.Jwt.UserService;
 import com.laptop.Laptop.util.JwtUtils;
+
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,7 @@ public class AuthServiceImpl implements  AuthService{
             newAdmin.setLastName("Admin");
             newAdmin.setPhone("0711766223");
             newAdmin.setUsername("superuser");
+
             newAdmin.setPassword(new BCryptPasswordEncoder().encode("admin"));
             newAdmin.setRole(Roles.SUPER_USER);  // Set the correct role
 
@@ -233,6 +236,57 @@ public class AuthServiceImpl implements  AuthService{
                 .build();
         return jwtAuthenticationResponse;
     }
+    public JWTAuthenticationResponse createSuperAuthToken(SignInRequestDto sign) {
+        System.out.println("Received authentication request: " + sign);
 
+        try {
+            // Fetch the user by username
+            User user = userRepository.findByUsername(sign.getUserName())
+                    .orElseThrow(() -> {
+                        System.out.println("Error: User not found for username: " + sign.getUserName());
+                        return new RuntimeException("User not found or not associated with the specified shop");
+                    });
+
+            System.out.println("Success: User found - " + user.getUsername());
+
+            // Validate the user's password
+            if (!passwordEncoder.matches(sign.getPassword(), user.getPassword())) {
+                System.out.println("Warning: Incorrect password for user: " + sign.getUserName());
+                throw new RuntimeException("Incorrect login credentials");
+            }
+
+            System.out.println("Success: Password matches for user - " + user.getUsername());
+
+            // Load user details for JWT generation
+            UserDetails userDetails = userService.userDetailsService().loadUserByUsername(sign.getUserName());
+            System.out.println("Success: User details loaded for - " + userDetails.getUsername());
+
+            // Generate the JWT token
+            final String jwt = jwtUtils.generateSuperToken(userDetails.getUsername());
+            System.out.println("Token generated: " + jwt);
+
+            // Build the JWT response
+            JWTAuthenticationResponse jwtAuthenticationResponse = JWTAuthenticationResponse.builder()
+                    .message("Login success")
+                    .token(jwt)
+                    .user(UserResponse.builder()
+                            .username(user.getUsername())
+                            .role(user.getRole().name())
+                            .shopId(null)  // Assuming no shop association here
+                            .shopCode(null) // Assuming no shop code provided
+                            .build())
+                    .shop(null)  // No specific shop info in this response
+                    .build();
+
+            return jwtAuthenticationResponse;
+
+        } catch (UsernameNotFoundException e) {
+            System.out.println("Error: User not found in userDetailsService: " + e.getMessage());
+            throw new UsernameNotFoundException("User not found, check login details", e);
+        } catch (Exception e) {
+            System.out.println("Error during authentication: " + e.getMessage());
+            throw new RuntimeException("Authentication failed", e);
+        }
+    }
 
 }
