@@ -41,12 +41,30 @@ export class ProductListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.fetchProducts(); // Call the fetchProducts method on component initialization
+    this.fetchCartItems();
+    this.fetchProducts(); 
+    // Call the fetchProducts method on component initialization
+    
   }
 
   fetchProducts(): void {
     this.loaderService.show();
     this.productService.getProducts().subscribe({
+      next: (data) => {
+        console.log(data)
+        this.products = data;
+        this.loaderService.hide();// Set the products from the API response
+      },
+      error: (error) => {
+        console.error('Error fetching products:', error);
+        this.loaderService.hide();
+      }
+    });
+  }
+
+  fetchCartItems(): void {
+    this.loaderService.show();
+    this.saleService.fetchCartItems().subscribe({
       next: (data) => {
         console.log(data)
         this.products = data;
