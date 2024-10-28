@@ -10,21 +10,25 @@ import { ProductsService } from '../Services/products.service';
 import { LoaderService } from '../Services/loader.service';
 import { LoaderComponent } from "../loader/loader.component";
 import { SalesService } from '../Services/sales.service';
+import { AddcartComponent } from "../addcart/addcart.component";
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [AngularToastifyModule, CommonModule, NgIconsModule, AddproductComponent, AddProductStockComponent, ViewSingleProductComponent, LoaderComponent],
+  imports: [AngularToastifyModule, CommonModule, NgIconsModule, AddproductComponent, AddProductStockComponent, ViewSingleProductComponent, LoaderComponent, AddcartComponent],
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css'] // Note the corrected property here
 })
 export class ProductListComponent implements OnInit {
+
+
   products: any[] = []; // Initialize as an empty array
   showAddProduct: boolean = false;
   showAStockProduct: boolean = false;
   showViewProduct: boolean = false;
   selectedProductId: number  = 0;
   selectedProductName: string | null = null;
+showCartForm:  boolean = false;
    // Store the selected product ID
 
   constructor(
@@ -74,25 +78,26 @@ export class ProductListComponent implements OnInit {
   closeViewProduct() {
     this.showViewProduct = false;
   }
-  openViewProduct() {
+  openViewProduct(productId: number) {
+
+    this.selectedProductId = productId; 
+ 
+    // Store the product ID
+    console.log('Selected Product ID:', productId);
     this.showViewProduct = true;
   }
 
-  addToCart(productId: number, quantity: number = 1): void {
-    if (!productId) {
-        this.toastService.error("Product ID is required.");
-        return;
+  openAddToCart(productId: number) {
+    this.selectedProductId = productId; 
+ 
+    // Store the product ID
+    console.log('Selected Product ID:', productId);
+    this.showCartForm=true;
     }
 
-    this.saleService.addCart(productId, quantity).subscribe({
-        next: (response) => {
-            this.toastService.success("Product added to cart successfully");
-            console.log(response); // For debugging
-        },
-        error: (error) => {
-            console.error("Error adding to cart:", error);
-            this.toastService.error("Failed to add product to cart");
-        }
-    });
-}
+    closeCart() {
+      this.showCartForm=false;
+      }
+
+ 
 }

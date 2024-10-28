@@ -38,8 +38,8 @@ public class SalesController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal(); // Ensure User implements UserDetails
     }
-    @PostMapping("/add")
-    public ResponseEntity<Cart> addToCart(@RequestParam Long productId, @RequestParam int quantity) {
+    @PostMapping("/add/{productId}")
+    public ResponseEntity<Cart> addToCart(@PathVariable Long productId, @RequestBody Cart quantity) {
         User loggedInUser = getLoggedInUser();
         // Implement this to get the logged-in user
         Cart cart = salesServices.addToCart(productId, quantity, loggedInUser);
