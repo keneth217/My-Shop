@@ -22,6 +22,7 @@ public class Cart {
     private Long id;
 
     private String shopCode;
+    private int quantity;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
