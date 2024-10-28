@@ -101,7 +101,7 @@ public class SalesServices {
     }
 
     @Transactional
-    public Sale checkoutCart(User user, String customerName, String customerPhone) throws IOException {
+    public Sale checkoutCart(User user, Sale customer) throws IOException {
         User loggedInUser = getLoggedInUser();
 
         // Find the user's cart associated with the current shop
@@ -117,8 +117,8 @@ public class SalesServices {
         sale.setSalePerson(loggedInUser.getUsername());
         sale.setUser(loggedInUser);
         sale.setShop(loggedInUser.getShop());
-        sale.setCustomerName(customerName);
-        sale.setCustomerPhone(customerPhone);
+        sale.setCustomerName(customer.getCustomerName());
+        sale.setCustomerPhone(customer.getCustomerPhone());
 
         // Save the sale to generate an ID
         Sale savedSale = saleRepository.save(sale);
@@ -215,7 +215,6 @@ public class SalesServices {
         // Find the cart for the logged-in user in the specific shop
         Cart cart = cartRepository.findByUserAndShop(user, loggedInUser.getShop())
                 .orElse(new Cart(loggedInUser));  // Return an empty cart if none exists
-
         // Return the count of items in the cart whose status is IN_CART
         return (int) cart.getItems().stream()
                 .filter(item -> CartStatus.IN_CART.equals(item.getStatus())) // Filter items whose status is IN_CART
