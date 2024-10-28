@@ -47,9 +47,9 @@ public class SalesController {
     }
 
     @PostMapping("/checkout")
-    public ResponseEntity<Sale> checkout(@RequestParam String customerName, @RequestParam String customerPhone) throws IOException {
+    public ResponseEntity<Sale> checkout(@RequestBody  Sale customer) throws IOException {
         User loggedInUser = getLoggedInUser();
-        Sale sale = salesServices.checkoutCart(loggedInUser, customerName, customerPhone);
+        Sale sale = salesServices.checkoutCart(loggedInUser,customer);
         return ResponseEntity.status(HttpStatus.CREATED).body(sale);
     }
 
