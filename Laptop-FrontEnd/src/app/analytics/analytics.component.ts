@@ -25,7 +25,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     STOCKPURCHASE: 0,
   };
 
-  private pieChart1: Chart<'pie', number[], string> | undefined;
+  private pieChart1: Chart<'bar', number[], string> | undefined;
   private pieChart2: Chart<'pie', number[], string> | undefined;
   private pieChart3: Chart<'pie', number[], string> | undefined; // Third chart
 
@@ -110,7 +110,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
       // Pie Chart 1: Sales, Net Profit, Gross Profit, Expenses
       this.pieChart1 = new Chart('pieChart1', {
-        type: 'pie',
+        type: 'bar',
         data: {
           labels: ['Sales', 'Net Profit', 'Gross Profit', 'Expenses'],
           datasets: [
@@ -123,7 +123,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-        } as ChartOptions<'pie'>,
+        } as ChartOptions<'bar'>,
       });
 
       // Pie Chart 2: Expense Types Distribution
