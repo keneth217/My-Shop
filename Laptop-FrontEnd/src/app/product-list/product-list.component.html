@@ -41,11 +41,22 @@
   <!-- Modal for view product form -->
   <div *ngIf="showViewProduct" class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
     <div class="bg-white p-6 rounded-lg shadow-lg relative">
-      <app-view-single-product (close)="closeViewProduct()"></app-view-single-product>
+      <app-view-single-product
+      [productId]="selectedProductId"
+       (close)="closeViewProduct()"></app-view-single-product>
     </div>
   </div>
 
-  <div class="shadow-sm rounded-sm bg-white p-4">
+  <!-- Modal for view product form -->
+  <div *ngIf="showCartForm" class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
+    <div class="bg-white p-6 rounded-lg shadow-lg relative">
+      <app-addcart
+      [productId]="selectedProductId"
+       (close)="closeCart()"></app-addcart>
+    </div>
+  </div>
+
+  <div class="  flex-1  shadow-sm rounded-sm bg-white p-4">
     <!-- Table displaying products -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <!-- Card layout for displaying products -->
@@ -56,13 +67,18 @@
         <p class="text-gray-600">Quantity Sold: {{ product.quantiytSold }}</p>
         <div class="flex justify-between mt-4">
           <button type="button" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500" (click)="openStockProduct(product.id,product.name)">Add Stock</button>
-          <button type="button" class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500" (click)="addToCart(product.id)">Cart</button>
-          <button type="button" class="bg-pink-400 text-white p-2 rounded-md font-bold hover:bg-pink-500" (click)="openViewProduct()">View</button>
+          <button type="button" class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500" (click)="openAddToCart(product.id)">Cart</button>
+          <button type="button" class="bg-pink-400 text-white p-2 rounded-md font-bold hover:bg-pink-500" (click)="openViewProduct(product.id)">View</button>
         </div>
       </div>
     </div>
-  
+    
   </div>
+
+  <div class="flex">
+    cart
+  </div>
+
   
 
   <lib-toastify-toast-container></lib-toastify-toast-container>
