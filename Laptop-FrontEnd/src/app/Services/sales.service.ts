@@ -25,14 +25,10 @@ export class SalesService {
   }
 
   addCart(productId: number, quantity: number): Observable<any[]> {
-    // Construct URL with query parameters
-    const params = new HttpParams()
-        .set('productId', productId.toString())
-        .set('quantity', quantity.toString());
-
-    return this.http.post<any[]>(`${this.baseUrl}/add`, {}, { // Send an empty body
+    const url = `${this.baseUrl}/add/${productId}`;
+    return this.http.post<any[]>(url,quantity,{ 
         headers: this.createAuthorizationHeaders(),
-        params: params
+       
     });
 }
 
