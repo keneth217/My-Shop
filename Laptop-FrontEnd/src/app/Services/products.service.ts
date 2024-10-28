@@ -24,8 +24,19 @@ export class ProductsService {
 
   // Fetch products from the API
   getProducts(): Observable<any[]> {
+
+    
     return this.http.get<any[]>(
       this.baseUrl,
+      { headers: this.createAuthorizationHeaders() }
+    );
+  }
+
+  // Fetch products from the API
+  getSingleProduct(productId:number): Observable<any[]> {
+
+    const url = `${this.baseUrl}/${productId}`;
+    return this.http.get<any[]>(url,
       { headers: this.createAuthorizationHeaders() }
     );
   }
