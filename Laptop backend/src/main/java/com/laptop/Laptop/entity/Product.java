@@ -1,11 +1,14 @@
 package com.laptop.Laptop.entity;
 
+import com.laptop.Laptop.audit.AuditAware;
+import com.laptop.Laptop.audit.AuditLogListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -13,7 +16,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Product {
+
+@EntityListeners(value = {AuditLogListener.class})
+public class Product implements Serializable, AuditAware {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,7 +38,7 @@ public class Product {
     private List<byte[]> productImages;  // Storing images as byte arrays
 
     @ManyToOne
-    @JoinColumn(name = "shop_id")
+    @JoinColumn(name = "shop_id",nullable = false)
     private Shop shop;  // Each product belongs to one shop
 
 
