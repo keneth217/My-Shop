@@ -22,32 +22,34 @@ import { AddcartComponent } from "../addcart/addcart.component";
 export class ProductListComponent implements OnInit {
 
 
+
   products: any[] = []; // Initialize as an empty array
   showAddProduct: boolean = false;
   showAStockProduct: boolean = false;
   showViewProduct: boolean = false;
-  selectedProductId: number  = 0;
+  selectedProductId: number = 0;
   selectedProductName: string | null = null;
-showCartForm:  boolean = false;
-   // Store the selected product ID
+  showCartForm: boolean = false;
+  cartsItems: any[] = [];
+  // Store the selected product ID
 
   constructor(
     private productService: ProductsService, // Inject the ProductService
     private toastService: ToastService,
-    private saleService:SalesService,
+    private saleService: SalesService,
     private loaderService: LoaderService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.fetchProducts(); // Call the fetchProducts method on component initialization
   }
 
   fetchProducts(): void {
-    this.loaderService.show(); 
+    this.loaderService.show();
     this.productService.getProducts().subscribe({
       next: (data) => {
         console.log(data)
-        this.products = data; 
+        this.products = data;
         this.loaderService.hide();// Set the products from the API response
       },
       error: (error) => {
@@ -57,9 +59,13 @@ showCartForm:  boolean = false;
     });
   }
 
-  openStockProduct(productId:number,productName:string) {
+  checkOut() {
+    throw new Error('Method not implemented.');
+    }
 
-    this.selectedProductId = productId; 
+  openStockProduct(productId: number, productName: string) {
+
+    this.selectedProductId = productId;
     this.selectedProductName = productName;
     // Store the product ID
     console.log('Selected Product ID:', productId);
@@ -80,24 +86,24 @@ showCartForm:  boolean = false;
   }
   openViewProduct(productId: number) {
 
-    this.selectedProductId = productId; 
- 
+    this.selectedProductId = productId;
+
     // Store the product ID
     console.log('Selected Product ID:', productId);
     this.showViewProduct = true;
   }
 
   openAddToCart(productId: number) {
-    this.selectedProductId = productId; 
- 
+    this.selectedProductId = productId;
+
     // Store the product ID
     console.log('Selected Product ID:', productId);
-    this.showCartForm=true;
-    }
+    this.showCartForm = true;
+  }
 
-    closeCart() {
-      this.showCartForm=false;
-      }
+  closeCart() {
+    this.showCartForm = false;
+  }
 
- 
+
 }
