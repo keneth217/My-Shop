@@ -21,6 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "users")
 @Entity
+//@EntityListeners(value = {AuditLogListener.class})
 public class User implements UserDetails {
 
     @Id
