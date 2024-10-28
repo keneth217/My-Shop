@@ -44,26 +44,28 @@ public class SalesServices {
         return (User) authentication.getPrincipal(); // Ensure User implements UserDetails
     }
     @Transactional
-    public Cart addToCart(Long productId, int quantity, User user) {
+    public Cart addToCart(Long productId, Cart quantity, User user) {
         // Ensure the provided user is the same as the logged-in user
         User loggedInUser = getLoggedInUser();
+
+        // Find the product by ID
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         // Find or create a new cart for the logged-in user
         Cart cart = cartRepository.findByUser(loggedInUser)
                 .orElseGet(() -> {
                     Cart newCart = new Cart(loggedInUser);
                     newCart.setShop(loggedInUser.getShop());
+                    newCart.setQuantity(quantity.getQuantity() +quantity.getQuantity());
+                    newCart.setTotalCart( quantity.getTotalCart() + product.getCost() * quantity.getQuantity());
                     newCart.setStatus(CartStatus.IN_CART); // Set status to IN_CART
                     newCart.setShopCode(loggedInUser.getShop().getShopCode());
                     return newCart;
                 });
 
-        // Find the product by ID
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
-
         // Check if there's enough stock
-        if (product.getStock() < quantity) {
+        if (product.getStock() < quantity.getQuantity()) {
             throw new InsufficientStockException("Insufficient stock for: " + product.getName());
         }
 
@@ -85,7 +87,7 @@ public class SalesServices {
                 });
 
         // Update the quantity of the cart item
-        cartItem.setQuantity(cartItem.getQuantity() + quantity);
+        cartItem.setQuantity(cartItem.getQuantity() + quantity.getQuantity());
 
         // Update the status of the cart and cart item to IN_CART
         cart.setStatus(CartStatus.IN_CART);
