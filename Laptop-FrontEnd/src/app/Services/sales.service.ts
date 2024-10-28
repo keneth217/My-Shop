@@ -10,7 +10,7 @@ export class SalesService {
   private apiUrl = 'http://localhost:9091/api/business';
   private baseUrl = 'http://localhost:9091/api/sales';
 
-  constructor(private http: HttpClient, private tokenService: TokenService) {}
+  constructor(private http: HttpClient, private tokenService: TokenService) { }
 
   // Fetch sales with optional date filters
   getSales(startDate?: string, endDate?: string): Observable<any[]> {
@@ -26,11 +26,27 @@ export class SalesService {
 
   addCart(productId: number, quantity: number): Observable<any[]> {
     const url = `${this.baseUrl}/add/${productId}`;
-    return this.http.post<any[]>(url,quantity,{ 
-        headers: this.createAuthorizationHeaders(),
-       
+    return this.http.post<any[]>(url, quantity, {
+      headers: this.createAuthorizationHeaders(),
+
     });
-}
+  }
+
+  checkOut(customerData:any): Observable<any[]> {
+    const url = `${this.baseUrl}/checkout`;
+    return this.http.post<any[]>(url, customerData, {
+      headers: this.createAuthorizationHeaders(),
+
+    });
+  }
+
+  fetchCartItems(): Observable<any[]> {
+    const url = `${this.baseUrl}/items`;
+    return this.http.get<any[]>(url, {
+      headers: this.createAuthorizationHeaders(),
+
+    });
+  }
 
   // Create a stock purchase with productId, supplierId, and StockPurchase data
   createSale(productId: number, supplierId: number, stockPurchase: any): Observable<any> {
