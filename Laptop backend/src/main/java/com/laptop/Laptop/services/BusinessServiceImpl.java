@@ -70,17 +70,21 @@ public class BusinessServiceImpl implements BusinessService {
 
         // Update product stock and cost
         product.setCost(stockPurchase.getItemCost());
+        //product.setStock(stockPurchase.getQuantity());
         product.setStock(product.getStock() + stockPurchase.getQuantity());
         product.setPrice(product.getStock() * stockPurchase.getItemCost());
 
         productRepository.save(product);
 
+
+        double stockCost=stockPurchase.getQuantity() * stockPurchase.getItemCost();
         // Set stock purchase details
-        stockPurchase.setTotalCost(stockPurchase.getQuantity() * stockPurchase.getItemCost());
+        stockPurchase.setTotalCost(stockCost);
         stockPurchase.setProduct(product);
         stockPurchase.setSupplier(supplier);
         stockPurchase.setPurchaseDate(LocalDate.now());
         stockPurchase.setUser(loggedInUser);
+        stockPurchase.setShopCode(loggedInUser.getShopCode());
         stockPurchase.setShop(userShop);
 
         stockPurchaseRepository.save(stockPurchase);
@@ -88,11 +92,12 @@ public class BusinessServiceImpl implements BusinessService {
         // Log stock purchase as expense
         Expense expense = new Expense();
         expense.setType(ExpenseType.STOCKPURCHASE);
-        expense.setAmount(stockPurchase.getTotalCost());
+        expense.setAmount(stockCost);
         expense.setDescription(product.getName() + " - Stock Purchase");
         expense.setDate(LocalDate.now());
         expense.setUser(loggedInUser);
         expense.setShop(userShop);
+        expense.setShopCode(loggedInUser.getShopCode());
 
         expenseRepository.save(expense);
         return stockPurchase;
