@@ -1,58 +1,61 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { ToastService } from 'angular-toastify';
 import { LoaderService } from '../Services/loader.service';
 import { ProductsService } from '../Services/products.service';
 import { SalesService } from '../Services/sales.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-view-single-product',
   standalone: true,
-  imports: [],
+  imports:[CommonModule],
   templateUrl: './view-single-product.component.html',
-  styleUrl: './view-single-product.component.css'
+  styleUrls: ['./view-single-product.component.css']
 })
-export class ViewSingleProductComponent {
+export class ViewSingleProductComponent implements OnInit {
+  @Input() productId!: number; // Product ID input to fetch product details
+  @Output() close = new EventEmitter<void>(); // Close event emitter
 
-  @Input() productId!: number;
-  product: any[] = [];
-  @Output() close = new EventEmitter<void>();
+  product: any = {}; // Store the fetched product details
+
   constructor(
-    private productService: ProductsService, // Inject the ProductService
+    private productService: ProductsService,
     private toastService: ToastService,
     private saleService: SalesService,
-    private loaderService: LoaderService,
-
-  ) { }
+    private loaderService: LoaderService
+  ) {}
 
   ngOnInit(): void {
-    this.fetchSingleProduct(); // Call the fetchProducts method on component initialization
+    this.fetchSingleProduct(); // Fetch product details on component initialization
   }
-
 
   fetchSingleProduct(): void {
     this.loaderService.show();
     this.productService.getSingleProduct(this.productId).subscribe({
       next: (data) => {
-        console.log(data)
-        this.product = data;
-        this.loaderService.hide();// Set the products from the API response
+        console.log(data);
+        this.product = data; // Set the product details from the API response
+        this.loaderService.hide();
       },
       error: (error) => {
         console.error('Error fetching product:', error);
+        this.toastService.error('Failed to fetch product details.');
         this.loaderService.hide();
       }
     });
   }
 
-  updateProduct() {
-    throw new Error('Method not implemented.');
-    }
-    deleteProduct() {
-    throw new Error('Method not implemented.');
-    }
-
-  closeViewForm() {
-    this.close.emit();
+  updateProduct(): void {
+    // Implement the logic to update the product
+    console.log('Updating product...');
   }
 
+  deleteProduct(): void {
+    // Implement the logic to delete the product
+    console.log('Deleting product...');
+  }
+
+  closeViewForm(): void {
+    this.close.emit(); // Emit the close event to the parent component
+  }
 }
