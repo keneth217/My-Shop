@@ -4,6 +4,7 @@ import com.laptop.Laptop.constants.ProductConstants;
 import com.laptop.Laptop.dto.ProductCreationRequestDto;
 import com.laptop.Laptop.dto.Responses.Responsedto;
 import com.laptop.Laptop.entity.Product;
+import com.laptop.Laptop.exceptions.ImageProcessingException;
 import com.laptop.Laptop.services.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ public class ProductController {
 
     // Add Product Endpoint
     @PostMapping("/add")
-    public ResponseEntity<Responsedto> addProduct(@ModelAttribute ProductCreationRequestDto request, HttpServletRequest httpRequest) {
+    public ResponseEntity<Responsedto> addProduct(@ModelAttribute ProductCreationRequestDto request, HttpServletRequest httpRequest) throws ImageProcessingException {
         Long shopId = (Long) httpRequest.getAttribute("shopId");
         Product newProduct = productService.addProductToShop(shopId, request);
 
@@ -64,6 +65,8 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ResponseEntity<ProductCreationRequestDto> getProductById(@PathVariable Long productId) {
         ProductCreationRequestDto product = productService.getProductById(productId);
+
+        logger.info("Response type: {}", product.getClass());
 
         if (product == null) {
             logger.warn("Product with ID {} not found", productId);
