@@ -8,11 +8,21 @@ import { tap } from 'rxjs/operators';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:9091/api/v1/auth/login'; // Replace with your API endpoint
-
+  private superUrl = 'http://localhost:9091/api/v1/auth/super/login'; // Replace with your API endpoint
   constructor(private http: HttpClient) {}
 
   login(credentials: { shopCode:string,userName: string; password: string }): Observable<any> {
     return this.http.post<any>(this.apiUrl, credentials).pipe(
+      tap((response) => {
+        // Store token and user info in localStorage
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+      })
+    );
+  }
+
+  superLogin(credentials: {userName: string; password: string }): Observable<any> {
+    return this.http.post<any>(this.superUrl, credentials).pipe(
       tap((response) => {
         // Store token and user info in localStorage
         localStorage.setItem('token', response.token);
