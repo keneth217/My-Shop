@@ -11,11 +11,14 @@ import { LoaderService } from '../Services/loader.service';
 import { LoaderComponent } from "../loader/loader.component";
 import { SalesService } from '../Services/sales.service';
 import { AddcartComponent } from "../addcart/addcart.component";
+import { CartResponse } from '../model/cartResponse';
+import { CheckoutComponent } from "../checkout/checkout.component";
+
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [AngularToastifyModule, CommonModule, NgIconsModule, AddproductComponent, AddProductStockComponent, ViewSingleProductComponent, LoaderComponent, AddcartComponent],
+  imports: [AngularToastifyModule, CommonModule, NgIconsModule, AddproductComponent, AddProductStockComponent, ViewSingleProductComponent, LoaderComponent, AddcartComponent, CheckoutComponent],
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css'] // Note the corrected property here
 })
@@ -23,6 +26,16 @@ export class ProductListComponent implements OnInit {
 
 
 
+  cartItems: {
+    id: number;
+    itemCosts: number;
+    productName: string | null;
+    quantity: number;
+    shopCode: string;
+    status: string;
+  }[] = [];  // Initialize as an empty array
+
+  totalInCart: number = 0; // Initialize to 0
   products: any[] = []; // Initialize as an empty array
   showAddProduct: boolean = false;
   showAStockProduct: boolean = false;
@@ -30,7 +43,10 @@ export class ProductListComponent implements OnInit {
   selectedProductId: number = 0;
   selectedProductName: string | null = null;
   showCartForm: boolean = false;
-  cartsItems: any[] = [];
+  showCheckOutForm: boolean = false;
+  selectedTotalCart: number = 0;
+
+
   // Store the selected product ID
 
   constructor(
@@ -42,9 +58,9 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchCartItems();
-    this.fetchProducts(); 
+    this.fetchProducts();
     // Call the fetchProducts method on component initialization
-    
+
   }
 
   fetchProducts(): void {
@@ -65,10 +81,11 @@ export class ProductListComponent implements OnInit {
   fetchCartItems(): void {
     this.loaderService.show();
     this.saleService.fetchCartItems().subscribe({
-      next: (data) => {
-        console.log(data)
-        this.products = data;
-        this.loaderService.hide();// Set the products from the API response
+      next: (data: CartResponse) => {  // Use the CartResponse type here
+        console.log(data);
+        this.cartItems = data.items || [];  // Properly access 'items'
+        this.totalInCart = data.total || 0; // Properly access 'total'
+        this.loaderService.hide();
       },
       error: (error) => {
         console.error('Error fetching products:', error);
@@ -79,7 +96,7 @@ export class ProductListComponent implements OnInit {
 
   checkOut() {
     throw new Error('Method not implemented.');
-    }
+  }
 
   openStockProduct(productId: number, productName: string) {
 
@@ -117,6 +134,17 @@ export class ProductListComponent implements OnInit {
     // Store the product ID
     console.log('Selected Product ID:', productId);
     this.showCartForm = true;
+  }
+
+
+  openCheckOut(totalInCart: number) {
+    this.selectedTotalCart = totalInCart;
+    console.log(totalInCart)
+    this.showCheckOutForm = true;
+  }
+
+  closeCheckOut() {
+    this.showCheckOutForm = false;
   }
 
   closeCart() {
