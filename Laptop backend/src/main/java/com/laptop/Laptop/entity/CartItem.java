@@ -28,6 +28,8 @@ public class CartItem {
     private Product product;
 
     private int quantity;
+    private String productName;
+
     private  String shopCode;
     private double itemCosts;
     @Enumerated(EnumType.STRING)
