@@ -73,6 +73,19 @@
 
   <!-- Modal for view product form -->
   <div
+    *ngIf="showCheckOutForm"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-lg relative">
+      <app-checkout
+        [totalInCart]="selectedTotalCart"
+        (close)="closeCheckOut()"
+      ></app-checkout>
+    </div>
+  </div>
+
+  <!-- Modal for view product form -->
+  <div
     *ngIf="showCartForm"
     class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
   >
@@ -87,7 +100,7 @@
   <div class="flex flex-1">
     <!-- Table displaying products -->
     <div
-      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 shadow-sm rounded-sm bg-white p-4"
+      class="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 shadow-sm rounded-sm bg-white p-4"
     >
       <!-- Card layout for displaying products -->
       <div
@@ -129,51 +142,68 @@
       </div>
     </div>
 
-    <div class="shadow-sm rounded-sm bg-white ml-2 p-4">
+    <!-- Cart Table -->
+    <div class="w-full lg:w-1/3 shadow-sm rounded-sm bg-white ml-2 p-4">
       <table class="table-auto border-collapse border border-slate-500 w-full">
         <thead>
           <tr>
-            <th class="border border-slate-600 p-2">product</th>
-            <th class="border border-slate-600 p-2">quantity</th>
-            <th class="border border-slate-600 p-2">itemCost</th>
-            <th class="border border-slate-600 p-2">item total</th>
+            <th class="border border-slate-600 p-2">Product</th>
+            <th class="border border-slate-600 p-2">Quantity</th>
+            <th class="border border-slate-600 p-2">Item Cost</th>
+            <th class="border border-slate-600 p-2">Item Total</th>
             <th class="border border-slate-600 p-2">Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngIf="cartsItems.length === 0">
-            <td colspan="4" class="border border-slate-600 p-4 text-center">
+          <tr *ngIf="cartItems.length === 0">
+            <td colspan="5" class="border border-slate-600 p-4 text-center">
               No items in cart.
             </td>
           </tr>
-          <tr *ngFor="let cart of cartsItems">
-            <td class="border border-slate-600 p-2">{{ cart.name }}</td>
+          <tr *ngFor="let cart of cartItems">
+            <td class="border border-slate-600 p-2">{{ cart.productName }}</td>
             <td class="border border-slate-600 p-2">{{ cart.quantity }}</td>
             <td class="border border-slate-600 p-2 text-right">
-              {{ cart.itemcoats }}
+              {{ cart.itemCosts }}
             </td>
             <td class="border border-slate-600 p-2 text-right">
-              {{ cart.total }}
+              {{ cart.itemCosts * cart.quantity }}
             </td>
-            <td class="border border-slate-600 p-2 text-right">total</td>
+            <!-- Assuming this is how you want to calculate item total -->
             <td class="border border-slate-600 p-2">
               <div class="flex justify-between">
                 <button
                   class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
                 >
-                  delete
+                  Delete
                 </button>
               </div>
             </td>
+          </tr>
+
+          <!-- Total Row -->
+          <tr>
+            <td
+              colspan="3"
+              class="border border-slate-600 p-2 text-right font-bold"
+            >
+              Total:
+            </td>
+            <td class="border border-slate-600 p-2 text-right font-bold">
+              {{ totalInCart }}
+            </td>
+            <!-- Function to calculate total -->
+            <td class="border border-slate-600 p-2"></td>
+            <!-- Empty cell for action column -->
           </tr>
         </tbody>
       </table>
       <div class="flex mt-10 justify-center">
         <button
           class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
-          (click)="checkOut()"
+          (click)="openCheckOut(totalInCart)"
         >
-          checkout
+          Checkout
         </button>
       </div>
     </div>
