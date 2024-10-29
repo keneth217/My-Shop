@@ -78,6 +78,7 @@ public class SalesServices {
                     newItem.setProduct(product);
                     newItem.setItemCosts(product.getCost());
                     newItem.setCart(cart);
+                    newItem.setProductName(product.getName());
                     newItem.setStatus(CartStatus.IN_CART); // Set status to IN_CART
                     newItem.setShop(loggedInUser.getShop());
                     newItem.setShopCode(loggedInUser.getShop().getShopCode());
