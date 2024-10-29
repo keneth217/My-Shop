@@ -34,8 +34,10 @@
     <table class="table-auto border-collapse border border-slate-500 w-full">
       <thead>
         <tr>
-          <th class="border border-slate-600 p-2">Date</th>
+          <th class="border border-slate-600 p-2">Transction Date</th>
           <th class="border border-slate-600 p-2">Seller</th>
+          <th class="border border-slate-600 p-2">Customer Name</th>
+          <th class="border border-slate-600 p-2">Customer Phone</th>
           <th class="border border-slate-600 p-2">Total</th>
           <th class="border border-slate-600 p-2">Action</th>
         </tr>
@@ -48,8 +50,10 @@
         </tr>
         <tr *ngFor="let sale of sales">
           <td class="border border-slate-600 p-2">{{ sale.date }}</td>
-          <td class="border border-slate-600 p-2">{{ sale.salesperson }}</td>
-          <td class="border border-slate-600 p-2 text-right">{{ sale.total }}</td>
+          <td class="border border-slate-600 p-2">{{ sale.salePerson }}</td>
+          <td class="border border-slate-600 p-2">{{ sale.customerName }}</td>
+          <td class="border border-slate-600 p-2">{{ sale.customerPhone }}</td>
+          <td class="border border-slate-600 p-2 text-right">{{ sale.totalPrice }}</td>
           <td class="border border-slate-600 p-2">
             <div class="flex justify-between">
               <button class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
