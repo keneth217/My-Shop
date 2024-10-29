@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TokenService } from './token.service';
+import { TopProductsResponse } from '../model/top.model';
 
 
 @Injectable({
@@ -10,6 +11,7 @@ import { TokenService } from './token.service';
 export class ProductsService {
 
   private baseUrl = 'http://localhost:9091/api/admin/products';
+  private topUrl='http://localhost:9091/api/business/top-products';
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
@@ -25,7 +27,7 @@ export class ProductsService {
   // Fetch products from the API
   getProducts(): Observable<any[]> {
 
-    
+
     return this.http.get<any[]>(
       this.baseUrl,
       { headers: this.createAuthorizationHeaders() }
@@ -33,7 +35,17 @@ export class ProductsService {
   }
 
   // Fetch products from the API
-  getSingleProduct(productId:number): Observable<any[]> {
+  getTopProducts(): Observable<TopProductsResponse> {
+
+
+    return this.http.get<TopProductsResponse>(
+      this.topUrl,
+      { headers: this.createAuthorizationHeaders() }
+    );
+  }
+
+  // Fetch products from the API
+  getSingleProduct(productId: number): Observable<any[]> {
 
     const url = `${this.baseUrl}/${productId}`;
     return this.http.get<any[]>(url,
