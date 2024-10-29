@@ -8,11 +8,16 @@ import { EmployeeListComponent } from './employee-list/employee-list.component';
 import { SalesListComponent } from './sales-list/sales-list.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { ExpenseListComponent } from './expense-list/expense-list.component';
+import { SuperLoginComponent } from './super-login/super-login.component';
+import { SuperDashboardComponent } from './super-dashboard/super-dashboard.component';
+import { ShoplistsComponent } from './shoplists/shoplists.component';
+import { SuperAnalyticsComponent } from './super-analytics/super-analytics.component';
 
 export const routes: Routes = [
 
     { path: "", redirectTo: "login", pathMatch: "full" },
     { path: 'login', title: 'Login Page', component: LoginComponent },
+    { path: 'super', title: 'Super Page', component: SuperLoginComponent },
     {
         path: 'dash', title: 'DashBoard', component: DashboardComponent,
         children: [
@@ -22,6 +27,16 @@ export const routes: Routes = [
             { path: 'employee', component: EmployeeListComponent },
             { path: 'sale', component: SalesListComponent },
             { path: 'expense', component: ExpenseListComponent },
+        ],
+    },
+
+
+    {
+        path: 'admin', title: 'DashBoard', component: SuperDashboardComponent,
+        children: [
+            { path: '', component: SuperAnalyticsComponent },
+            { path: 'shops', component: ShoplistsComponent },
+        
         ],
     },
     { path: '**', component: PageNotFoundComponent }
