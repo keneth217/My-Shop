@@ -1,5 +1,6 @@
 package com.laptop.Laptop.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laptop.Laptop.audit.AuditAware;
 import com.laptop.Laptop.audit.AuditLogListener;
 import jakarta.persistence.*;
@@ -19,6 +20,8 @@ import java.util.List;
 
 @EntityListeners(value = {AuditLogListener.class})
 public class Product implements Serializable, AuditAware {
+//public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,10 +41,12 @@ public class Product implements Serializable, AuditAware {
     private List<byte[]> productImages;  // Storing images as byte arrays
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "shop_id",nullable = false)
     private Shop shop;  // Each product belongs to one shop
 
 
     @OneToMany(mappedBy = "product")
+    @JsonIgnore
     private List<StockPurchase> stockPurchases;
 }
