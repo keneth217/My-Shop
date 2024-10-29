@@ -1,12 +1,17 @@
 package com.laptop.Laptop.services;
 
+import com.laptop.Laptop.controller.ProductController;
 import com.laptop.Laptop.dto.ProductCreationRequestDto;
 import com.laptop.Laptop.entity.Product;
 import com.laptop.Laptop.entity.Shop;
 import com.laptop.Laptop.entity.User;
+import com.laptop.Laptop.exceptions.ImageProcessingException;
 import com.laptop.Laptop.repository.ProductRepository;
 import com.laptop.Laptop.repository.ShopRepository;
 import com.laptop.Laptop.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,6 +26,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 public class ProductService {
     @Autowired
@@ -31,8 +37,8 @@ public class ProductService {
 
     @Autowired
     private ShopRepository shopRepository;
-
-    @Cacheable("products")
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
+    @Cacheable(value = "productsByShop", key = "#shopId")
     public List<ProductCreationRequestDto> getProductsForShop(Long shopId) {
         List<Product> products = productRepository.findByShopId(shopId);
 
@@ -53,8 +59,9 @@ public class ProductService {
         }).collect(Collectors.toList());
     }
 
+    @Transactional
     @CacheEvict(value = "products", allEntries = true)
-    public Product addProductToShop(Long shopId, ProductCreationRequestDto request) {
+    public Product addProductToShop(Long shopId, ProductCreationRequestDto request) throws ImageProcessingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -64,13 +71,18 @@ public class ProductService {
         userRepository.findByUsernameAndShopId(username, shopId)
                 .orElseThrow(() -> new IllegalStateException("User not associated with this shop"));
 
+        // Validate the product request
+        if (request.getName() == null || request.getName().isEmpty()) {
+            throw new IllegalArgumentException("Product name is required");
+        }
+
         List<byte[]> productImages = new ArrayList<>();
         if (request.getProductImages() != null) {
             for (MultipartFile file : request.getProductImages()) {
                 try {
                     productImages.add(file.getBytes());
                 } catch (IOException e) {
-                    throw new RuntimeException("Error processing uploaded image files", e);
+                    throw new ImageProcessingException("Error processing uploaded image files", e);
                 }
             }
         }
@@ -86,13 +98,17 @@ public class ProductService {
                 .shop(shop)
                 .build();
 
+        logger.info("User {} is adding a new product: {}", username, product);
+
         return productRepository.save(product);
     }
 
-    @Cacheable(value = "products", key = "#productId")
+    @Cacheable(value = "products", key = "'product:' + #productId")
     public ProductCreationRequestDto getProductById(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalStateException("Product not found"));
+
+        logger.info("Retrieved product: {}", product);
 
         ProductCreationRequestDto dto = new ProductCreationRequestDto();
         dto.setId(product.getId());
