@@ -1,63 +1,119 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
-    <!-- Card 1: Total Milk -->
-    <div class="bg-white shadow-md rounded-lg p-4 outline-none border-x-4 border-green-400">
-        <h3 class="text-lg font-bold">Total Products</h3>
-        <p class="text-gray-600">{{analytics?.totalProducts}}</p>
-    </div>
-    <!-- Card 2: Prepayments -->
-    <div class="bg-white shadow-md rounded-lg p-4 outline-none border-x-4 border-green-400">
-        <h3 class="text-lg font-bold">Sales</h3>
-        <p class="text-gray-600">{{analytics?.totalSales}}</p>
-    </div>
-    <!-- Card 2: Prepayments -->
-    <div class="bg-white shadow-md rounded-lg p-4 outline-none border-x-4 border-green-400">
-        <h3 class="text-lg font-bold">Gross Profit</h3>
-        <p class="text-gray-600">{{analytics?.grossProfit}}</p>
-    </div>
+<div
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4"
+>
+  <!-- Card 1: Total Milk -->
+  <div
+    class="bg-white shadow-md rounded-lg p-4 outline-none border-x-4 border-green-400"
+  >
+    <h3 class="text-lg font-bold">Total Products</h3>
+    <p class="text-gray-600">{{ analytics?.totalProducts }}</p>
+  </div>
+  <!-- Card 2: Prepayments -->
+  <div
+    class="bg-white shadow-md rounded-lg p-4 outline-none border-x-4 border-green-400"
+  >
+    <h3 class="text-lg font-bold">Sales</h3>
+    <p class="text-gray-600">{{ analytics?.totalSales }}</p>
+  </div>
+  <!-- Card 2: Prepayments -->
+  <div
+    class="bg-white shadow-md rounded-lg p-4 outline-none border-x-4 border-green-400"
+  >
+    <h3 class="text-lg font-bold">Gross Profit</h3>
+    <p class="text-gray-600">{{ analytics?.grossProfit }}</p>
+  </div>
 
-
-    <div class="bg-white shadow-md rounded-lg p-4 outline-none border-x-4 border-green-400">
-        <h3 class="text-lg font-bold">Net Profit</h3>
-        <p class="text-gray-600">{{analytics?.netProfit}}</p>
-    </div>
-
+  <div
+    class="bg-white shadow-md rounded-lg p-4 outline-none border-x-4 border-green-400"
+  >
+    <h3 class="text-lg font-bold">Net Profit</h3>
+    <p class="text-gray-600">{{ analytics?.netProfit }}</p>
+  </div>
 </div>
 
 <!-- Chart Section -->
 <div class="container mx-auto mt-6 px-4">
-    <div class="flex flex-col lg:flex-row flex-wrap gap-6 p-5 shadow-md bg-white rounded-lg">
-
-        <!-- Pie Chart 1: Sales, Net, and Gross Profit -->
-        <div class="flex-1 min-w-[300px] p-5 shadow-md rounded-md flex flex-col items-center">
-            <p class="text-teal-500 text-xl underline font-semibold mb-4 text-center">
-                Sales, Net, and Gross Profit
-            </p>
-            <div class="w-full h-64">
-                <canvas id="pieChart1" class="w-full h-full"></canvas>
-            </div>
-        </div>
-
-        <!-- Pie Chart 2: Totals (Employees and Products) -->
-        <div class="flex-1 min-w-[300px] p-5 shadow-md rounded-md flex flex-col items-center">
-            <p class="text-teal-500 text-xl underline font-semibold mb-4 text-center">Totals</p>
-            <div class="w-full h-64">
-                <canvas id="pieChart3" class="w-full h-full"></canvas>
-            </div>
-        </div>
-
-        <!-- Pie Chart 3: Expense Totals -->
-        <div class="flex-1 min-w-[300px] p-5 shadow-md rounded-md flex flex-col items-center">
-            <p class="text-teal-500 text-xl font-semibold mb-4 text-center">Expense Totals</p>
-            <div class="w-full h-64">
-                <canvas id="pieChart2" class="w-full h-full"></canvas>
-            </div>
-        </div>
-
+  <div
+    class="flex flex-col lg:flex-row flex-wrap gap-6 p-5 shadow-md bg-white rounded-lg"
+  >
+    <!-- Pie Chart 1: Sales, Net, and Gross Profit -->
+    <div
+      class="flex-1 min-w-[300px] p-5 shadow-md rounded-md flex flex-col items-center"
+    >
+      <p class="text-teal-500 text-xl underline font-semibold mb-4 text-center">
+        Sales, Net, and Gross Profit
+      </p>
+      <div class="w-full h-64">
+        <canvas id="pieChart1" class="w-full h-full"></canvas>
+      </div>
     </div>
+
+    <!-- Pie Chart 2: Totals (Employees and Products) -->
+    <div
+      class="flex-1 min-w-[300px] p-5 shadow-md rounded-md flex flex-col items-center"
+    >
+      <p class="text-teal-500 text-xl underline font-semibold mb-4 text-center">
+        Totals
+      </p>
+      <div class="w-full h-64">
+        <canvas id="pieChart3" class="w-full h-full"></canvas>
+      </div>
+    </div>
+
+    <!-- Pie Chart 3: Expense Totals -->
+    <div
+      class="flex-1 min-w-[300px] p-5 shadow-md rounded-md flex flex-col items-center"
+    >
+      <p class="text-teal-500 text-xl font-semibold mb-4 text-center">
+        Expense Totals
+      </p>
+      <div class="w-full h-64">
+        <canvas id="pieChart2" class="w-full h-full"></canvas>
+      </div>
+    </div>
+  </div>
 </div>
+<div class="container mx-auto mt-6 px-4">
+  <div class="w-full justify-center  p-4">
+    <p class="text-2xl font-bold text-green-500">Top  Selling Products</p>
+  </div>
+  <!-- Table displaying payments -->
+  <table class="table-auto border-collapse border border-slate-500 w-full">
+    <thead>
+      <tr>
+        <th class="border border-slate-600 p-2">Name</th>
 
+        <th class="border border-slate-600 p-2">cost</th>
+        <th class="border border-slate-600 p-2">stock</th>
+        <th class="border border-slate-600 p-2">quantity sold</th>
+        <th class="border border-slate-600 p-2">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="toProducts.length === 0">
+        <td colspan="4" class="border border-slate-600 p-4 text-center">
+          No product found .
+        </td>
+      </tr>
 
+      <tr *ngFor="let top of toProducts">
+        <td class="border border-slate-600 p-2">{{ top.name }}</td>
+        <td class="border border-slate-600 p-2">{{ top.cost }}</td>
+        <td class="border border-slate-600 p-2">{{ top.stock }}</td>
+        <td class="border border-slate-600 p-2">{{ top.quantitySold }}</td>
 
-
-
-
+        <td class="border border-slate-600 p-2">
+          <div class="flex justify-around">
+        
+            <button
+              type="submit"
+              class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+            >
+              Delete
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
