@@ -2,6 +2,21 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TokenService } from './token.service';
+import { SalesResponse } from '../model/sales.model';
+
+
+interface CartResponse {
+  items: Array<{
+    id: number;
+    itemCosts: number;
+    productName: string | null;
+    quantity: number;
+    shopCode: string;
+    status: string;
+  }>;
+  total: number;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +28,12 @@ export class SalesService {
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
   // Fetch sales with optional date filters
-  getSales(startDate?: string, endDate?: string): Observable<any[]> {
+  getSales(startDate?: string, endDate?: string): Observable<SalesResponse> {
     let params: any = {};
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
 
-    return this.http.get<any[]>(`${this.apiUrl}/sales`, {
+    return this.http.get<SalesResponse>(`${this.apiUrl}/sales`, {
       headers: this.createAuthorizationHeaders(),
       params,
     });
@@ -40,9 +55,9 @@ export class SalesService {
     });
   }
 
-  fetchCartItems(): Observable<any[]> {
+  fetchCartItems(): Observable<CartResponse> {
     const url = `${this.baseUrl}/items`;
-    return this.http.get<any[]>(url, {
+    return this.http.get<CartResponse>(url, {
       headers: this.createAuthorizationHeaders(),
 
     });
