@@ -107,21 +107,24 @@ export class AddproductComponent {
     if (this.productForm.valid && this.features.length > 0) {
       const formData = new FormData();
       formData.append('name', this.productForm.get('name')?.value);
-
-      // Append productFeatures to FormData
-      this.features.controls.forEach((control, index) => {
-        formData.append(`productFeatures[${index}][featureName]`, control.get('featureName')?.value);
-      });
-
+  
+      // Create an array of feature objects
+      const featuresArray = this.features.controls.map(control => ({
+        featureName: control.get('featureName')?.value
+      }));
+  
+      // Append productFeatures as a JSON string (proper format)
+      formData.append('productFeatures', JSON.stringify(featuresArray));
+  
       // Append productImages to FormData
       this.selectedImages.forEach((image) => {
         formData.append('productImages', image.file);
       });
-
+  
       this.productsService.addProduct(formData).subscribe({
         next: () => {
           this.toastService.success('Product uploaded successfully!');
-          this.closePForm(); // Uncomment to close the form after successful submission
+          this.closePForm(); // Close form after successful submission
         },
         error: () => {
           this.toastService.error('Failed to upload product.');
