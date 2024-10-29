@@ -1,26 +1,23 @@
 package com.laptop.Laptop.dto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
+@Setter
+@Getter
+@AllArgsConstructor
 @NoArgsConstructor
 public class AuditTrailDTO {
-
     private String className;
     private String persistedObjectId;
     private String eventName;
     private String propertyName;
     private String oldValue;
     private String newValue;
+    private String modifiedBy;         // User responsible for the change
+    private String computerName;       // Hostname of the system
+    private String computerAddress;    // IP address of the system
 
-    public AuditTrailDTO(String className, String persistedObjectId, String eventName, String propertyName, String oldValue, String newValue) {
-        this.className = className;
-        this.persistedObjectId = persistedObjectId;
-        this.eventName = eventName;
-        this.propertyName = propertyName;
-        this.oldValue = oldValue;
-        this.newValue = newValue;
+    public AuditTrailDTO(String canonicalName, String string, String name, String propertyName, String aNull, String aNull1) {
     }
-
 }
