@@ -37,6 +37,7 @@ public class WebSecurityConfiguration {
                       //  .requestMatchers("api/shops/").hasAnyAuthority(Roles.SUPER_USER.name())
                         .requestMatchers("api/admin/").hasAnyAuthority(Roles.ADMIN.name())
                         .requestMatchers("api/customer/").hasAnyAuthority(Roles.CASHIER.name())
+                        .requestMatchers("api/shops/").hasAnyAuthority(Roles.SUPER_USER.name())
                         .anyRequest().authenticated())
                 .sessionManagement(manager->manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
@@ -50,7 +51,6 @@ public class WebSecurityConfiguration {
             "/v3/api-docs/**",
             "/v3/api-docs.yaml",
             "/swagger-ui/**",
-            "api/shops/**",
             "api/logs",
             "api/metrics",
             "/swagger-ui.html"
