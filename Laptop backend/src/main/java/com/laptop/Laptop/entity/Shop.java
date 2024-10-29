@@ -1,5 +1,6 @@
 package com.laptop.Laptop.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.laptop.Laptop.enums.ShopStatus;
@@ -39,8 +40,8 @@ public class Shop {
 
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    //@JsonIgnore
-    @JsonManagedReference  // Add this annotation
+    @JsonBackReference
+
     private List<User> users = new ArrayList<>(); // Initialize the list here
 
     // Other shop details like address, phone number, etc.
