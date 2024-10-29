@@ -4,6 +4,9 @@ import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { LoaderService } from '../Services/loader.service';
 import { ExpenseService } from '../Services/expense.service';
 import { Chart, ChartOptions, registerables } from 'chart.js';
+import { ProductsService } from '../Services/products.service';
+import { CommonModule } from '@angular/common';
+import { TopProductsResponse } from '../model/top.model';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -11,12 +14,14 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [AngularToastifyModule],
+  imports: [AngularToastifyModule,CommonModule],
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.css'],
 })
 export class AnalyticsComponent implements OnInit, OnDestroy {
   analytics: any;
+
+  toProducts: any[] = [];
   expenses: any[] = [];
 
   ExpenseTotals: { [key: string]: number } = {
@@ -32,13 +37,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   constructor(
     private dashboardService: DashboardService,
     private toastService: ToastService,
+    private productsService:ProductsService,
     private expenseService: ExpenseService,
     private loaderService: LoaderService
   ) {}
 
   ngOnInit(): void {
     this.loaderService.show();
-    Promise.all([this.fetchAnalytics(), this.fetchExpenseTotals()]).finally(() =>
+    Promise.all([this.fetchAnalytics(),this.fetchTopProducts(), this.fetchExpenseTotals()]).finally(() =>
       this.loaderService.hide()
     );
   }
@@ -47,6 +53,24 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     if (this.pieChart1) this.pieChart1.destroy();
     if (this.pieChart2) this.pieChart2.destroy();
     if (this.pieChart3) this.pieChart3.destroy(); // Destroy third chart
+  }
+
+  fetchTopProducts(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.productsService.getTopProducts().subscribe({
+        next: (data:TopProductsResponse) => {
+          console.log(data);
+          this.toProducts = data.content;
+      
+          resolve();
+        },
+        error: (error) => {
+          console.error('Error fetching analytics:', error);
+          this.toastService.error('Failed to load analytics data.');
+          reject(error);
+        },
+      });
+    });
   }
 
   fetchAnalytics(): Promise<void> {
@@ -156,7 +180,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           datasets: [
             {
               data: [totalEmployees,totalUsers, totalProducts],
-              backgroundColor: ['#36A2EB', '#FF6384','#FF6384'],
+              backgroundColor: ['#36A2EB', '#1549F4','#FF6384'],
             },
           ],
         },
