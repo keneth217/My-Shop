@@ -34,7 +34,7 @@ fetchSuppliers(): void {
       console.log(data)
     },
     error: (error) => {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching SUPPLIERS:', error);
     }
   });
 }
