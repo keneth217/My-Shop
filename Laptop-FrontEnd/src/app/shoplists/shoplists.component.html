@@ -1,0 +1,81 @@
+<div class="container mx-auto relative my-6">
+
+    <div class="text-white my-4 flex justify-between items-center">
+      <!-- Button for adding product -->
+      <button (click)="openAddShop()"
+        class="bg-green-400 p-2 rounded-md text-2xl flex items-center justify-center font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
+        type="button">
+        <span><ng-icon name="heroPlusCircle" class="mr-3 text-2xl"></ng-icon></span>New shop
+      </button>
+  
+      <!-- Buttons for PDF and Excel, aligned to the far end -->
+      <div class="flex space-x-2">
+        <button
+          class="bg-green-400 p-2 rounded-md text-white font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
+          type="button">PDF</button>
+  
+      </div>
+    </div>
+    <!-- Modal for Add Expense form -->
+    <div *ngIf="showAddShop"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
+      <div class="bg-white p-6 rounded-lg shadow-lg relative">
+        <app-super-add-shop (close)="closeAddShop()"></app-super-add-shop>
+  
+      </div>
+    </div>
+  <div class="shadow-sm rounded-sm bg-white p-4">
+    <!-- Table displaying payments -->
+    <table class="table-auto border-collapse border  border-slate-500 w-full">
+      <thead>
+        <tr>
+          <th class="border border-slate-600 text-left p-2">Name</th>
+          <th class="border border-slate-600 text-left p-2">Owner</th>
+          <th class="border border-slate-600 text-left p-2">Phone</th>
+          <th class="border border-slate-600 text-left p-2">Shop Code</th>
+          <th class="border border-slate-600 text-left p-2">Registration date</th>
+          <th class="border border-slate-600 text-left p-2">Expiry date</th>
+          <th class="border border-slate-600 text-left p-2">Status</th>
+       
+          <th class="border border-slate-600 text-left p-2">Action</th>
+  
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr *ngIf="shops.length === 0">
+          <td colspan="4" class="border border-slate-600 p-4 text-center">
+            No shop found .
+          </td>
+        </tr>
+        <tr *ngFor="let shop of shops">
+          <td class="border border-slate-600 p-2">{{shop.shopName}}</td>
+          <td class="border border-slate-600 p-2">{{shop.owner}}</td>
+          <td class="border border-slate-600 p-2">{{shop.phoneNumber}}</td>
+          <td class="border border-slate-600 p-2">{{shop.shopCode}}</td>
+          <td class="border border-slate-600 p-2">{{shop.registrationDate}}</td>
+          <td class="border border-slate-600 p-2">{{shop.expiryDate}}</td>
+       
+          <td class="border border-slate-600 p-2">{{shop.shopStatus}}</td>
+          <td class="border border-slate-600 p-2 text-left">{{shop.description}}</td>
+          
+          <td class="border border-slate-600 p-2">
+  
+            <div class="flex justify-between">
+            
+                <button type="submit" class="bg-red-400 text-white p-2 
+                rounded-md font-bold hover:bg-red-500">Activate</button>
+                <button type="submit" class="bg-red-400 text-white p-2 
+                rounded-md font-bold hover:bg-red-500">De-activate</button>
+                
+            </div>
+          </td>
+  
+        </tr>
+      </tbody>
+    </table>
+  </div>
+    <lib-toastify-toast-container></lib-toastify-toast-container>
+  
+  
+  </div>
