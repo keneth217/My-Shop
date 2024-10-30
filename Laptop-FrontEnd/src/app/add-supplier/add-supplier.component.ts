@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [AngularToastifyModule, NgIconsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './add-supplier.component.html',
-  styleUrl: './add-supplier.component.css'
+  styleUrls: ['./add-supplier.component.css'] // Corrected typo
 })
 export class AddSupplierComponent {
 
@@ -22,6 +22,7 @@ export class AddSupplierComponent {
     private supplierService: SupplierService,
     private toastService: ToastService
   ) {
+    // Initialize the form with validators
     this.supplierForm = this.fb.group({
       supplierName: ['', Validators.required],
       supplierPhone: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
@@ -30,21 +31,20 @@ export class AddSupplierComponent {
     });
   }
 
-  closeEForm() {
-    this.close.emit();
-  }
-
-  submitSupplierData() {
+  /**
+   * Submits supplier data if the form is valid.
+   */
+  submitSupplierData(): void {
     if (this.supplierForm.valid) {
-      const supplierData = this.supplierForm.value;
-
-
+      const supplierData = { ...this.supplierForm.value };
+  
       this.supplierService.addSupplier(supplierData).subscribe(
         (response) => {
-          console.log(response)
           this.toastService.success('Supplier registered successfully!');
           this.supplierForm.reset();
-          //this.closeEForm();
+          this.supplierForm.markAsPristine();
+          this.supplierForm.markAsUntouched();
+          this.closeForm();
         },
         (error) => {
           this.toastService.error('Failed to register supplier!');
@@ -52,15 +52,15 @@ export class AddSupplierComponent {
         }
       );
     } else {
+      this.supplierForm.markAllAsTouched();
       this.toastService.warn('Please fill in all required fields!');
     }
   }
-  closeForm() {
+
+  /**
+   * Closes the form by emitting the close event.
+   */
+  closeForm(): void {
     this.close.emit();
   }
-
-
-
-
-
 }
