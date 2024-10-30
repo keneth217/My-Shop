@@ -8,6 +8,7 @@ import com.laptop.Laptop.repository.SupplierRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -39,20 +40,27 @@ public class SupplierService {
 
     public Supplier addSupplier(Supplier supplier) {
         User loggedInUser = getLoggedInUser();
-        logger.info("Adding supplier for user: {}", loggedInUser.getId());
 
         if (loggedInUser == null) {
             throw new IllegalArgumentException("User is not logged in.");
         }
 
+        if (loggedInUser.getShop() == null || loggedInUser.getShopCode() == null) {
+            throw new IllegalArgumentException("User does not have a valid shop or shop code.");
+        }
+
         supplier.setShop(loggedInUser.getShop());
         supplier.setShopCode(loggedInUser.getShopCode());
 
-        Supplier savedSupplier = supplierRepository.save(supplier);
-        logger.info("Supplier added successfully: {}", savedSupplier.getId());
-        return savedSupplier;
+        try {
+            Supplier savedSupplier = supplierRepository.save(supplier);
+            logger.info("Supplier added successfully: {}", savedSupplier.getId());
+            return savedSupplier;
+        } catch (DataIntegrityViolationException e) {
+            logger.error("Error saving supplier: {}", e.getMessage());
+            throw new RuntimeException("Error saving supplier: " + e.getMessage());
+        }
     }
-
 
     public List<Supplier> getSuppliersForShop() {
         Shop shop = getUserShop();  // Get the logged-in user's shop
