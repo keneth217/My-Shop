@@ -41,6 +41,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements  AuthService{
     private final UserRepository userRepository;
+
     private  final EmployeeRepository employeeRepository;
     private final AuthenticationManager authenticationManager;
     private final ShopRepository shopRepository;
@@ -249,6 +250,15 @@ public class AuthServiceImpl implements  AuthService{
 
             System.out.println("Success: User found - " + user.getUsername());
 
+            // Check if the user is associated with a shop
+            Shop shop = user.getShop(); // Assuming user has a reference to shop
+            if (shop != null) {
+                System.out.println("Error: User associated with a shop. Login not allowed.");
+                throw new RuntimeException("You are not allowed to log in to this site");
+            }
+
+            System.out.println("No shop associated with the user. Proceeding with login.");
+
             // Validate the user's password
             if (!passwordEncoder.matches(sign.getPassword(), user.getPassword())) {
                 System.out.println("Warning: Incorrect password for user: " + sign.getUserName());
@@ -272,10 +282,10 @@ public class AuthServiceImpl implements  AuthService{
                     .user(UserResponse.builder()
                             .username(user.getUsername())
                             .role(user.getRole().name())
-                            .shopId(null)  // Assuming no shop association here
-                            .shopCode(null) // Assuming no shop code provided
+                            .shopId(null)  // No shop info since login only allowed if shop is null
+                            .shopCode(null)
                             .build())
-                    .shop(null)  // No specific shop info in this response
+                    .shop(null)  // No shop details in response
                     .build();
 
             return jwtAuthenticationResponse;
