@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angula
 import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { SalesService } from '../Services/sales.service';
 import { CommonModule } from '@angular/common';
+import confetti from 'canvas-confetti'; // Import canvas-confetti
 
 @Component({
   selector: 'app-checkout',
@@ -25,7 +26,6 @@ export class CheckoutComponent {
   ) {
     // Initialize the checkout form
     this.checkOutForm = this.fb.group({
-
       customerName: ['', Validators.required],
       customerPhone: ['', Validators.required],
       customerAddress: ['', Validators.required],
@@ -33,10 +33,17 @@ export class CheckoutComponent {
   }
 
   ngOnInit(): void {
-    this.totalInCart;
-    console.log("total in cart" + this.totalInCart)
+    console.log("Total in cart: " + this.totalInCart);
   }
 
+  // Method to trigger confetti
+  private launchConfetti() {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+  }
 
   CompleteSale() {
     if (this.checkOutForm.valid) {
@@ -46,6 +53,7 @@ export class CheckoutComponent {
         (response) => {
           console.log(response);
           this.toastService.success('Sale completed successfully!');
+          this.launchConfetti(); // Trigger confetti on success
           this.checkOutForm.reset();
           this.closeForm(); // Emit close event after successful sale
         },
