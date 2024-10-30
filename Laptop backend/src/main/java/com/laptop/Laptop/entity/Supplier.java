@@ -25,10 +25,12 @@ public class Supplier {
     private String supplierLocation;
     private String shopCode;
 
-    @OneToMany(mappedBy = "supplier")
-    private List<StockPurchase> stockPurchases;
+//    @OneToMany(mappedBy = "supplier")
+//    @JsonManagedReference
+//    private List<StockPurchase> stockPurchases;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
