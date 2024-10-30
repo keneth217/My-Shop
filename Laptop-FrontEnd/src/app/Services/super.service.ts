@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CartResponse } from '../model/cartResponse';
 import { TokenService } from './token.service';
+import { ShopData } from '../model/shop.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +17,9 @@ export class SuperService {
 
 
 
-  addShop(shopdata:any): Observable<any[]> {
-    const url = `${this.baseUrl}/add/`;
-    return this.http.post<any[]>(url, shopdata, {
+  addShop(shopdata:ShopData): Observable<ShopData> {
+    const url = `${this.baseUrl}/register`;
+    return this.http.post<ShopData>(url, shopdata, {
       headers: this.createAuthorizationHeaders(),
 
     });
