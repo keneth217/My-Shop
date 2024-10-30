@@ -1,43 +1,78 @@
+<div class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full outline-none border-green-400 border-2">
+    <lib-toastify-toast-container></lib-toastify-toast-container>
 
-<div class="fixed inset-0 flex items-center justify-center ">
-  <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm 
-  w-full outline-none border-green-400 border-2">
+    <div class="flex justify-center mb-2">
+      <h2 class="text-xl font-bold text-green-500">Add New Supplier</h2>
+    </div>
 
+    <hr class="border-0 border-t border-green-400 mb-4">
 
-    <div>
-      <lib-toastify-toast-container></lib-toastify-toast-container>
-    </div>
-    <div class="flex justify-center mb-2 ">
-      <h2 class="text-xl font-bold text-green-500 ">Add New Supplier</h2>
-   
-    </div>
-    <div class="text-green mb-3">
-      <hr class="border-0 border-t border-green-400 mb-2">
-    </div>
-    <!-- <form [formGroup]="milkForm" (ngSubmit)="submitMilkData()"> -->
     <form [formGroup]="supplierForm" (ngSubmit)="submitSupplierData()">
-      <label for="name" class="block text-gray-700 font-bold">Suppplier Name</label>
-      <input id="name" type="text" formControlName="supplierName" name="supplierName" placeholder="Enter Suppplier NAme"
-        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
-      <label for="phone" class="block text-gray-700 font-bold">Supplier phone</label>
-      <input id="phone" type="text" formControlName="supplierPhone" name="supplierPhone" placeholder="Enter phone"
-        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
-
-      <label for="address" class="block text-gray-700 font-bold">Suppplier Address</label>
-      <input id="address" type="text" formControlName="supplierAddress" name="supplierAddress" placeholder="Enter address"
-        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
-        <label for="location" class="block text-gray-700 font-bold">Suppplier Location</label>
-        <input id="location" type="text" formControlName="supplierLocation" name="supplierLocation" placeholder="Enter location"
-          class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
-  
-      <div class="flex justify-between">
-        <button type="submit" class="bg-green-400 text-white p-2 
-          rounded-md font-bold hover:bg-green-500">Add</button>
-          <button type="button" (click)="closeForm()" class="bg-red-400 text-white p-2 
-          rounded-md font-bold hover:bg-red-500">Close</button>
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700 font-bold mb-1">Supplier Name</label>
+        <input 
+          id="name" 
+          type="text" 
+          formControlName="supplierName" 
+          placeholder="Enter Supplier Name"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div *ngIf="supplierForm.get('supplierName')?.invalid && supplierForm.get('supplierName')?.touched" class="text-red-500">
+          Supplier name is required.
+        </div>
       </div>
 
-    
+      <div class="mb-4">
+        <label for="phone" class="block text-gray-700 font-bold mb-1">Supplier Phone</label>
+        <input 
+          id="phone" 
+          type="text" 
+          formControlName="supplierPhone" 
+          placeholder="Enter Phone Number"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div *ngIf="supplierForm.get('supplierPhone')?.invalid && supplierForm.get('supplierPhone')?.touched" class="text-red-500">
+          Valid phone number is required.
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="address" class="block text-gray-700 font-bold mb-1">Supplier Address</label>
+        <input 
+          id="address" 
+          type="text" 
+          formControlName="supplierAddress" 
+          placeholder="Enter Address"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div *ngIf="supplierForm.get('supplierAddress')?.invalid && supplierForm.get('supplierAddress')?.touched" class="text-red-500">
+          Address is required.
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="location" class="block text-gray-700 font-bold mb-1">Supplier Location</label>
+        <input 
+          id="location" 
+          type="text" 
+          formControlName="supplierLocation" 
+          placeholder="Enter Location"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div *ngIf="supplierForm.get('supplierLocation')?.invalid && supplierForm.get('supplierLocation')?.touched" class="text-red-500">
+          Location is required.
+        </div>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button type="submit" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
+          Add
+        </button>
+        <button type="button" (click)="closeForm()" class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500">
+          Close
+        </button>
+      </div>
     </form>
   </div>
 </div>
