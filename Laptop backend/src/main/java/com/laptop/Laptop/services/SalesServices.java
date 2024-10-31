@@ -65,8 +65,10 @@ public class SalesServices {
                 });
 
         // Check if there's enough stock
-        if (product.getStock() < quantity.getQuantity()) {
-            throw new InsufficientStockException("Insufficient stock for: " + product.getName());
+        if (product.getStock() <= 0) {
+            throw new InsufficientStockException("Product " + product.getName() + " is out of stock.");
+        } else if (product.getStock() < quantity.getQuantity()) {
+            throw new InsufficientStockException("Insufficient stock for " + product.getName() + ". Available stock: " + product.getStock());
         }
         //reduce stock  by quantity passed
         product.setStock(product.getStock()- quantity.getQuantity());
