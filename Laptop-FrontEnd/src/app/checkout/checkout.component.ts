@@ -4,6 +4,7 @@ import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { SalesService } from '../Services/sales.service';
 import { CommonModule } from '@angular/common';
 import confetti from 'canvas-confetti'; // Import canvas-confetti
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-checkout',
@@ -14,6 +15,7 @@ import confetti from 'canvas-confetti'; // Import canvas-confetti
 })
 export class CheckoutComponent {
 
+
   @Input() totalInCart!: number | null; // Input for sale total
   @Input() productId!: number;
   @Output() close = new EventEmitter<void>();
@@ -22,7 +24,8 @@ export class CheckoutComponent {
   constructor(
     private fb: FormBuilder,
     private saleService: SalesService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private router: Router
   ) {
     // Initialize the checkout form
     this.checkOutForm = this.fb.group({
@@ -39,8 +42,8 @@ export class CheckoutComponent {
   // Method to trigger confetti
   private launchConfetti() {
     confetti({
-      particleCount: 100,
-      spread: 70,
+      particleCount: 200,
+      spread: 100,
       origin: { y: 0.6 },
     });
   }
@@ -54,8 +57,11 @@ export class CheckoutComponent {
           console.log(response);
           this.toastService.success('Sale completed successfully!');
           this.launchConfetti(); // Trigger confetti on success
-          this.checkOutForm.reset();
-          this.closeForm(); // Emit close event after successful sale
+          this.router.navigateByUrl('/dash/sale');
+
+
+          // this.checkOutForm.reset();
+          //this.closeForm(); // Emit close event after successful sale
         },
         (error) => {
           this.toastService.error('Failed to complete sale!');
@@ -69,5 +75,9 @@ export class CheckoutComponent {
 
   closeForm() {
     this.close.emit();
+  }
+
+  test() {
+    this.launchConfetti(); // Trigger confetti on success
   }
 }

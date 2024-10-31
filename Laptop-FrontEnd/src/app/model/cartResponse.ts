@@ -6,6 +6,8 @@ export interface CartResponse {
       quantity: number;
       shopCode: string;
       status: string;
+    
     }>;
     total: number;
+  
   }

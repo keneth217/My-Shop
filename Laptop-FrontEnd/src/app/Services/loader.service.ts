@@ -11,9 +11,12 @@ export class LoaderService {
 
   show() {
     this.loadingSubject.next(true);
+    console.log('i am here loading....... waiting to fetch data')
   }
 
   hide() {
     this.loadingSubject.next(false);
+
+    console.log('done loading.......  data fetched')
   }
 }

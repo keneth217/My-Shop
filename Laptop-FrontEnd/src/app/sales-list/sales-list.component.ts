@@ -4,11 +4,13 @@ import { SalesService } from '../Services/sales.service';
 import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SalesResponse } from '../model/sales.model';
+import { LoaderService } from '../Services/loader.service';
+import { LoaderComponent } from "../loader/loader.component";
 
 @Component({
   selector: 'app-sales-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, AngularToastifyModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, AngularToastifyModule, LoaderComponent],
   templateUrl: './sales-list.component.html',
   styleUrls: ['./sales-list.component.css'],
 })
@@ -19,7 +21,8 @@ export class SalesListComponent {
 
   constructor(
     private salesService: SalesService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private loaderService: LoaderService
   ) {}
 
   ngOnInit(): void {
@@ -36,11 +39,15 @@ export class SalesListComponent {
 
   // Fetch sales based on selected dates
   fetchSales(): void {
+    this.loaderService.show();
     this.salesService.getSales(this.startDate, this.endDate).subscribe({
       next: (data: SalesResponse) => {
         console.log(data);
-        this.sales = data.content; // Assigning the content of the response to sales
+        this.sales = data.content;
+        this.loaderService.hide();
+       
         if (this.sales.length === 0) {
+          this.loaderService.hide();// Set the products from the API response
           this.toastService.warn('No sales found for the selected date range.');
         }
       },

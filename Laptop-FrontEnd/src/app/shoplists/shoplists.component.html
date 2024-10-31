@@ -16,11 +16,25 @@
   
       </div>
     </div>
-    <!-- Modal for Add Expense form -->
+    <!-- Modal for Add  shop form -->
     <div *ngIf="showAddShop"
       class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
       <div class="bg-white p-6 rounded-lg shadow-lg relative">
-        <app-super-add-shop (close)="closeAddShop()"></app-super-add-shop>
+        <app-super-add-shop
+       
+         (close)="closeAddShop()">
+        </app-super-add-shop>
+  
+      </div>
+    </div>
+
+    <div *ngIf="showActivateForm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
+      <div class="bg-white p-6 rounded-lg shadow-lg relative">
+        <app-activate-shop
+        [shopId]="selectedShopId"
+         (close)="closeActivateShop()">
+        </app-activate-shop>
   
       </div>
     </div>
@@ -64,9 +78,9 @@
             <div class="flex justify-between">
             
                 <button type="submit" class="bg-red-400 text-white p-2 
-                rounded-md font-bold hover:bg-red-500">Activate</button>
+                rounded-md font-bold hover:bg-red-500"  (click)="activate(shop.id)">Activate</button>
                 <button type="submit" class="bg-red-400 text-white p-2 
-                rounded-md font-bold hover:bg-red-500">De-activate</button>
+                rounded-md font-bold hover:bg-red-500" (click)="deActivate(shop.id)">De-activate</button>
                 
             </div>
           </td>

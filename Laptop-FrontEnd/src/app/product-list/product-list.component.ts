@@ -26,6 +26,7 @@ export class ProductListComponent implements OnInit {
 
 
 
+
   cartItems: {
     id: number;
     itemCosts: number;
@@ -62,6 +63,11 @@ export class ProductListComponent implements OnInit {
     // Call the fetchProducts method on component initialization
 
   }
+
+  load() {
+    this.loaderService.show();
+    console.log('Loading  ......')
+    }
 
   fetchProducts(): void {
     this.loaderService.show();

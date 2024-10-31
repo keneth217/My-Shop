@@ -35,14 +35,49 @@ export class DashboardComponent implements OnInit {
   userRole: string = ''; // Initialize with an empty string to avoid issues
   links: Link[] = []; // Holds the active links based on role
 
+  currentTime: string = '';
+  private timerInterval: any;
+
   constructor(private tokenService: TokenService,private router:Router) { }
 
+
+  ngOnDestroy(): void {
+    // Clear the interval when the component is destroyed
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+  }
+
+
+  startTimer(): void {
+    this.timerInterval = setInterval(() => {
+      const now = new Date();
+      // Format time as HH:mm:ss Hrs
+      const timeString = now.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }) + ' Hrs';
+  
+      // Format date as day of week, month, day, year
+      const dateString = 
+        now.toLocaleDateString('en-GB', { weekday: 'long' }) + ', ' +
+        now.toLocaleDateString('en-GB', { month: 'long' }) + ', ' +
+        now.toLocaleDateString('en-GB', { day: 'numeric' }) + ', ' +
+        now.toLocaleDateString('en-GB', { year: 'numeric' });
+  
+      // Combine time and date
+      this.currentTime = `${timeString}, ${dateString}`;
+    }, 1000);
+  }
   // Fetch the user role after initialization
   ngOnInit(): void {
     this.userRole = this.tokenService.getUserRole;
     this.links = this.getUserLinks(); // Set links based on the role
     this.shopDetails();
     this.userDetails();
+    this.startTimer();
   }
 
   logout(): void {

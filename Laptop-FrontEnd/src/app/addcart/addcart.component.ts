@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { SupplierService } from '../Services/supplier.service';
 import { SalesService } from '../Services/sales.service';
+import { CartResponse } from '../model/cartResponse';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-addcart',
@@ -22,7 +24,8 @@ export class AddcartComponent {
   constructor(
     private fb: FormBuilder,
     private saleService: SalesService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private router:Router
   ) {
     this.cartForm = this.fb.group({
       quantity: ['', Validators.required],
@@ -33,18 +36,22 @@ export class AddcartComponent {
   addCartData() {
     if (this.cartForm.valid) {
       const cartData = this.cartForm.value;
-
-
-      this.saleService.addCart(this.productId,cartData).subscribe(
+  
+      this.saleService.addCart(this.productId, cartData).subscribe(
         (response) => {
-          console.log(response)
-          this.toastService.success('add to cart successfully!');
+          console.log(response);
+          if (response) {
+            this.toastService.success("Item added successfully!");
+          } else {
+            this.toastService.info("Item added successfully!"); // Fallback message if responseMessage is undefined
+          }
           this.cartForm.reset();
-          //this.closeEForm();
+          this.router.navigateByUrl('/dash/product');
         },
         (error) => {
-          this.toastService.error('Failed to add to cart!');
-          console.error(error);
+          console.error('Error adding to cart:', error);
+          const errorMessage = error.error?.errorMessage || "Something went wrong!";
+          this.toastService.error(errorMessage);
         }
       );
     } else {

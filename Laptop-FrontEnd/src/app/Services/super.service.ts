@@ -34,6 +34,19 @@ export class SuperService {
 
     });
   }
+  activateShop(shopId:number,shopData:any): Observable<any[]> {
+    const url = `${this.baseUrl}/${shopId}/activate`;
+    return this.http.post<any[]>(url,shopData, {
+      headers: this.createAuthorizationHeaders(),
+
+    });
+  }
+  deactivateShop(shopId: number): Observable<any[]> {
+    const url = `${this.baseUrl}/${shopId}/deactivate`;
+    return this.http.put<any[]>(url, {}, { 
+      headers: this.createAuthorizationHeaders()
+    });
+  }
 
   // Create a stock purchase with productId, supplierId, and StockPurchase data
   createSale(productId: number, supplierId: number, stockPurchase: any): Observable<any> {
@@ -42,12 +55,21 @@ export class SuperService {
       headers: this.createAuthorizationHeaders(),
     });
   }
-
-  // Create authorization headers
+ // Create authorization headers
   private createAuthorizationHeaders(): HttpHeaders {
     const token = this.tokenService.getToken;
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    let headers = new HttpHeaders();
+    console.log(headers)
+    console.log(token)
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+  
+    return headers;
   }
+
+ 
+ 
 }
 
 
