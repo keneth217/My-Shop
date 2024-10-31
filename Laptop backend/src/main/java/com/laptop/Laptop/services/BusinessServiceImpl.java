@@ -241,10 +241,10 @@ public class BusinessServiceImpl implements BusinessService {
         // Get the shop associated with the logged-in user
         Shop shop = getUserShop();
 
-        // Ensure that the request always returns only 10 products per page
+        // Ensure that the request returns a maximum of 10 products per page
         Pageable limitedPageable = PageRequest.of(pageable.getPageNumber(), 10, pageable.getSort());
 
-        // Fetch top-selling products for this shop
+        // Fetch top-selling products for this shop with quantitySold > 0
         return productRepository.findTopSellingProductsByShop(shop.getId(), limitedPageable);
     }
 
