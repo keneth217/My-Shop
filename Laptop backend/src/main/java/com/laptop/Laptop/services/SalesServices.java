@@ -68,6 +68,8 @@ public class SalesServices {
         if (product.getStock() < quantity.getQuantity()) {
             throw new InsufficientStockException("Insufficient stock for: " + product.getName());
         }
+        //reduce stock  by quantity passed
+        product.setStock(product.getStock()- quantity.getQuantity());
 
         // Check if the product is already in the cart
         CartItem cartItem = cart.getItems().stream()
@@ -130,7 +132,7 @@ public class SalesServices {
             int quantity = cartItem.getQuantity();
 
             // Update product stock and quantity sold
-            product.setStock(product.getStock() - quantity);
+
             product.setQuantitySold(product.getQuantitySold() + quantity);
             productRepository.save(product);
 
