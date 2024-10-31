@@ -20,7 +20,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findAllByStockLessThanEqual(int stock, Pageable pageable);
 
    // Page<Product> findTopSellingProducts(Pageable pageable);
-   @Query("SELECT p FROM Product p WHERE p.shop.id = :shopId ORDER BY p.quantitySold DESC")
+   @Query("SELECT p FROM Product p WHERE p.shop.id = :shopId AND p.quantitySold > 0 ORDER BY p.quantitySold DESC")
    Page<Product> findTopSellingProductsByShop(@Param("shopId") Long shopId, Pageable pageable);
 
     Page<Product> findAllByShopAndStockLessThanEqual(Shop shop, int lowStockThreshold, Pageable pageable);
