@@ -1,5 +1,6 @@
 package com.laptop.Laptop.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laptop.Laptop.enums.ExpenseType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,12 +26,13 @@ public class Expense {
     private LocalDate date;
     private String shopCode;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    // Getters and Setters
 }

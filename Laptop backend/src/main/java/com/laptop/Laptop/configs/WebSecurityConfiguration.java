@@ -37,7 +37,7 @@ public class WebSecurityConfiguration {
                       //  .requestMatchers("api/shops/").hasAnyAuthority(Roles.SUPER_USER.name())
                         .requestMatchers("api/admin/").hasAnyAuthority(Roles.ADMIN.name())
                         .requestMatchers("api/customer/").hasAnyAuthority(Roles.CASHIER.name())
-                        .requestMatchers("api/shops/").hasAnyAuthority(Roles.SUPER_USER.name())
+                        .requestMatchers("api/shops/**").hasAnyAuthority(Roles.SUPER_USER.name())
                         .anyRequest().authenticated())
                 .sessionManagement(manager->manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

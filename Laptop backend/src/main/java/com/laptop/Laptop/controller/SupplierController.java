@@ -18,7 +18,6 @@ public class SupplierController {
 
     @PostMapping
     public ResponseEntity<Supplier> addSupplier(@RequestBody Supplier supplier) {
-        System.out.println("Received Supplier: " + supplier);
         Supplier savedSupplier = supplierService.addSupplier(supplier);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSupplier);
     }

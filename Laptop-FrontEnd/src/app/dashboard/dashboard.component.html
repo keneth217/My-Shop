@@ -4,12 +4,17 @@
       <ng-icon name="heroBars4"></ng-icon>
     </div>
     <div class="text-white">
-      <p class="text-2xl bold">{{shopDetailsData.shopName}}</p>
+      <p class="text-2xl bold uppercase">{{shopDetailsData.shopName}}</p>
+
+    </div>
+
+    <div class="text-white">
+      <p class="text-2xl bold">{{currentTime}}</p>
 
     </div>
     <div class="text-white flex items-center cursor-pointer relative" (click)="toggleUserDropdown()">
       <img src="../assets/boy.png" alt="User avatar" class="w-10 h-10 rounded-full mr-2" />
-      <p>{{userDetailsData.username}}</p>
+      <p class="uppercase">{{userDetailsData.username}}</p>
       <ng-icon name="heroChevronDown" class="ml-2"></ng-icon>
       <ul [ngClass]="{
           'max-h-0 opacity-0': !isUserDropdownOpen,
@@ -21,6 +26,8 @@
         <li class="block px-4 py-2 hover:bg-gray-200" (click)="logout()">Logout</li>
       </ul>
     </div>
+
+   
   </div>
 </header>
 

@@ -44,5 +44,9 @@ public class Shop {
 
     private List<User> users = new ArrayList<>(); // Initialize the list here
 
-    // Other shop details like address, phone number, etc.
+
+    @OneToMany(mappedBy = "shop")
+    @JsonManagedReference // Forward reference
+    private List<Investment> investments;
+
 }

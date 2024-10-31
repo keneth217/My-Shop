@@ -43,9 +43,10 @@ public class User implements UserDetails {
     @JsonBackReference  // Prevent circular references during serialization
     private Shop shop;
 
-//    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JsonManagedReference  // To correctly serialize investments
-//    private List<Investment> investments;
+  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+@JsonManagedReference // Forward reference
+private List<Investment> investments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

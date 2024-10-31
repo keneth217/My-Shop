@@ -31,15 +31,25 @@ public class InvestmentService {
     // Handle investment
     public Investment addInvestment(Investment investment) {
         User loggedInUser = getLoggedInUser();
-        System.out.println(loggedInUser);
-        System.out.println("--------------addding investement------------");
+        if (loggedInUser == null) {
+            throw new IllegalStateException("User must be logged in to add an investment.");
+        }
+
+        if (investment.getAmount() <= 0) {
+            throw new IllegalArgumentException("Investment amount must be positive.");
+        }
+
         investment.setDate(LocalDate.now());
         investment.setShopCode(loggedInUser.getShopCode());
         investment.setShop(loggedInUser.getShop());
         investment.setUser(loggedInUser);
-        investment.setDescription("Initial investement");
-        investment.setAmount(investment.getAmount());
-        return investmentRepository.save(investment);
+        investment.setDescription("Initial investment");
+
+        try {
+            return investmentRepository.save(investment);
+        } catch (Exception e) {
+            throw new RuntimeException("Error saving investment: " + e.getMessage(), e);
+        }
     }
 
     public List<Investment> getInvestementForShop() {
