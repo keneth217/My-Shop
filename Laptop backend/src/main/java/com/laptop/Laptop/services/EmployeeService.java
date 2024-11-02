@@ -1,10 +1,11 @@
 package com.laptop.Laptop.services;
 
+import com.laptop.Laptop.dto.EmployeeDto; // Import EmployeeDto
 import com.laptop.Laptop.dto.PaymentResponseDto;
 import com.laptop.Laptop.dto.SalaryDto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.enums.ExpenseType;
-import com.laptop.Laptop.helper.AuthUser;
+import com.laptop.Laptop.enums.Roles;
 import com.laptop.Laptop.repository.EmployeeRepository;
 import com.laptop.Laptop.repository.ExpenseRepository;
 import com.laptop.Laptop.repository.PaymentRepository;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -25,26 +27,37 @@ public class EmployeeService {
 
     @Autowired
     private ExpenseRepository expenseRepository;
+
     @Autowired
     private PaymentRepository paymentRepository;
-
-
-
 
     // Utility method to get the logged-in user's details from the authentication token
     private User getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal(); // Ensure User implements UserDetails
     }
+
     private Shop getUserShop() {
         return getLoggedInUser().getShop();
     }
+
     @Transactional
-    public Employee addEmployee(Employee employee) {
+    public EmployeeDto addEmployee(EmployeeDto employeeDto) {
         User loggedInUser = getLoggedInUser();
-        employee.setShop(loggedInUser.getShop());
-        return employeeRepository.save(employee);
+        Employee employee = Employee.builder()
+                .name(employeeDto.getName())
+                .salary(employeeDto.getSalary())
+                .phoneNumber(employeeDto.getPhoneNumber())
+                .shop(loggedInUser.getShop())
+                .role(Roles.CASHIER)
+                .user(loggedInUser) // Set the user if needed
+                .build();
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        // Return the DTO of the saved employee
+        return mapToDto(savedEmployee);
     }
+
     @Transactional
     public PaymentResponseDto payEmployee(Long employeeId, SalaryDto salary) {
         User loggedInUser = getLoggedInUser();
@@ -69,6 +82,7 @@ public class EmployeeService {
                 .date(LocalDate.now())
                 .shopCode(loggedInUser.getShopCode())
                 .user(loggedInUser)
+
                 .shop(loggedInUser.getShop())
                 .build();
         expenseRepository.save(salaryExpense);
@@ -77,11 +91,29 @@ public class EmployeeService {
                 salary.getSalaryAmount(), employee.getName(), LocalDate.now());
     }
 
-
-
-    public List<Employee> getExpenseForShop() {
+    public List<EmployeeDto> getEmployeesForShop() {
         Shop shop = getUserShop();  // Get the logged-in user's shop
-        return employeeRepository.findByShop(shop);
+        User loggedInUser = getLoggedInUser(); // Retrieve the logged-in user
+        String employerRole = String.valueOf(loggedInUser.getRole()); // Get employer's role
+
+        List<Employee> employees = employeeRepository.findByShop(shop);
+
+        // Convert each Employee to EmployeeDto and include employer's role
+        return employees.stream()
+                .map(employee -> mapToDto(employee, employerRole)) // Pass employer role
+                .collect(Collectors.toList());
     }
 
+    // Helper method to convert Employee to EmployeeDto with employerRole
+    private EmployeeDto mapToDto(Employee employee, String employerRole) {
+        return EmployeeDto.builder()
+                .id(employee.getId())
+                .name(employee.getName())
+                .salary(employee.getSalary())
+                .role(employee.getRole())
+                .phoneNumber(employee.getPhoneNumber())
+                .shopId(employee.getShop().getId())
+                .employerRole(employerRole) // Set employer's role
+                .build();
+    }
 }
