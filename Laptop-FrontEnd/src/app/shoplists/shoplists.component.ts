@@ -6,6 +6,7 @@ import { NgIconsModule } from '@ng-icons/core';
 import { ExpenseService } from '../Services/expense.service';
 import { SuperService } from '../Services/super.service';
 import { ActivateShopComponent } from "../activate-shop/activate-shop.component";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-shoplists',
@@ -29,6 +30,7 @@ export class ShoplistsComponent {
   constructor(
     private superService: SuperService, // Inject the ProductService
     private toastService: ToastService,
+    private router:Router
   ) { }
   ngOnInit(): void {
     this.fetchShops(); // Call the fetchProducts method on component initialization
@@ -51,6 +53,7 @@ export class ShoplistsComponent {
       next: (data) => {
         console.log(data);
         this.toastService.success("Shop deactivated");
+        this.router.navigateByUrl('/admin/shops')
       },
       error: (error) => {
         console.error('Error deactivating:', error);
