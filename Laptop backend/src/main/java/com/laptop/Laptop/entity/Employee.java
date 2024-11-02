@@ -1,5 +1,6 @@
 package com.laptop.Laptop.entity;
 
+import com.laptop.Laptop.enums.Roles;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,9 @@ public class Employee {
     private String name;
     private double salary;
     private String phoneNumber;
+
+    @Enumerated(EnumType.STRING)
+    private Roles role;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
