@@ -20,25 +20,33 @@
         class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
       />
 
-      <label for="itemCost" class="block text-gray-700 font-bold">Item Cost</label>
+      <label for="buyingPrice" class="block text-gray-700 font-bold">Buying price</label>
       <input
-        id="itemCost"
+        id="buyingPrice"
         type="number"
-        formControlName="itemCost"
+        formControlName="buyingPrice"
         placeholder="Enter item cost"
         class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
       />
 
-      <label for="supplier" class="block text-gray-700 font-bold">Select Supplier</label>
-      <select
-        id="supplier"
-        formControlName="supplier"
+      <label for="sellingPrice" class="block text-gray-700 font-bold">selling price</label>
+      <input
+        id="sellingPrice"
+        type="number"
+        formControlName="sellingPrice"
+        placeholder="Enter item cost"
         class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-      >
-        <option *ngFor="let supplier of suppliers" [value]="supplier.id">
-          {{ supplier.supplierName }}
-        </option>
-      </select>
+      />
+
+      <select
+      id="supplierName"
+      formControlName="supplierName"
+      class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+    >
+      <option *ngFor="let supplier of suppliers" [value]="supplier.id">
+        {{ supplier.supplierName }}
+      </option>
+    </select>
 
       <div class="flex justify-between">
         <button type="submit" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
