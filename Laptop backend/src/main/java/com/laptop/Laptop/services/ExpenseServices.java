@@ -1,8 +1,8 @@
 package com.laptop.Laptop.services;
 
+import com.laptop.Laptop.dto.ExpenseDto; // Import ExpenseDto
 import com.laptop.Laptop.entity.Expense;
 import com.laptop.Laptop.entity.Shop;
-import com.laptop.Laptop.entity.Supplier;
 import com.laptop.Laptop.entity.User;
 import com.laptop.Laptop.enums.ExpenseType;
 import com.laptop.Laptop.repository.ExpenseRepository;
@@ -35,32 +35,49 @@ public class ExpenseServices {
     /**
      * Add a new expense for the logged-in user.
      */
-    public Expense addExpense(Expense expense) {
+    public ExpenseDto addExpense(ExpenseDto expenseDto) {
         User loggedInUser = getLoggedInUser(); // Fetch user dynamically
 
-        // Set expense-specific details
+        // Convert DTO to Entity
+        Expense expense = new Expense();
         expense.setShopCode(loggedInUser.getShopCode());
         expense.setUser(loggedInUser);
         expense.setDate(LocalDate.now());
+        expense.setAmount(expenseDto.getAmount());
+        expense.setType(expenseDto.getType());
         expense.setShop(loggedInUser.getShop());
+        expense.setDescription(expenseDto.getDescription());
 
         // Save the expense to the database
-        return expenseRepository.save(expense);
+        Expense savedExpense = expenseRepository.save(expense);
+
+        // Convert saved entity back to DTO
+        return mapToDto(savedExpense);
     }
 
     /**
      * Find expenses by type for the logged-in user's shop.
      */
-    public List<Expense> findExpensesByType(ExpenseType type ) {
+    public List<ExpenseDto> findExpensesByType(ExpenseType type) {
         User loggedInUser = getLoggedInUser(); // Fetch user dynamically
-        return expenseRepository.findByShopAndType(
+        List<Expense> expenses = expenseRepository.findByShopAndType(
                 loggedInUser.getShop(), type
         );
+
+        // Convert each Expense to ExpenseDto
+        return expenses.stream()
+                .map(this::mapToDto)
+                .toList();
     }
 
-    public List<Expense> getExpenseForShop() {
+    public List<ExpenseDto> getExpenseForShop() {
         Shop shop = getUserShop();  // Get the logged-in user's shop
-        return expenseRepository.findByShop(shop);
+        List<Expense> expenses = expenseRepository.findByShop(shop);
+
+        // Convert each Expense to ExpenseDto
+        return expenses.stream()
+                .map(this::mapToDto)
+                .toList();
     }
 
     public Map<ExpenseType, Double> getExpenseTotal() {
@@ -75,5 +92,16 @@ public class ExpenseServices {
         }
 
         return expenseTotals;
+    }
+
+    // Helper method to convert Expense to ExpenseDto
+    private ExpenseDto mapToDto(Expense expense) {
+        return ExpenseDto.builder()
+                .type(expense.getType())
+                .amount(expense.getAmount())
+                .description(expense.getDescription())
+                .date(expense.getDate())
+                .shopCode(expense.getShopCode())
+                .build();
     }
 }
