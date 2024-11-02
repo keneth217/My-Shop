@@ -4,6 +4,7 @@ import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { SupplierService } from '../Services/supplier.service';
 import { SalesService } from '../Services/sales.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-product-stock',
@@ -26,12 +27,14 @@ export class AddProductStockComponent implements OnInit, OnChanges {
     private fb: FormBuilder,
     private supplierService: SupplierService,
     private salesService: SalesService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private router:Router
   ) {
     this.stockForm = this.fb.group({
       quantity: ['', [Validators.required, Validators.min(1)]],
-      itemCost: ['', [Validators.required, Validators.min(0)]],
-      supplier: ['', Validators.required],
+      buyingPrice: ['', [Validators.required, Validators.min(0)]],
+      sellingPrice: ['', [Validators.required, Validators.min(0)]],
+      supplierName: ['', Validators.required],
     });
   }
 
@@ -48,7 +51,10 @@ export class AddProductStockComponent implements OnInit, OnChanges {
 
   fetchSuppliers(): void {
     this.supplierService.getSuppliers().subscribe({
-      next: (data) => (this.suppliers = data),
+      next: (data) => {
+        this.suppliers = data;
+        console.log(this.suppliers); // Log to check supplier IDs
+      },
       error: (error) => console.error('Error fetching suppliers:', error),
     });
   }
@@ -58,15 +64,17 @@ export class AddProductStockComponent implements OnInit, OnChanges {
       this.toastService.error('Please fill in all required fields correctly.');
       return;
     }
-
-    const { stock, itemCost, supplier } = this.stockForm.value;
-
+  
+    const { quantity, buyingPrice, sellingPrice, supplierName } = this.stockForm.value;
+    console.log(this.stockForm.value); // Log the form values
     this.salesService
-      .createSale(this.productId, supplier, { stock, itemCost })
+      .createSale(this.productId, supplierName, { quantity, buyingPrice, sellingPrice })
       .subscribe({
         next: (response) => {
           console.log(response);
+          console.log(this.stockForm.value); // Log the form values
           this.toastService.success(response.responseMessage);
+          this.router.navigateByUrl('/dash/product');
           this.closeSForm();
         },
         error: (error) => {
