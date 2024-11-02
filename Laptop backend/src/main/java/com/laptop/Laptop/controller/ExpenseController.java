@@ -1,6 +1,7 @@
 package com.laptop.Laptop.controller;
 
 import com.laptop.Laptop.constants.MyConstants;
+import com.laptop.Laptop.dto.ExpenseDto;
 import com.laptop.Laptop.dto.Responses.Responsedto;
 import com.laptop.Laptop.entity.Expense;
 import com.laptop.Laptop.entity.Shop;
@@ -25,15 +26,15 @@ private ExpenseServices expenseServices;
 
     // Add a new expense
     @PostMapping("/add")
-    public ResponseEntity<Responsedto> addExpense(@RequestBody Expense expense) {
-        Expense savedExpense = expenseServices.addExpense(expense);
+    public ResponseEntity<Responsedto> addExpense(@RequestBody ExpenseDto expense) {
+        ExpenseDto savedExpense = expenseServices.addExpense(expense);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new Responsedto(MyConstants.EXPENSE_CREATION,MyConstants.EXPENSE_CREATION_CODE));
     }
     @GetMapping
-    public ResponseEntity<List<Expense>> getSuppliers(){
-        List<Expense> expense=expenseServices.getExpenseForShop();
+    public ResponseEntity<List<ExpenseDto>> getSuppliers(){
+        List<ExpenseDto> expense=expenseServices.getExpenseForShop();
         if (expense.isEmpty()){
             return  ResponseEntity.noContent().build();
         }
