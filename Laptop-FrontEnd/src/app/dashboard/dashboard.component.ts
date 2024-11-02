@@ -127,6 +127,7 @@ export class DashboardComponent implements OnInit {
   adminLinks: Link[] = [
     { label: 'Analytics', icon: 'heroPlusCircle', route: '/dash' },
     { label: 'Product', icon: 'heroPlusCircle', route: '/dash/product' },
+    { label: 'Stocks', icon: 'heroPlusCircle', route: '/dash/stocks' },
     { label: 'Supplier', icon: 'heroPercentBadge', route: '/dash/supplier' },
     { label: 'Employee', icon: 'heroPercentBadge', route: '/dash/employee' },
     { label: 'Sales', icon: 'heroPercentBadge', route: '/dash/sale' },

@@ -54,7 +54,7 @@ public class Cart {
     // Recalculate the total cart value
     public void recalculateTotal() {
         totalCart = items.stream()
-                .mapToDouble(item -> item.getQuantity() * item.getProduct().getPrice())
+                .mapToDouble(item -> item.getQuantity() * item.getProduct().getSellingPrice())
                 .sum();
     }
 }
