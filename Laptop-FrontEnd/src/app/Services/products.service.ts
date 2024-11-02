@@ -34,6 +34,13 @@ export class ProductsService {
     );
   }
 
+  getProductStocks(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.baseUrl}/stock`,
+      { headers: this.createAuthorizationHeaders() }
+    );
+  }
+
   // Fetch products from the API
   getTopProducts(): Observable<TopProductsResponse> {
 
