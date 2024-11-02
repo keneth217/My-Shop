@@ -16,8 +16,8 @@ public class ProductCreationRequestDto {
 
 private Long id;
     private String name;
-    private double price;  // Selling price
-    private double cost;
+    private double sellingPrice;  // Selling price
+    private double buyingPrice;
     private List<String> productFeatures;
     private List<String> productImagesList;
     private List<MultipartFile> productImages;  
