@@ -34,18 +34,12 @@ public class BusinessOperationsController {
 
     // Add a new stock purchase linked to a product
     @PostMapping("/stock-purchases/{productId}/{supplierId}")
-    public ResponseEntity<Responsedto> addStockPurchase(@PathVariable Long productId, @PathVariable Long supplierId, @RequestBody StockPurchase stockPurchase) {
-        StockPurchase addedStockPurchase = businessService.addStockPurchase(productId,supplierId, stockPurchase);
+    public ResponseEntity<Responsedto> addStockPurchase(@PathVariable Long productId, @PathVariable Long supplierId, @RequestBody StockPurchaseDto stockPurchase) {
+        StockPurchaseDto addedStockPurchase = businessService.addStockPurchase(productId,supplierId, stockPurchase);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new Responsedto(MyConstants.STOCK_PURCHASE_CODE,MyConstants.STOCK_PURCHASE_CREATION));
     }
-//    @GetMapping("/top-products")
-//    public ResponseEntity<PaginatedResponse<Product>> getTopProducts(Pageable pageable) {
-//        Page<Product> topProductsPage = businessService.getTopSellingProducts(pageable);
-//        PaginatedResponse<Product> response = new PaginatedResponse<>(topProductsPage);
-//        return ResponseEntity.ok(response);
-//    }
 
     @GetMapping("/top-products")
     public ResponseEntity<PaginatedResponse<Product>> getTopProducts(Pageable pageable) {
