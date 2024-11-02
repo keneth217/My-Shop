@@ -44,17 +44,21 @@ public class EmployeeService {
     @Transactional
     public EmployeeDto addEmployee(EmployeeDto employeeDto) {
         User loggedInUser = getLoggedInUser();
+
+        // Create a new Employee entity and set its fields
         Employee employee = Employee.builder()
                 .name(employeeDto.getName())
                 .salary(employeeDto.getSalary())
                 .phoneNumber(employeeDto.getPhoneNumber())
-                .shop(loggedInUser.getShop())
-                .role(Roles.CASHIER)
-                .user(loggedInUser) // Set the user if needed
+                .shop(loggedInUser.getShop())  // Link the employee to the logged-in user's shop
+                .role(Roles.CASHIER)  // Set default role; can make this dynamic if needed
+                .user(loggedInUser)  // Link the employee to the current user (employer)
                 .build();
+
+        // Save the employee entity to the repository
         Employee savedEmployee = employeeRepository.save(employee);
 
-        // Return the DTO of the saved employee
+        // Map the saved Employee entity to an EmployeeDto and return it
         return mapToDto(savedEmployee);
     }
 
@@ -100,12 +104,12 @@ public class EmployeeService {
 
         // Convert each Employee to EmployeeDto and include employer's role
         return employees.stream()
-                .map(employee -> mapToDto(employee, employerRole)) // Pass employer role
+                .map(employee -> mapToDto(employee)) // Pass employer role
                 .collect(Collectors.toList());
     }
 
     // Helper method to convert Employee to EmployeeDto with employerRole
-    private EmployeeDto mapToDto(Employee employee, String employerRole) {
+    private EmployeeDto mapToDto(Employee employee) {
         return EmployeeDto.builder()
                 .id(employee.getId())
                 .name(employee.getName())
@@ -113,7 +117,7 @@ public class EmployeeService {
                 .role(employee.getRole())
                 .phoneNumber(employee.getPhoneNumber())
                 .shopId(employee.getShop().getId())
-                .employerRole(employerRole) // Set employer's role
+               // .employerRole(employerRole) // Set employer's role
                 .build();
     }
 }
