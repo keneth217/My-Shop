@@ -1,6 +1,7 @@
 package com.laptop.Laptop.controller;
 
 import com.laptop.Laptop.constants.MyConstants;
+import com.laptop.Laptop.dto.EmployeeDto;
 import com.laptop.Laptop.dto.PaymentResponseDto;
 import com.laptop.Laptop.dto.Responses.Responsedto;
 import com.laptop.Laptop.dto.SalaryDto;
@@ -35,16 +36,16 @@ public class EmployeeController {
 
     // Add a new employee and automatically track their salary as an expense
     @PostMapping
-    public ResponseEntity<Responsedto> addEmployee(@RequestBody Employee employee) {
-        Employee addedEmployee = employeeService.addEmployee(employee);
+    public ResponseEntity<Responsedto> addEmployee(@RequestBody EmployeeDto employee) {
+        EmployeeDto addedEmployee = employeeService.addEmployee(employee);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body( new Responsedto(MyConstants.EMPLOYEE_CREATION,MyConstants.EMPLOYEE_CREATION_CODE));// Use 201 Created
     }
 
     @GetMapping
-    public ResponseEntity<List<Employee>> getSuppliers(){
-        List<Employee> employees=employeeService.getExpenseForShop();
+    public ResponseEntity<List<EmployeeDto>> getSuppliers(){
+        List<EmployeeDto> employees=employeeService.getEmployeesForShop();
         if (employees.isEmpty()){
             return  ResponseEntity.noContent().build();
         }

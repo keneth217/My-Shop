@@ -1,5 +1,6 @@
 package com.laptop.Laptop.services;
 
+import com.laptop.Laptop.dto.StockPurchaseDto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.enums.ExpenseType;
 
@@ -42,6 +43,7 @@ public class BusinessServiceImpl implements BusinessService {
     private InvestmentRepository investmentRepository;
 
     private static final int LOW_STOCK_THRESHOLD = 5;
+    private static final int OUT_OF_STOCK_THRESHOLD = 0;
 
     // Utility: Get the current logged-in user
     private User getLoggedInUser() {
@@ -55,7 +57,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Transactional
-    public StockPurchase addStockPurchase(Long productId, Long supplierId, StockPurchase stockPurchase) {
+    public StockPurchaseDto addStockPurchase(Long productId, Long supplierId, StockPurchaseDto stockPurchaseDto) {
         User loggedInUser = getLoggedInUser();
         Shop userShop = loggedInUser.getShop();
 
@@ -69,16 +71,16 @@ public class BusinessServiceImpl implements BusinessService {
                 .orElseThrow(() -> new IllegalArgumentException("Supplier not found"));
 
         // Update product stock and cost
-        product.setCost(stockPurchase.getItemCost());
-        //product.setStock(stockPurchase.getQuantity());
-        product.setStock(product.getStock() + stockPurchase.getQuantity());
-        product.setPrice(product.getStock() * stockPurchase.getItemCost());
+        product.setCost(stockPurchaseDto.getBuyingPrice());
+        product.setSellingPrice(stockPurchaseDto.getSellingPrice());
+        product.setStock(product.getStock() + stockPurchaseDto.getQuantity());
 
         productRepository.save(product);
 
+        double stockCost = stockPurchaseDto.getQuantity() * stockPurchaseDto.getBuyingPrice();
 
-        double stockCost=stockPurchase.getQuantity() * stockPurchase.getItemCost();
-        // Set stock purchase details
+        // Create and set stock purchase details
+        StockPurchase stockPurchase = new StockPurchase();
         stockPurchase.setTotalCost(stockCost);
         stockPurchase.setProduct(product);
         stockPurchase.setSupplier(supplier);
@@ -86,10 +88,13 @@ public class BusinessServiceImpl implements BusinessService {
         stockPurchase.setUser(loggedInUser);
         stockPurchase.setShopCode(loggedInUser.getShopCode());
         stockPurchase.setShop(userShop);
+        stockPurchase.setQuantity(stockPurchaseDto.getQuantity());
+        stockPurchase.setBuyingPrice(stockPurchaseDto.getBuyingPrice());
+        stockPurchase.setSellingPrice(stockPurchaseDto.getSellingPrice());
 
         stockPurchaseRepository.save(stockPurchase);
 
-        // Log stock purchase as expense
+        // Log stock purchase as an expense
         Expense expense = new Expense();
         expense.setType(ExpenseType.STOCKPURCHASE);
         expense.setAmount(stockCost);
@@ -100,7 +105,17 @@ public class BusinessServiceImpl implements BusinessService {
         expense.setShopCode(loggedInUser.getShopCode());
 
         expenseRepository.save(expense);
-        return stockPurchase;
+
+        // Prepare and return StockPurchaseDto
+        return StockPurchaseDto.builder()
+                .purchaseDate(stockPurchase.getPurchaseDate())
+                .quantity(stockPurchase.getQuantity())
+                .buyingPrice(stockPurchase.getBuyingPrice())
+                .sellingPrice(stockPurchase.getSellingPrice())
+                .totalCost(stockCost)
+                .supplierName(supplier.getSupplierName())  // Assuming Supplier has a getName() method
+                .shopCode(userShop.getShopCode())
+                .build();
     }
 
     @Override
@@ -117,61 +132,68 @@ public class BusinessServiceImpl implements BusinessService {
     public int totalProducts() {
         return (int) productRepository.countByShop(getUserShop());
     }
+@Override
+public double calculateGrossProfit() {
+    Shop shop = getUserShop();  // Get the shop of the logged-in user
 
-    @Override
-    public double calculateGrossProfit() {
-        Shop shop = getUserShop();  // Get the shop of the logged-in user
+    // Calculate total revenue from sales
+    double totalRevenue = saleRepository.findByShop(shop).stream()
+            .mapToDouble(Sale::getTotalPrice)
+            .sum();
 
-        // Calculate total revenue from sales
-        double totalRevenue = saleRepository.findByShop(shop).stream()
-                .mapToDouble(Sale::getTotalPrice)
-                .sum();
+    // Calculate total stock cost from purchases
+    double totalStockCost = stockPurchaseRepository.findByShop(shop).stream()
+            .mapToDouble(purchase -> purchase.getProduct().getCost() * purchase.getQuantity())
+            .sum();
 
-        // Calculate total stock cost from purchases
-        double totalStockCost = stockPurchaseRepository.findByShop(shop).stream()
-                .mapToDouble(purchase ->
-                        purchase.getProduct().getCost() * purchase.getQuantity()
-                ).sum();
+    // Gross Profit = Total Revenue - Total Stock Cost
+    return totalRevenue - totalStockCost;
+}
+@Override
+public double calculateNetProfit() {
+    // Calculate gross profit for the user's shop
+    double grossProfit = calculateGrossProfit();
+    
+    // Calculate total expenses
+    double totalExpenses = getTotalExpenses();
 
-        // Gross Profit = Total Revenue - Total Stock Cost
-        return totalRevenue - totalStockCost;
-    }
+    // Calculate total investments (money injected into the business)
+    double totalInvestments = getTotalInvestments();
 
-    @Override
-    public double calculateNetProfit() {
-        // Calculate gross profit for the user's shop
-        double grossProfit = calculateGrossProfit();
-        double totalExpenses = getTotalExpenses();  // Get total expenses
-        double totalInvestments = getTotalInvestments();  // Get total investments
+    // Real Net Profit = Gross Profit - Total Expenses - Total Investments
+    return grossProfit - totalExpenses - totalInvestments;
+}
 
-        // Net Profit = Gross Profit - Total Expenses + Total Investments
-        return grossProfit - totalExpenses + totalInvestments;
-    }
+public double getTotalSales() {
+    Shop shop = getUserShop();  // Get the shop of the logged-in user
+    return saleRepository.findByShop(shop).stream()
+            .mapToDouble(Sale::getTotalPrice)
+            .sum();
+}
 
-    public double getTotalSales() {
-        Shop shop = getUserShop();  // Get the shop of the logged-in user
-        return saleRepository.findByShop(shop).stream()
-                .mapToDouble(Sale::getTotalPrice)
-                .sum();
-    }
+public double getTotalExpenses() {
+    Shop shop = getUserShop();  // Get the shop of the logged-in user
+    return expenseRepository.findByShop(shop).stream()
+            .mapToDouble(Expense::getAmount)
+            .sum();
+}
 
-    public double getTotalExpenses() {
-        Shop shop = getUserShop();  // Get the shop of the logged-in user
-        return expenseRepository.findByShop(shop).stream()
-                .mapToDouble(Expense::getAmount)
-                .sum();
-    }
-
-    public double getTotalInvestments() {
-        Shop shop = getUserShop();  // Get the shop of the logged-in user
-        return investmentRepository.findByShop(shop).stream()
-                .mapToDouble(Investment::getAmount)
-                .sum();
-    }
+public double getTotalInvestments() {
+    Shop shop = getUserShop();  // Get the shop of the logged-in user
+    return investmentRepository.findByShop(shop).stream()
+            .mapToDouble(Investment::getAmount)
+            .sum();
+}
     @Override
     public Page<Product> getStockAlerts(Pageable pageable) {
         Shop shop = getUserShop();  // Get the logged-in user's shop
         return productRepository.findAllByShopAndStockLessThanEqual(shop, LOW_STOCK_THRESHOLD, pageable);
+    }
+
+    @Override
+    public Page<Product> getOutOFStockAlerts(Pageable pageable) {
+        Shop shop = getUserShop();  // Get the logged-in user's shop
+        return productRepository.findAllByShopAndStockLessThanEqual(shop, OUT_OF_STOCK_THRESHOLD, pageable);
     }
 
     public Page<Sale> getSalesByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
