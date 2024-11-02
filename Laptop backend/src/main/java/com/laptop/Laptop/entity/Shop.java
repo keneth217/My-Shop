@@ -1,8 +1,7 @@
 package com.laptop.Laptop.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.laptop.Laptop.enums.ShopStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,11 +13,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Data
 @Builder
-@NoArgsConstructor  // Add this
-@AllArgsConstructor //
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Shop {
     @Id
@@ -33,20 +31,17 @@ public class Shop {
     private String description;
     private LocalDate registrationDate;
     private LocalDate expiryDate;
+    
     @Enumerated(EnumType.STRING)
     private ShopStatus shopStatus;
+    
     private String logo;
 
-
-
-    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    @JsonBackReference
-
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference // Use @JsonManagedReference here
     private List<User> users = new ArrayList<>(); // Initialize the list here
 
-
-    @OneToMany(mappedBy = "shop")
-    @JsonManagedReference // Forward reference
-    private List<Investment> investments;
-
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Consider using LAZY for investments
+    @JsonManagedReference // Use @JsonManagedReference for investments as well
+    private List<Investment> investments = new ArrayList<>(); // Initialize the list here
 }
