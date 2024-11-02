@@ -149,13 +149,15 @@ public class PdfReportServices {
             document.add(new Paragraph(" "));
 
             // Create table with columns: No., Product Name, Stock, Price
-            PdfPTable table = new PdfPTable(4); // 4 columns
+            PdfPTable table = new PdfPTable(5); // 4 columns
             table.setWidthPercentage(100);
             table.setWidths(new float[]{1, 3, 1, 1}); // Set column widths
             table.addCell(createCell("No.", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
             table.addCell(createCell("Product Name", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
             table.addCell(createCell("Stock", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
-            table.addCell(createCell("Price", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+
+            table.addCell(createCell("Buying Price", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
+            table.addCell(createCell("Selling Price", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
 
             // Fetch and sort products by stock in descending order
             List<Product> products = productRepository.findByShopId(shop.getId()).stream()
@@ -168,7 +170,9 @@ public class PdfReportServices {
                 table.addCell(String.valueOf(count++)); // Add number
                 table.addCell(product.getName()); // Product name
                 table.addCell(String.valueOf(product.getStock())); // Stock
-                table.addCell(String.valueOf(product.getPrice())); // Price
+
+                table.addCell(String.valueOf(product.getCost())); // Price
+                table.addCell(String.valueOf(product.getSellingPrice())); // Price
             }
 
             document.add(table);
@@ -248,19 +252,21 @@ public class PdfReportServices {
             document.add(new Paragraph("Stock Purchase Report"));
             document.add(new Paragraph(" "));
 
-            PdfPTable table = new PdfPTable(5); // Columns: Date, Supplier, Quantity, Total
+            PdfPTable table = new PdfPTable(6); // Columns: Date, Supplier, Quantity, Total
             table.setWidthPercentage(100);
             table.addCell("Date");
             table.addCell("Supplier");
             table.addCell("Quantity");
-            table.addCell("Item Cost");
+            table.addCell("Buy");
+            table.addCell("Sell");
             table.addCell("Total");
 
             for (StockPurchase stockPurchase : stockPurchases) {
                 table.addCell(stockPurchase.getPurchaseDate().toString());
                 table.addCell(String.valueOf(stockPurchase.getSupplierName()));
                 table.addCell(String.valueOf(stockPurchase.getQuantity()));
-                table.addCell(String.valueOf(stockPurchase.getItemCost()));
+                table.addCell(String.valueOf(stockPurchase.getBuyingPrice()));
+                table.addCell(String.valueOf(stockPurchase.getSellingPrice()));
 
                 table.addCell(String.valueOf(stockPurchase.getTotalCost()));
             }
