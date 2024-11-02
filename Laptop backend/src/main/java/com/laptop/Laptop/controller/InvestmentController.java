@@ -1,7 +1,6 @@
 package com.laptop.Laptop.controller;
 
-import com.laptop.Laptop.entity.Investment;
-import com.laptop.Laptop.entity.Supplier;
+import com.laptop.Laptop.dto.InvestmentDto;
 import com.laptop.Laptop.services.InvestmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,18 +16,18 @@ public class InvestmentController {
     private InvestmentService investmentService;
 
     @PostMapping
-    public ResponseEntity<Investment> addInvestment(@RequestBody Investment investment ) {
-        Investment saveInvestment = investmentService.addInvestment(investment);
+    public ResponseEntity<InvestmentDto> addInvestment(@RequestBody InvestmentDto investmentDto) {
+        InvestmentDto savedInvestment = investmentService.addInvestment(investmentDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(saveInvestment);
+                .body(savedInvestment);
     }
 
     @GetMapping
-    public ResponseEntity<List<Investment>> getSuppliers(){
-        List<Investment> investment=investmentService.getInvestementForShop();
-        if (investment.isEmpty()){
-            return  ResponseEntity.noContent().build();
+    public ResponseEntity<List<InvestmentDto>> getInvestments() {
+        List<InvestmentDto> investments = investmentService.getInvestmentForShop();
+        if (investments.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(investment);
+        return ResponseEntity.ok(investments);
     }
 }
