@@ -27,7 +27,7 @@ public class Product {
     private Long id;
     private String name;
     private String shopCode;
-    private double price;  // Selling price
+    private double sellingPrice;  // Selling price
     private double cost;   // costs of each product Cost price
     private int stock;
     private int quantitySold;
