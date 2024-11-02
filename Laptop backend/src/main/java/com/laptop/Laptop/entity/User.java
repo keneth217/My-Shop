@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,9 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @Table(name = "users")
 @Entity
-//@EntityListeners(value = {AuditLogListener.class})
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,13 +39,12 @@ public class User implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "shop_id") // Ensure non-nullable FK
-    @JsonBackReference  // Prevent circular references during serialization
+    @JsonBackReference // Prevent circular references during serialization
     private Shop shop;
 
-  @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-
-@JsonManagedReference // Forward reference
-private List<Investment> investments;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonManagedReference // Forward reference for investments
+    private List<Investment> investments = new ArrayList<>(); // Initialize the list here
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
