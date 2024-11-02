@@ -4,6 +4,7 @@ import { NgIconsModule } from '@ng-icons/core';
 import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { SupplierService } from '../Services/supplier.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-supplier',
@@ -20,7 +21,8 @@ export class AddSupplierComponent {
   constructor(
     private fb: FormBuilder,
     private supplierService: SupplierService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private router:Router
   ) {
     // Initialize the form with validators
     this.supplierForm = this.fb.group({
@@ -41,6 +43,7 @@ export class AddSupplierComponent {
       this.supplierService.addSupplier(supplierData).subscribe(
         (response) => {
           this.toastService.success('Supplier registered successfully!');
+          this.router.navigateByUrl('/dash/supplier');
           this.supplierForm.reset();
           this.supplierForm.markAsPristine();
           this.supplierForm.markAsUntouched();
