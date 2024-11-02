@@ -27,15 +27,13 @@ public class Investment {
     private String shopCode;
     private LocalDate date;
 
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "shop_id")
-    private Shop shop;
+      @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "shop_id", nullable = false)
+    private Shop shop;
 
 
 
