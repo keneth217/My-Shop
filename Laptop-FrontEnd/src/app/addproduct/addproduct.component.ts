@@ -6,6 +6,7 @@ import {
 } from '@angular/forms';
 import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { ProductsService } from '../Services/products.service';
+import { Router } from '@angular/router';
 
 interface PreviewImage {
   file: File;
@@ -30,7 +31,8 @@ export class AddproductComponent {
   constructor(
     private fb: FormBuilder,
     private toastService: ToastService,
-    private productsService: ProductsService
+    private productsService: ProductsService,
+    private router:Router
   ) {
     this.productForm = this.fb.group({
       name: ['', Validators.required],
@@ -122,6 +124,7 @@ export class AddproductComponent {
       this.productsService.addProduct(formData).subscribe({
         next: () => {
           this.toastService.success('Product uploaded successfully!');
+          this.router.navigateByUrl('/dash/product');
           this.closePForm(); // Close the form after successful submission
         },
         error: () => {
