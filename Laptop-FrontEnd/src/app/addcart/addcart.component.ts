@@ -42,10 +42,11 @@ export class AddcartComponent {
           console.log(response);
           if (response) {
             this.toastService.success("Item added successfully!");
+            this.router.navigateByUrl('/dash/product');
           } else {
             this.toastService.info("Item added successfully!"); // Fallback message if responseMessage is undefined
           }
-          this.cartForm.reset();
+         // this.cartForm.reset();
           this.router.navigateByUrl('/dash/product');
         },
         (error) => {
