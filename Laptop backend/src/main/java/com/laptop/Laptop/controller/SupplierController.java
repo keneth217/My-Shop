@@ -1,5 +1,6 @@
 package com.laptop.Laptop.controller;
 
+import com.laptop.Laptop.dto.SupplierDto;
 import com.laptop.Laptop.entity.Supplier;
 import com.laptop.Laptop.services.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,13 @@ public class SupplierController {
     private SupplierService supplierService;
 
     @PostMapping
-    public ResponseEntity<Supplier> addSupplier(@RequestBody Supplier supplier) {
-        Supplier savedSupplier = supplierService.addSupplier(supplier);
+    public ResponseEntity<SupplierDto> addSupplier(@RequestBody SupplierDto supplier) {
+        SupplierDto savedSupplier = supplierService.addSupplier(supplier);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedSupplier);
     }
     @GetMapping
-    public ResponseEntity<List<Supplier>> getSuppliers(){
-        List<Supplier> suppliers=supplierService.getSuppliersForShop();
+    public ResponseEntity<List<SupplierDto>> getSuppliers(){
+        List<SupplierDto> suppliers=supplierService.getSuppliersForShop();
         if (suppliers.isEmpty()){
             return  ResponseEntity.noContent().build();
         }
