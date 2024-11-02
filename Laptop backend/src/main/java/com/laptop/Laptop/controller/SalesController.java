@@ -61,6 +61,16 @@ public class SalesController {
         return ResponseEntity.ok(cartResponse);
     }
 
+    @DeleteMapping("/{cartItemId}")
+    public ResponseEntity<Void> deleteCartItem(@PathVariable Long cartItemId) {
+        User loggedInUser = getLoggedInUser();
+
+        salesServices.removeFromCart(loggedInUser,cartItemId);
+
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+
     // Get list of sales for the logged-in user and shop
     @GetMapping
     public ResponseEntity<List<Sale>> getSalesForShop() {
