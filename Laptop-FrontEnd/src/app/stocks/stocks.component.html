@@ -1,0 +1,156 @@
+<div class="container mx-auto relative my-6">
+    <div class="text-white my-4 flex justify-between items-center">
+      <button
+        (click)="openAddProduct()"
+        class="bg-green-400 p-2 rounded-md text-2xl flex items-center justify-center font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
+        type="button"
+      >
+        <span
+          ><ng-icon name="heroPlusCircle" class="mr-3 text-2xl"></ng-icon></span
+        >Add Product
+      </button>
+      <div class="flex space-x-2">
+        <button
+          class="bg-green-400 p-2 rounded-md text-white font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
+          type="button"
+        >
+          cart <span class="bg-green-500">(1)</span>
+        </button>
+      </div>
+  
+      <div class="flex space-x-2">
+        <button
+          class="bg-green-400 p-2 rounded-md text-white font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
+          type="button"
+        >
+          PDF
+        </button>
+      </div>
+    </div>
+  
+    <!-- Modal for Add product form -->
+    <div
+      *ngIf="showAddProduct"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg relative">
+        <app-addproduct (close)="closeAddProduct()"></app-addproduct>
+        <button
+          (click)="closeAddProduct()"
+          class="absolute top-2 right-2 text-red-500 hover:text-red-800"
+        >
+          <ng-icon name="heroXMark" class="mr-3 text-2xl text-red-600"></ng-icon>
+        </button>
+      </div>
+    </div>
+  
+    <!-- Modal for stock product form -->
+    <div
+      *ngIf="showAStockProduct"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg relative">
+        <app-add-product-stock
+          [productId]="selectedProductId"
+          [productName]="selectedProductName"
+          (close)="closeStockProduct()"
+        ></app-add-product-stock>
+      </div>
+    </div>
+  
+    <!-- Modal for view product form -->
+    <div
+      *ngIf="showViewProduct"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg relative">
+        <app-view-single-product
+          [productId]="selectedProductId"
+          (close)="closeViewProduct()"
+        ></app-view-single-product>
+      </div>
+    </div>
+  
+    <!-- Modal for view product form -->
+    <div
+      *ngIf="showCheckOutForm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg relative">
+        <app-checkout
+          [totalInCart]="selectedTotalCart"
+          (close)="closeCheckOut()"
+        ></app-checkout>
+      </div>
+    </div>
+  
+    <!-- Modal for view product form -->
+    <div
+      *ngIf="showCartForm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg relative">
+        <app-addcart
+          [productId]="selectedProductId"
+          (close)="closeCart()"
+        ></app-addcart>
+      </div>
+    </div>
+  
+    <div class="flex flex-1">
+      <!-- Table displaying products -->
+      <div
+        class="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 shadow-sm rounded-sm bg-white p-4"
+      >
+  
+      <div *ngIf="products?.length === 0">
+        <p  class=" p-4 text-center">
+          No products found .
+        </p>
+      </div>
+        <!-- Card layout for displaying products -->
+        <div
+          *ngFor="let product of products"
+          class="bg-white rounded-lg shadow-md p-4"
+        >
+          <img
+            [src]="'data:image/jpeg;base64,' + product.productImagesList?.[0]"
+            alt="Product Image"
+            class="w-full h-40 object-cover mb-2"
+            *ngIf="product.productImagesList?.length > 0"
+          />
+          <h3 class="text-lg font-semibold">{{ product.name }}</h3>
+          <p class="text-gray-600">Stock: {{ product.stock }}</p>
+          <p class="text-gray-600">Quantity Sold: {{ product.quantiytSold }}</p>
+          <div class="flex justify-between mt-4">
+            <button
+              type="button"
+              class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+              (click)="openStockProduct(product.id, product.name)"
+            >
+              Add Stock
+            </button>
+            <button
+              type="button"
+              class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+              (click)="openAddToCart(product.id)"
+            >
+              Cart
+            </button>
+            <button
+              type="button"
+              class="bg-pink-400 text-white p-2 rounded-md font-bold hover:bg-pink-500"
+              (click)="openViewProduct(product.id)"
+            >
+              View
+            </button>
+          </div>
+        </div>
+      </div>
+  
+    
+  
+      <lib-toastify-toast-container></lib-toastify-toast-container>
+    </div>
+  </div>
+  
