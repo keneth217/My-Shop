@@ -42,7 +42,7 @@ export class CheckoutComponent {
   // Method to trigger confetti
   private launchConfetti() {
     confetti({
-      particleCount: 200,
+      particleCount: 400,
       spread: 100,
       origin: { y: 0.6 },
     });
