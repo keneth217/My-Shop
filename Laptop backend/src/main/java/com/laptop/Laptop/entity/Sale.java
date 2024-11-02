@@ -30,7 +30,7 @@ public class Sale {
     private String customerName;
     private String customerPhone;
     private String customerAddress;
-
+    private double totalPrice;  // Total price for all items in the sale
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore  // Prevents serialization loop
@@ -46,5 +46,9 @@ public class Sale {
     @JsonIgnore  // Prevents serialization loop
     private Shop shop;
 
-    private double totalPrice;  // Total price for all items in the sale
+    @OneToOne
+    @JoinColumn(name = "cart_id", nullable = false, unique = true)
+    @JsonIgnore // Optional: if you don’t need the cart to be serialized
+    private Cart cart;
+
 }
