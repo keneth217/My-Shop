@@ -30,6 +30,7 @@ fetchSuppliers(): void {
   this.supplierService.getSuppliers().subscribe({
     next: (data) => {
       this.suppliers = data; 
+      console.log(data)
       // Set the products from the API response
       console.log(data)
     },
