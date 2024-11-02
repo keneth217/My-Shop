@@ -12,6 +12,7 @@ import { SuperLoginComponent } from './super-login/super-login.component';
 import { SuperDashboardComponent } from './super-dashboard/super-dashboard.component';
 import { ShoplistsComponent } from './shoplists/shoplists.component';
 import { SuperAnalyticsComponent } from './super-analytics/super-analytics.component';
+import { StocksComponent } from './stocks/stocks.component';
 
 export const routes: Routes = [
 
@@ -23,6 +24,7 @@ export const routes: Routes = [
         children: [
             { path: '', component: AnalyticsComponent },
             { path: 'product', component: ProductListComponent },
+            { path: 'stocks', component: StocksComponent },
             { path: 'supplier', component: SuppliersListComponent },
             { path: 'employee', component: EmployeeListComponent },
             { path: 'sale', component: SalesListComponent },
