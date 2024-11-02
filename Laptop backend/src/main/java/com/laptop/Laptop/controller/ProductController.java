@@ -61,6 +61,26 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @GetMapping("/stock")
+    public ResponseEntity<List<ProductCreationRequestDto>> getProductsToStock(HttpServletRequest request) {
+        Long shopId = (Long) request.getAttribute("shopId");
+
+        if (shopId == null) {
+            logger.warn("Shop ID is null for request: {}", request);
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        List<ProductCreationRequestDto> products = productService.getProductsForShopToStock(shopId);
+
+        if (products.isEmpty()) {
+            logger.info("No products found for shop ID: {}", shopId);
+            return ResponseEntity.noContent().build();
+        }
+
+        logger.info("Retrieved {} products for shop ID: {}", products.size(), shopId);
+        return ResponseEntity.ok(products);
+    }
+
     // Retrieve Single Product by ID
     @GetMapping("/{productId}")
     public ResponseEntity<ProductCreationRequestDto> getProductById(@PathVariable Long productId) {
