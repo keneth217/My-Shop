@@ -2,6 +2,7 @@ package com.laptop.Laptop.services;
 
 import com.laptop.Laptop.dto.PaymentResponseDto;
 import com.laptop.Laptop.dto.SalaryDto;
+import com.laptop.Laptop.dto.StockPurchaseDto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.enums.ExpenseType;
 import org.springframework.data.domain.Page;
@@ -12,8 +13,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface BusinessService {
-    StockPurchase addStockPurchase(Long productId, Long supplierId, StockPurchase stockPurchase);
 
+    StockPurchaseDto addStockPurchase(Long productId, Long supplierId, StockPurchaseDto stockPurchaseDto);
     long totalUsersByShop();
 
     int totalEmployees();
@@ -40,7 +41,7 @@ public interface BusinessService {
 //
 //    List<StockPurchase> getStockPurchasesForShop(Long shopId, LocalDate startDate, LocalDate endDate);
 
-
+    Page<Product> getOutOFStockAlerts(Pageable pageable);
     Page<Product> getTopSellingProducts(Pageable pageable);
 
     double getTotalSalesForShop(Long shopId, String shopCode);
