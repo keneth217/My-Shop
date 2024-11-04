@@ -1,5 +1,6 @@
 package com.laptop.Laptop.controller;
 
+import com.laptop.Laptop.dto.CartDto;
 import com.laptop.Laptop.dto.Responses.CartResponse;
 import com.laptop.Laptop.entity.Cart;
 import com.laptop.Laptop.entity.CartItem;
@@ -39,18 +40,20 @@ public class SalesController {
         return (User) authentication.getPrincipal(); // Ensure User implements UserDetails
     }
     @PostMapping("/add/{productId}")
-    public ResponseEntity<Cart> addToCart(@PathVariable Long productId, @RequestBody Cart quantity) {
+    public ResponseEntity<CartResponse> addToCart(@PathVariable Long productId, @RequestBody CartDto quantity) {
         User loggedInUser = getLoggedInUser();
         // Implement this to get the logged-in user
-        Cart cart = salesServices.addToCart(productId, quantity, loggedInUser);
+        CartResponse cart = salesServices.addToCart(productId, quantity, loggedInUser);
         return ResponseEntity.ok(cart);
     }
 
+
+
     @PostMapping("/checkout")
-    public ResponseEntity<Sale> checkout(@RequestBody  Sale customer) throws IOException {
-        User loggedInUser = getLoggedInUser();
-        Sale sale = salesServices.checkoutCart(loggedInUser,customer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(sale);
+    public ResponseEntity<Sale> checkoutCart( @RequestBody Sale customer) throws IOException {
+        User user = getLoggedInUser(); // Assuming this retrieves the currently logged-in user
+        Sale savedSale = salesServices.checkoutCart( user, customer);
+        return ResponseEntity.ok(savedSale);
     }
 
     // Get the list of cart items and the total price for the logged-in user
