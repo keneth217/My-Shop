@@ -25,8 +25,6 @@ import { CheckoutComponent } from "../checkout/checkout.component";
 export class ProductListComponent implements OnInit {
 
 
-
-
   cartItems: {
     id: number;
     itemCosts: number;
@@ -37,6 +35,8 @@ export class ProductListComponent implements OnInit {
   }[] = [];  // Initialize as an empty array
 
   totalInCart: number = 0; // Initialize to 0
+
+  cartId:number=0;
   products: any[] = []; // Initialize as an empty array
   showAddProduct: boolean = false;
   showAStockProduct: boolean = false;
@@ -46,6 +46,8 @@ export class ProductListComponent implements OnInit {
   showCartForm: boolean = false;
   showCheckOutForm: boolean = false;
   selectedTotalCart: number = 0;
+  selectedCartId: number=0; 
+isLoading: boolean=false;
 
 
   // Store the selected product ID
@@ -64,22 +66,22 @@ export class ProductListComponent implements OnInit {
 
   }
 
-  load() {
-    this.loaderService.show();
-    console.log('Loading  ......')
-    }
+ 
 
   fetchProducts(): void {
+    this.isLoading=true;
     this.loaderService.show();
     this.productService.getProducts().subscribe({
       next: (data) => {
         console.log(data)
         this.products = data;
+        this.isLoading=false;
         this.loaderService.hide();// Set the products from the API response
       },
       error: (error) => {
         console.error('Error fetching products:', error);
         this.loaderService.hide();
+        this.isLoading=false;
       }
     });
   }
@@ -99,6 +101,25 @@ export class ProductListComponent implements OnInit {
       }
     });
   }
+
+
+  deleteItem(cartItemId: number) {
+    console.log(`Deleting cart item with ID: ${cartItemId}`);  // Log the ID being deleted
+    this.saleService.deleteCartItem(cartItemId).subscribe({
+        next: () => {  // No data is returned
+            console.log('Cart item deleted successfully.');  // Log success message
+            this.fetchCartItems(); 
+            this.fetchProducts() ;// Fetch updated cart items after deletion
+            this.toastService.success("Item deleted successfully");  // Show success toast
+        },
+        error: (error) => {
+            console.error('Error deleting cart item:', error);
+            this.toastService.error(error.errorMessage || 'An error occurred while deleting the item');  // Handle error
+            this.loaderService.hide();
+        }
+    });
+}
+
 
   checkOut() {
     throw new Error('Method not implemented.');
@@ -145,6 +166,7 @@ export class ProductListComponent implements OnInit {
 
   openCheckOut(totalInCart: number) {
     this.selectedTotalCart = totalInCart;
+  
     console.log(totalInCart)
     this.showCheckOutForm = true;
   }
