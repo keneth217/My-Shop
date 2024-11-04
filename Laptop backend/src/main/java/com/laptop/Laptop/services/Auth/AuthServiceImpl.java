@@ -235,6 +235,7 @@ public class AuthServiceImpl implements  AuthService{
                             .shopName(user.getShop().getShopName())
                             .shopAddress(user.getShop().getAddress())
                             .shopLogo(user.getShop().getLogo())
+                            .shopCode(user.getShopCode())
                             .shopPhone(user.getShop().getPhoneNumber())
                             .build())
                     .build();
