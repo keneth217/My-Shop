@@ -53,6 +53,8 @@ public class ProductService {
                     dto.setName(product.getName());
                     dto.setProductFeatures(product.getProductFeatures());
                     dto.setStock(product.getStock());
+                    dto.setBuyingPrice(product.getCost());
+                    dto.setSellingPrice(product.getSellingPrice());
 
                     List<String> productImagesAsBase64 = product.getProductImages().stream()
                             .map(image -> Base64.getEncoder().encodeToString(image))
@@ -78,6 +80,8 @@ public class ProductService {
                     dto.setName(product.getName());
                     dto.setProductFeatures(product.getProductFeatures());
                     dto.setStock(product.getStock());
+                    dto.setBuyingPrice(product.getCost());
+                    dto.setSellingPrice(product.getSellingPrice());
 
                     List<String> productImagesAsBase64 = product.getProductImages().stream()
                             .map(image -> Base64.getEncoder().encodeToString(image))
