@@ -45,6 +45,7 @@ export class StocksComponent {
   showCartForm: boolean = false;
   showCheckOutForm: boolean = false;
   selectedTotalCart: number = 0;
+isLoading: boolean=false;
 
 
   // Store the selected product ID
@@ -63,22 +64,22 @@ export class StocksComponent {
 
   }
 
-  load() {
-    this.loaderService.show();
-    console.log('Loading  ......')
-    }
+  
 
   fetchProducts(): void {
     this.loaderService.show();
+    this.isLoading=true;
     this.productService.getProductStocks().subscribe({
       next: (data) => {
         console.log(data)
         this.products = data;
+        this.isLoading=false;
         this.loaderService.hide();// Set the products from the API response
       },
       error: (error) => {
         console.error('Error fetching products:', error);
         this.loaderService.hide();
+        this.isLoading=false;
       }
     });
   }
