@@ -46,9 +46,11 @@ public class Sale {
     @JsonIgnore  // Prevents serialization loop
     private Shop shop;
 
-    @OneToOne
-    @JoinColumn(name = "cart_id", nullable = false, unique = true)
-    @JsonIgnore // Optional: if you don’t need the cart to be serialized
-    private Cart cart;
+
+
+//    @OneToOne
+//    @JoinColumn(name = "cart_id", nullable = false, unique = true)
+//    @JsonIgnore // Optional: if you don’t need the cart to be serialized
+//    private Cart cart;
 
 }
