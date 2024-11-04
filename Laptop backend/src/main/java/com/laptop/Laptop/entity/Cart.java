@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Cart {
 
@@ -22,7 +24,7 @@ public class Cart {
     private Long id;
 
     private String shopCode;
-    private int quantity;
+
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -42,18 +44,12 @@ public class Cart {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Cart(User user) {
-        this.user = user;
-        this.items = new ArrayList<>();
+    public Cart(User loggedInUser) {
     }
 
-    public Cart() {
-        this.items = new ArrayList<>();
-    }
 
-    // Recalculate the total cart value
-    //get total of items in cart_item  with same id of that cart and status like IN_CART
     public void recalculateTotal() {
+        // Calculate the total only for items in this cart
         totalCart = items.stream()
                 .mapToDouble(item -> item.getQuantity() * item.getProduct().getSellingPrice())
                 .sum();
