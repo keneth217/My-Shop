@@ -39,7 +39,7 @@
           <th class="border border-slate-600 p-2">Customer Name</th>
           <th class="border border-slate-600 p-2">Customer Phone</th>
           <th class="border border-slate-600 p-2">Total</th>
-          <th class="border border-slate-600 p-2">Action</th>
+          <th class="border border-slate-600 p-2">Receipt</th>
         </tr>
       </thead>
       <tbody>
@@ -57,11 +57,14 @@
           <td class="border border-slate-600 p-2 text-right">{{ sale.totalPrice }}</td>
           <td class="border border-slate-600 p-2">
             <div class="flex justify-between">
-              <button class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
-                Receipt
+              <button class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+              
+              (click)="downloadReceipt(sale.id)">
+                Download
               </button>
-              <button class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500">
-                View
+              <button class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+              (click)="previewPdf(sale.id)">
+                Preview
               </button>
             </div>
           </td>
