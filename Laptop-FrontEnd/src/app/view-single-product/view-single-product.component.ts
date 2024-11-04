@@ -4,11 +4,12 @@ import { LoaderService } from '../Services/loader.service';
 import { ProductsService } from '../Services/products.service';
 import { SalesService } from '../Services/sales.service';
 import { CommonModule } from '@angular/common';
+import { NgIconsModule } from '@ng-icons/core';
 
 @Component({
   selector: 'app-view-single-product',
   standalone: true,
-  imports:[CommonModule],
+  imports:[CommonModule,NgIconsModule],
   templateUrl: './view-single-product.component.html',
   styleUrls: ['./view-single-product.component.css']
 })
