@@ -20,6 +20,7 @@ export class CheckoutComponent {
   @Input() productId!: number;
   @Output() close = new EventEmitter<void>();
   checkOutForm!: FormGroup;
+isSubmitting:boolean=false;
 
   constructor(
     private fb: FormBuilder,
@@ -51,27 +52,37 @@ export class CheckoutComponent {
   CompleteSale() {
     if (this.checkOutForm.valid) {
       const customerData = this.checkOutForm.value;
-
+  
+      // Optional: Disable the form or button to prevent multiple submissions
+      this.isSubmitting = true; // Create a boolean to track submission state
+  
       this.saleService.checkOut(customerData).subscribe(
         (response) => {
           console.log(response);
           this.toastService.success('Sale completed successfully!');
           this.launchConfetti(); // Trigger confetti on success
+          
+          // Optionally reset the form
+          this.checkOutForm.reset();
+          // Optionally close the form/modal
+          this.closeForm(); // Emit close event after successful sale
+          
           this.router.navigateByUrl('/dash/sale');
-
-
-          // this.checkOutForm.reset();
-          //this.closeForm(); // Emit close event after successful sale
         },
         (error) => {
-          this.toastService.error('Failed to complete sale!');
+          this.toastService.error('Failed to complete sale! ' + (error?.error?.message || ''));
           console.error(error);
+        },
+        () => {
+          // Always enable the button or reset the submitting state
+          this.isSubmitting = false; // Reset the submission state
         }
       );
     } else {
       this.toastService.warn('Please fill in all required fields!');
     }
   }
+  
 
   closeForm() {
     this.close.emit();
