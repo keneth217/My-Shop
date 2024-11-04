@@ -103,11 +103,15 @@
       class="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 shadow-sm rounded-sm bg-white p-4"
     >
 
-    <div *ngIf="products?.length === 0">
-      <p  class=" p-4 text-center">
-        No products found .
+    <div *ngIf="!products || products.length === 0">
+      <p class="p-4 text-center">
+        No products found whose stock is more than one.
       </p>
     </div>
+
+
+    <!-- Display loader if data is loading -->
+    <app-loader *ngIf="isLoading"></app-loader>
       <!-- Card layout for displaying products -->
       <div
         *ngFor="let product of products"
@@ -116,10 +120,11 @@
         <img
           [src]="'data:image/jpeg;base64,' + product.productImagesList?.[0]"
           alt="Product Image"
-          class="w-full h-40 object-cover mb-2"
+          class="w-full h-50 object-cover mb-2"
           *ngIf="product.productImagesList?.length > 0"
         />
         <h3 class="text-lg font-semibold">{{ product.name }}</h3>
+        <h3 class="text-lg text-green-500 font-semibold">Kshs:{{ product.sellingPrice }}</h3>
         <p class="text-gray-600">Stock: {{ product.stock }}</p>
         <!-- <p class="text-gray-600">Quantity Sold: {{ product.quantitySold }}</p> -->
         <div class="flex justify-between mt-4">
@@ -173,13 +178,14 @@
               {{ cart.itemCosts }}
             </td>
             <td class="border border-slate-600 p-2 text-right">
-              {{ cart.itemCosts * cart.quantity }}
+              {{cart.quantity * cart.itemCosts}}
             </td>
             <!-- Assuming this is how you want to calculate item total -->
             <td class="border border-slate-600 p-2">
               <div class="flex justify-between">
                 <button
                   class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+                  (click)="deleteItem(cart.id)"
                 >
                   Delete
                 </button>
@@ -212,12 +218,7 @@
           Checkout
         </button>
 
-        <button
-        class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
-        (click)="load()"
-      >
-        test loading
-      </button>
+    
       </div>
     </div>
 
