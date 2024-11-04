@@ -114,7 +114,7 @@ public class EmployeeService {
                 .id(employee.getId())
                 .name(employee.getName())
                 .salary(employee.getSalary())
-                .role(employee.getRole())
+                .role(employee.getUser().getRole())
                 .phoneNumber(employee.getPhoneNumber())
                 .shopId(employee.getShop().getId())
                // .employerRole(employerRole) // Set employer's role

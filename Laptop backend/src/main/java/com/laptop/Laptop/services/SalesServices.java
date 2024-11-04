@@ -102,7 +102,18 @@ public class SalesServices {
         cartItem.setStatus(CartStatus.IN_CART);
 
         // Recalculate the total cart value
+        //get total of cart items associated with that id of that cart
+
+
         cart.recalculateTotal();
+
+
+//         double totalCart=0;
+//         totalCart=cartItem.stream()
+//                .mapToDouble(cart -> item.getQuantity() * item.getProduct().getSellingPrice())
+//                .sum();
+
+        
 
         // Save and return the updated cart
         return cartRepository.save(cart);
@@ -116,7 +127,7 @@ public class SalesServices {
         Cart cart = cartRepository.findByUserAndShop(user, loggedInUser.getShop())
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
 
-        double totalPrice = 0;
+       // double totalPrice = 0;
 
         // Create the Sale object
         Sale sale = new Sale();
@@ -149,14 +160,14 @@ public class SalesServices {
             saleItem.setSale(savedSale);
             savedSale.getSaleItems().add(saleItem);
 
-            totalPrice += product.getSellingPrice() * quantity;
+          //  totalPrice += product.getSellingPrice() * quantity;
 
             // Set each cart item status to SOLD
             cartItem.setStatus(CartStatus.SOLD);
         }
 
         // Set the total price of the sale
-        savedSale.setTotalPrice(totalPrice);
+        savedSale.setTotalPrice(cart.getTotalCart());
         saleRepository.save(savedSale);
 
         // Update the cart status to SOLD

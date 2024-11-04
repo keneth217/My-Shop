@@ -33,6 +33,7 @@ employees: any[]=[];
     this.employeeService.getEmployees().subscribe({
       next: (data) => {
         console.log(data)
+        console.log(data)
         this.employees = data; // Set the products from the API response
       },
       error: (error) => {
