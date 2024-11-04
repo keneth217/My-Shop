@@ -46,6 +46,12 @@ export class SalesService {
 
     });
   }
+  deleteCartItem(cartItemId: number): Observable<CartResponse> {
+    const url = `${this.baseUrl}/${cartItemId}`;
+    return this.http.delete<CartResponse>(url, {
+      headers: this.createAuthorizationHeaders(),
+    });
+  }
 
   checkOut(customerData:any): Observable<any[]> {
     const url = `${this.baseUrl}/checkout`;
@@ -54,7 +60,11 @@ export class SalesService {
 
     });
   }
-
+  // New method to generate a PDF receipt
+  generatePrintableReceipt(saleId: number): Observable<Blob> {
+    const url = `${this.baseUrl}/generate/${saleId}`; // Adjust this endpoint to return PDF
+    return this.http.get(url, { responseType: 'blob', headers: this.createAuthorizationHeaders() });
+  }
   fetchCartItems(): Observable<CartResponse> {
     const url = `${this.baseUrl}/items`;
     return this.http.get<CartResponse>(url, {
