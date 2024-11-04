@@ -15,9 +15,12 @@ import { LoaderComponent } from "../loader/loader.component";
   styleUrls: ['./sales-list.component.css'],
 })
 export class SalesListComponent {
+
   sales: any[] = [];
   startDate: string = ''; // Bound to the form input
   endDate: string = ''; // Bound to the form input
+
+  saleid:number=0;
 
   constructor(
     private salesService: SalesService,
@@ -56,5 +59,36 @@ export class SalesListComponent {
         this.toastService.error('Failed to fetch sales data.');
       },
     });
+  }
+
+  previewPdf(saleId: number): void {
+    this.salesService.generatePrintableReceipt(saleId).subscribe(
+      (response: Blob) => {
+        const fileURL = URL.createObjectURL(response);
+        window.open(fileURL); // Open PDF in a new tab for preview
+      },
+      (error: any) => {
+        console.error('Error generating PDF for preview:', error);
+      }
+    );
+  }
+  
+
+
+
+  downloadReceipt(saleId: number): void {
+    this.salesService.generatePrintableReceipt(saleId).subscribe(
+      (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `receipt-${saleId}.pdf`; // Customize the file name
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      (error) => {
+        console.error('Error downloading receipt:', error);
+      }
+    );
   }
 }
