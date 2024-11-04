@@ -1,24 +1,25 @@
 package com.laptop.Laptop.services;
 
+import com.laptop.Laptop.dto.CartDto;
 import com.laptop.Laptop.dto.Responses.CartResponse;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.enums.CartStatus;
-import com.laptop.Laptop.exceptions.CartItemNotFoundException;
-import com.laptop.Laptop.exceptions.CartNotFoundException;
-import com.laptop.Laptop.exceptions.InsufficientStockException;
-import com.laptop.Laptop.exceptions.ProductNotFoundException;
+import com.laptop.Laptop.exceptions.*;
 import com.laptop.Laptop.helper.AuthUser;
 import com.laptop.Laptop.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,8 +46,7 @@ public class SalesServices {
     }
 
     @Transactional
-    //@CacheEvict(value = "productsByShop", key = "#shopId")
-    public Cart addToCart(Long productId, Cart quantity, User user) {
+    public CartResponse addToCart(Long productId, CartDto cartDto, User user) {
         // Ensure the provided user is the same as the logged-in user
         User loggedInUser = getLoggedInUser();
 
@@ -57,18 +57,19 @@ public class SalesServices {
         // Check if there's enough stock
         if (product.getStock() <= 0) {
             throw new InsufficientStockException("Product " + product.getName() + " is out of stock.");
-        } else if (product.getStock() < quantity.getQuantity()) {
+        } else if (product.getStock() < cartDto.getQuantity()) {
             throw new InsufficientStockException("Insufficient stock for " + product.getName() + ". Available stock: " + product.getStock());
         }
 
         // Reduce stock by quantity passed
-        product.setStock(product.getStock() - quantity.getQuantity());
+        product.setStock(product.getStock() - cartDto.getQuantity());
         productRepository.save(product); // Save product to update stock in the database
 
         // Find or create a new cart for the logged-in user
         Cart cart = cartRepository.findByUser(loggedInUser)
                 .orElseGet(() -> {
-                    Cart newCart = new Cart(loggedInUser);
+                    Cart newCart = new Cart();
+                    newCart.setUser(loggedInUser);
                     newCart.setShop(loggedInUser.getShop());
                     newCart.setStatus(CartStatus.IN_CART); // Set status to IN_CART
                     newCart.setShopCode(loggedInUser.getShop().getShopCode());
@@ -82,9 +83,8 @@ public class SalesServices {
                 .orElseGet(() -> {
                     CartItem newItem = new CartItem();
                     newItem.setProduct(product);
-                    newItem.setItemCosts(product.getCost());
+                    newItem.setItemCosts(product.getSellingPrice());
                     newItem.setCart(cart);
-                    //newItem.getQuantity(quantity.getQuantity())
                     newItem.setProductName(product.getName());
                     newItem.setStatus(CartStatus.IN_CART); // Set status to IN_CART
                     newItem.setShop(loggedInUser.getShop());
@@ -95,89 +95,90 @@ public class SalesServices {
                 });
 
         // Update the quantity of the cart item
-        cartItem.setQuantity(quantity.getQuantity());
+        cartItem.setQuantity(cartDto.getQuantity());
 
         // Update the status of the cart and cart item to IN_CART
         cart.setStatus(CartStatus.IN_CART);
         cartItem.setStatus(CartStatus.IN_CART);
 
         // Recalculate the total cart value
-        //get total of cart items associated with that id of that cart
-
-
         cart.recalculateTotal();
 
+        // Save the updated cart
+        cartRepository.save(cart);
 
-//         double totalCart=0;
-//         totalCart=cartItem.stream()
-//                .mapToDouble(cart -> item.getQuantity() * item.getProduct().getSellingPrice())
-//                .sum();
+        // Create a CartResponse to return
+        CartResponse response = CartResponse.builder()
+                .items(cart.getItems())
+                .total(cart.getTotalCart())
+                .build();
 
-        
-
-        // Save and return the updated cart
-        return cartRepository.save(cart);
+        return response;
     }
+
+
 
     @Transactional
     public Sale checkoutCart(User user, Sale customer) throws IOException {
         User loggedInUser = getLoggedInUser();
 
-        // Find the user's cart associated with the current shop
+        // Find or create the user's cart associated with the current shop
         Cart cart = cartRepository.findByUserAndShop(user, loggedInUser.getShop())
-                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
+                .orElseGet(() -> {
+                    Cart newCart = new Cart();
+                    newCart.setUser(user);
+                    newCart.setShop(loggedInUser.getShop());
+                    newCart.setStatus(CartStatus.IN_CART);
+                    cartRepository.save(newCart); // Save and return the new cart
+                    return newCart;
+                });
 
-       // double totalPrice = 0;
+        // Check if the cart has already been checked out
+        if (cart.getStatus() == CartStatus.SOLD) {
+            // If already checked out, create a new cart for the user
+            cart = new Cart();
+            cart.setUser(user);
+            cart.setShop(loggedInUser.getShop());
+            cart.setStatus(CartStatus.IN_CART);
+            cartRepository.save(cart);
+        }
 
-        // Create the Sale object
+        // Create and populate the Sale object
         Sale sale = new Sale();
         sale.setShopCode(loggedInUser.getShop().getShopCode());
         sale.setDate(LocalDate.now());
         sale.setSalePerson(loggedInUser.getUsername());
         sale.setUser(loggedInUser);
+        sale.setCustomerAddress(customer.getCustomerAddress());
         sale.setShop(loggedInUser.getShop());
         sale.setCustomerName(customer.getCustomerName());
         sale.setCustomerPhone(customer.getCustomerPhone());
-        sale.setCart(cart); // Associate the sale with the cart
 
-        // Save the sale to generate an ID
-        Sale savedSale = saleRepository.save(sale);
+        List<SaleItem> saleItems = new ArrayList<>();
+        double totalPrice = 0;
 
-        // Process each cart item
         for (CartItem cartItem : cart.getItems()) {
             Product product = cartItem.getProduct();
             int quantity = cartItem.getQuantity();
-
-            // Update product stock and quantity sold
-            product.setQuantitySold(product.getQuantitySold() + quantity);
-            productRepository.save(product);
 
             // Create and associate a SaleItem with the Sale
             SaleItem saleItem = new SaleItem();
             saleItem.setProduct(product);
             saleItem.setQuantity(quantity);
             saleItem.setSalePrice(product.getSellingPrice());
-            saleItem.setSale(savedSale);
-            savedSale.getSaleItems().add(saleItem);
+            saleItem.setSale(sale);
+            saleItems.add(saleItem); // Accumulate sale items
 
-          //  totalPrice += product.getSellingPrice() * quantity;
-
-            // Set each cart item status to SOLD
-            cartItem.setStatus(CartStatus.SOLD);
+            // Update total price
+            totalPrice += product.getSellingPrice() * quantity;
         }
 
-        // Set the total price of the sale
-        savedSale.setTotalPrice(cart.getTotalCart());
-        saleRepository.save(savedSale);
+        // Save sale with its items and total price
+        sale.setSaleItems(saleItems);
+        sale.setTotalPrice(totalPrice);
+        Sale savedSale = saleRepository.save(sale);
 
-        // Update the cart status to SOLD
-        cart.setStatus(CartStatus.SOLD);
-        cartRepository.save(cart);
-
-        // Save the updated cart items with SOLD status
-        cartItemRepository.saveAll(cart.getItems());
-
-        // Create and save a receipt for the sale
+        // Create a receipt for the sale
         Receipt receipt = new Receipt();
         receipt.setShop(savedSale.getShop());
         receipt.setSale(savedSale);
@@ -188,11 +189,42 @@ public class SalesServices {
         receipt.setReceiptNo(receiptNo);
         receiptRepository.save(receipt);
 
-        // Generate the PDF receipt
+        // Generate a PDF receipt
         pdfReportServices.generateReceiptForSale(savedSale.getId());
+
+        // Delete all cart items to clear the cart for the logged-in user
+        cartItemRepository.deleteAll(cart.getItems());
+
+        // Delete the cart itself for the logged-in user
+        cartRepository.delete(cart);
 
         return savedSale;
     }
+
+
+
+
+
+
+
+
+
+
+    // Extracted method to create a Receipt
+    private Receipt createReceipt(Sale savedSale) {
+        Receipt receipt = new Receipt();
+        receipt.setShop(savedSale.getShop());
+        receipt.setSale(savedSale);
+        receipt.setReceiptDate(LocalDate.now());
+        receipt.setReceiptTo(savedSale.getCustomerName());
+        receipt.setUser(savedSale.getUser());
+
+        // Ensure receipt number is unique
+        int receiptNo = receiptRepository.findMaxReceiptNo().orElse(0) + 1;
+        receipt.setReceiptNo(receiptNo);
+        return receipt;
+    }
+
 
 
     @Transactional(readOnly = true)
@@ -246,12 +278,20 @@ public class SalesServices {
         Cart cart = cartRepository.findByUserAndShop(user,loggedInUser.getShop())
                 .orElseThrow(() -> new CartNotFoundException("Cart not found for user"));
 
+
         // Find the cart item by its ID
         CartItem cartItem = cart.getItems().stream()
                 .filter(item -> item.getId().equals(cartItemId) && CartStatus.IN_CART.equals(item.getStatus()))
                 .findFirst()
                 .orElseThrow(() -> new CartItemNotFoundException("Cart item not found"));
 
+
+        // Retrieve the product associated with the cart item
+        Product product = cartItem.getProduct();
+
+        // Update the product's stock by adding back the cart item's quantity
+        product.setStock(product.getStock() + cartItem.getQuantity());
+        productRepository.save(product);  // Save the updated product
         // Remove the cart item from the cart
         cart.getItems().remove(cartItem);
 
