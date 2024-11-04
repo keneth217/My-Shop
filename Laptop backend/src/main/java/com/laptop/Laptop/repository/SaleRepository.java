@@ -1,5 +1,6 @@
 package com.laptop.Laptop.repository;
 
+import com.laptop.Laptop.entity.Cart;
 import com.laptop.Laptop.entity.Sale;
 import com.laptop.Laptop.entity.Shop;
 import com.laptop.Laptop.entity.User;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByDateBetween(LocalDate startDate, LocalDate endDate);
@@ -23,4 +25,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     Page<Sale> findAllByShopAndDateBetween(Shop shop, LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     List<Sale> findByUserAndShop(User loggedInUser, Shop shop);
+
+
 }
