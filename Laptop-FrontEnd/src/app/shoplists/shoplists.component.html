@@ -38,6 +38,9 @@
   
       </div>
     </div>
+
+        <!-- Display loader if data is loading -->
+        <app-loader *ngIf="isLoading"></app-loader>
   <div class="shadow-sm rounded-sm bg-white p-4">
     <!-- Table displaying payments -->
     <table class="table-auto border-collapse border  border-slate-500 w-full">
@@ -70,7 +73,7 @@
           <td class="border border-slate-600 p-2">{{shop.registrationDate}}</td>
           <td class="border border-slate-600 p-2">{{shop.expiryDate}}</td>
        
-          <td class="border border-slate-600 p-2">{{shop.shopStatus}}</td>
+          <td class="border border-slate-600 p-2">{{shop.status}}</td>
          
           
           <td class="border border-slate-600 p-2">
