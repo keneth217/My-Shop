@@ -1,6 +1,7 @@
 package com.laptop.Laptop.services;
 
 import com.laptop.Laptop.dto.ShopRegistrationRequestDto;
+import com.laptop.Laptop.dto.ShopUpdateRequestDto;
 import com.laptop.Laptop.entity.Employee;
 import com.laptop.Laptop.entity.Shop;
 import com.laptop.Laptop.entity.User;
@@ -15,11 +16,15 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class ShopService {
@@ -153,16 +158,87 @@ public class ShopService {
 
 
     // List all registered shops
-    public List<Shop> getAllShops() {
-        List<Shop> shop= shopRepository.findAll(); // Fetch all shops
-        return shop;
+    public List<ShopUpdateRequestDto> getAllShops() {
+        // Fetch all shops from the repository
+        List<Shop> shops = shopRepository.findAll();
+
+        // Map each Shop entity to ShopUpdateRequestDto
+        return shops.stream()
+                .map(shop -> ShopUpdateRequestDto.builder()
+                        .id(shop.getId())
+                        .shopName(shop.getShopName())
+                        .address(shop.getAddress())
+                        .owner(shop.getOwner())
+                        .shopCode(shop.getShopCode())
+                        .phoneNumber(shop.getPhoneNumber())
+                        .description(shop.getDescription())
+                        .registrationDate(shop.getRegistrationDate())
+                        .expiryDate(shop.getExpiryDate())
+                        .status(shop.getShopStatus())
+
+                        .build())
+                .collect(Collectors.toList());
     }
+
 
     // Get all shops by status
     public List<Shop> getAllShopsByStatus(ShopStatus status) {
         List<Shop> shops=shopRepository.findByShopStatus(status);
         return  shops; // Fetch shops by status
     }
+
+    @Transactional
+    public ShopUpdateRequestDto updateShopDetails(Long shopId, ShopUpdateRequestDto request) {
+
+        // Fetch the shop by its ID
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new ShopNotFoundException("Shop not found with ID: " + shopId));
+
+        // Update shop details
+        shop.setShopName(request.getShopName());
+        shop.setAddress(request.getAddress());
+        shop.setOwner(request.getOwner());
+
+        shop.setPhoneNumber(request.getPhoneNumber());
+        shop.setDescription(request.getDescription());
+
+        // Update logo URL if provided
+        String logoUrl = null;
+        if (shop.getShopLogo() != null) {
+            // Convert byte array to base64 or handle accordingly if you store it as a URL
+            logoUrl = "data:image/png;base64," + Base64.getEncoder().encodeToString(shop.getShopLogo());
+        }
+
+        // Convert and store logo as byte array if a new logo file is provided
+        if (request.getShopLogo() != null && !request.getShopLogo().isEmpty()) {
+            try {
+                byte[] logoBytes = request.getShopLogo().getBytes();
+                shop.setShopLogo(logoBytes);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to store shop logo", e);
+            }
+        }
+
+        // Save updated shop details
+        shopRepository.save(shop);
+
+        // Map the updated shop to ShopUpdateRequestDto to return
+        ShopUpdateRequestDto response = ShopUpdateRequestDto.builder()
+                .shopName(shop.getShopName())
+                .address(shop.getAddress())
+                .owner(shop.getOwner())
+                .phoneNumber(shop.getPhoneNumber())
+                .description(shop.getDescription())
+                .shopLogoUrl(logoUrl)
+                .build();
+
+        return response;
+    }
+
+
+
+
+
 }
 
 
