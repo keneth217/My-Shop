@@ -21,6 +21,7 @@ export class SalesListComponent {
   endDate: string = ''; // Bound to the form input
 
   saleid:number=0;
+isLoading: boolean=false;
 
   constructor(
     private salesService: SalesService,
@@ -42,10 +43,12 @@ export class SalesListComponent {
 
   // Fetch sales based on selected dates
   fetchSales(): void {
+    this.isLoading=true;
     this.loaderService.show();
     this.salesService.getSales(this.startDate, this.endDate).subscribe({
       next: (data: SalesResponse) => {
         console.log(data);
+        this.isLoading=false;
         this.sales = data.content;
         this.loaderService.hide();
        
