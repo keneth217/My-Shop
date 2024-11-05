@@ -4,17 +4,19 @@ import { NgIconsModule } from '@ng-icons/core';
 import { AngularToastifyModule, ToastService } from 'angular-toastify';
 import { AddSupplierComponent } from "../add-supplier/add-supplier.component";
 import { SupplierService } from '../Services/supplier.service';
+import { LoaderComponent } from "../loader/loader.component";
 
 @Component({
   selector: 'app-suppliers-list',
   standalone: true,
-  imports: [AngularToastifyModule, CommonModule, NgIconsModule, AddSupplierComponent],
+  imports: [AngularToastifyModule, CommonModule, NgIconsModule, AddSupplierComponent, LoaderComponent],
   templateUrl: './suppliers-list.component.html',
   styleUrl: './suppliers-list.component.css'
 })
 export class SuppliersListComponent {
   suppliers: any[]=[];
 showAddSupplier: Boolean=false;
+isLoading: boolean=false;
 
 
 constructor(
@@ -27,9 +29,11 @@ ngOnInit(): void {
 }
 
 fetchSuppliers(): void {
+  this.isLoading=true;
   this.supplierService.getSuppliers().subscribe({
     next: (data) => {
       this.suppliers = data; 
+      this.isLoading=false;
       console.log(data)
       // Set the products from the API response
       console.log(data)
