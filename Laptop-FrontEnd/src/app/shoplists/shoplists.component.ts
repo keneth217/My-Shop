@@ -7,11 +7,12 @@ import { ExpenseService } from '../Services/expense.service';
 import { SuperService } from '../Services/super.service';
 import { ActivateShopComponent } from "../activate-shop/activate-shop.component";
 import { Router } from '@angular/router';
+import { LoaderComponent } from "../loader/loader.component";
 
 @Component({
   selector: 'app-shoplists',
   standalone: true,
-  imports: [SuperAddShopComponent, CommonModule, AngularToastifyModule, NgIconsModule, ActivateShopComponent],
+  imports: [SuperAddShopComponent, CommonModule, AngularToastifyModule, NgIconsModule, ActivateShopComponent, LoaderComponent],
   templateUrl: './shoplists.component.html',
   styleUrl: './shoplists.component.css'
 })
@@ -23,6 +24,7 @@ export class ShoplistsComponent {
   showAddShop: boolean = false;
   showActivateForm: boolean = false;
   selectedShopId: number = 0;
+isLoading:  boolean = false;
 
 
 
@@ -37,10 +39,12 @@ export class ShoplistsComponent {
   }
 
   fetchShops(): void {
+    this.isLoading=true;
     this.superService.fetchShops().subscribe({
       next: (data) => {
         console.log(data)
         this.shops = data; // Set the products from the API response
+        this.isLoading=false;
       },
       error: (error) => {
         console.error('Error fetching employees:', error);
@@ -52,6 +56,7 @@ export class ShoplistsComponent {
     this.superService.deactivateShop(shopId).subscribe({
       next: (data) => {
         console.log(data);
+        this.fetchShops()
         this.toastService.success("Shop deactivated");
         this.router.navigateByUrl('/admin/shops')
       },
