@@ -30,6 +30,9 @@
       </button>
     </form>
 
+        <!-- Display loader if data is loading -->
+        <app-loader *ngIf="isLoading"></app-loader>
+
     <!-- Table displaying sales -->
     <table class="table-auto border-collapse border border-slate-500 w-full">
       <thead>
