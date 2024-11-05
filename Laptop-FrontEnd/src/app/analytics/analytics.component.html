@@ -31,6 +31,9 @@
   </div>
 </div>
 
+    <!-- Display loader if data is loading -->
+    <app-loader *ngIf="isLoading"></app-loader>
+
 <!-- Chart Section -->
 <div class="container mx-auto mt-6 px-4">
   <div
@@ -77,43 +80,46 @@
   <div class="w-full justify-center  p-4">
     <p class="text-2xl font-bold text-green-500">Top  Selling Products</p>
   </div>
-  <!-- Table displaying payments -->
-  <table class="table-auto border-collapse border border-slate-500 w-full">
-    <thead>
-      <tr>
-        <th class="border border-slate-600 p-2">Name</th>
+<!-- Table displaying payments -->
+<table class="table-auto border-collapse border border-slate-500 w-full">
+  <thead>
+    <tr>
+      <th class="border border-slate-600 p-2">No.</th>
+      <th class="border border-slate-600 p-2">Name</th>
+      <th class="border border-slate-600 p-2">Cost</th>
+      <th class="border border-slate-600 p-2">Stock</th>
+      <th class="border border-slate-600 p-2">Quantity Sold</th>
+      <th class="border border-slate-600 p-2">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Display if no products are found -->
+    <tr *ngIf="toProducts.length === 0">
+      <td colspan="6" class="border border-slate-600 p-4 text-center">
+        No products found.
+      </td>
+    </tr>
 
-        <th class="border border-slate-600 p-2">cost</th>
-        <th class="border border-slate-600 p-2">stock</th>
-        <th class="border border-slate-600 p-2">quantity sold</th>
-        <th class="border border-slate-600 p-2">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngIf="toProducts.length === 0">
-        <td colspan="4" class="border border-slate-600 p-4 text-center">
-          No product found .
-        </td>
-      </tr>
+    <!-- Display products if available -->
+    <tr *ngFor="let top of toProducts; let i = index">
+      <td class="border border-slate-600 p-2">{{ i + 1 }}</td> <!-- Display row number -->
+      <td class="border border-slate-600 p-2">{{ top.name }}</td>
+      <td class="border border-slate-600 p-2">{{ top.cost }}</td>
+      <td class="border border-slate-600 p-2">{{ top.stock }}</td>
+      <td class="border border-slate-600 p-2">{{ top.quantitySold }}</td>
+      <td class="border border-slate-600 p-2">
+        <div class="flex justify-around">
+          <button
+            type="button"
+            class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+            (click)="deleteProduct(top.id)"
+          >
+            Delete
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-      <tr *ngFor="let top of toProducts">
-        <td class="border border-slate-600 p-2">{{ top.name }}</td>
-        <td class="border border-slate-600 p-2">{{ top.cost }}</td>
-        <td class="border border-slate-600 p-2">{{ top.stock }}</td>
-        <td class="border border-slate-600 p-2">{{ top.quantitySold }}</td>
-
-        <td class="border border-slate-600 p-2">
-          <div class="flex justify-around">
-        
-            <button
-              type="submit"
-              class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
-            >
-              Delete
-            </button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
 </div>
