@@ -5,11 +5,12 @@ import { ProductsService } from '../Services/products.service';
 import { SalesService } from '../Services/sales.service';
 import { CommonModule } from '@angular/common';
 import { NgIconsModule } from '@ng-icons/core';
+import { LoaderComponent } from "../loader/loader.component";
 
 @Component({
   selector: 'app-view-single-product',
   standalone: true,
-  imports:[CommonModule,NgIconsModule],
+  imports: [CommonModule, NgIconsModule, LoaderComponent],
   templateUrl: './view-single-product.component.html',
   styleUrls: ['./view-single-product.component.css']
 })
@@ -18,6 +19,7 @@ export class ViewSingleProductComponent implements OnInit {
   @Output() close = new EventEmitter<void>(); // Close event emitter
 
   product: any = {}; // Store the fetched product details
+isLoading: any;
 
   constructor(
     private productService: ProductsService,
