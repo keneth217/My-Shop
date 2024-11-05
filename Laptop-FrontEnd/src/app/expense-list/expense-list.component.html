@@ -28,6 +28,9 @@
         </button>
       </div>
     </div>
+
+        <!-- Display loader if data is loading -->
+        <app-loader *ngIf="isLoading"></app-loader>
   <div class="shadow-sm rounded-sm bg-white p-4">
     <!-- Table displaying payments -->
     <table class="table-auto border-collapse border  border-slate-500 w-full">
