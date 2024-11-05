@@ -13,6 +13,11 @@ import { SuperDashboardComponent } from './super-dashboard/super-dashboard.compo
 import { ShoplistsComponent } from './shoplists/shoplists.component';
 import { SuperAnalyticsComponent } from './super-analytics/super-analytics.component';
 import { StocksComponent } from './stocks/stocks.component';
+import { MyShopComponent } from './my-shop/my-shop.component';
+import { InvestementlistComponent } from './investementlist/investementlist.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { ConfigurationsComponent } from './configurations/configurations.component';
+import { ContactusComponent } from './contactus/contactus.component';
 
 export const routes: Routes = [
 
@@ -29,6 +34,12 @@ export const routes: Routes = [
             { path: 'employee', component: EmployeeListComponent },
             { path: 'sale', component: SalesListComponent },
             { path: 'expense', component: ExpenseListComponent },
+            { path: 'shop', component: MyShopComponent },
+            { path: 'investment', component: InvestementlistComponent },
+            { path: 'profile', component: UserProfileComponent },
+            { path: 'tenant-conf', component: ConfigurationsComponent },
+            { path: 'contact', component: ContactusComponent },
+
         ],
     },
 
