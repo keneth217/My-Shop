@@ -3,6 +3,7 @@ package com.laptop.Laptop.controller;
 import com.laptop.Laptop.constants.MyConstants;
 import com.laptop.Laptop.dto.Responses.Responsedto;
 import com.laptop.Laptop.dto.ShopRegistrationRequestDto;
+import com.laptop.Laptop.dto.ShopUpdateRequestDto;
 import com.laptop.Laptop.entity.Shop;
 import com.laptop.Laptop.enums.ShopStatus;
 import com.laptop.Laptop.services.PdfReportServices;
@@ -62,8 +63,8 @@ public class ShopController {
 
     // Get all registered shops
     @GetMapping
-    public ResponseEntity<List<Shop>> getAllShops() {
-        List<Shop> shops = shopService.getAllShops();
+    public ResponseEntity<List<ShopUpdateRequestDto>> getAllShops() {
+        List<ShopUpdateRequestDto> shops = shopService.getAllShops();
         return ResponseEntity.ok(shops);
     }
 
@@ -76,13 +77,16 @@ public class ShopController {
 
     // Generate shop list report PDF
     @GetMapping("/pdf/report")
-    public ResponseEntity<?> generateShopListReport() throws IOException {
+    public ResponseEntity<byte[]> generateShopListReport() throws IOException {
 
         // Fetch all shops
-        List<Shop> shops = shopService.getAllShops();
+        List<ShopUpdateRequestDto> shops = shopService.getAllShops();
 
         // Generate the PDF report
         ByteArrayInputStream pdfStream = pdfReportServices.generateShopListReport(shops);
+
+        // Read the PDF bytes from the InputStream
+        byte[] pdfBytes = pdfStream.readAllBytes();
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=shop-list-report.pdf");
@@ -90,6 +94,17 @@ public class ShopController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(pdfStream.readAllBytes());
+                .body(pdfBytes); // Return the byte array representing the PDF
+    }
+
+
+    @PutMapping("/update/{shopId}")
+    public ResponseEntity<ShopUpdateRequestDto> updateShopDetails(
+            @PathVariable Long shopId,
+            @ModelAttribute ShopUpdateRequestDto request) {
+
+        ShopUpdateRequestDto updatedShop = shopService.updateShopDetails(shopId, request);
+
+        return ResponseEntity.ok(updatedShop);
     }
 }
