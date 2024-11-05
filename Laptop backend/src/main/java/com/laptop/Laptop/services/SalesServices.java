@@ -161,6 +161,11 @@ public class SalesServices {
             Product product = cartItem.getProduct();
             int quantity = cartItem.getQuantity();
 
+
+            // Update product stock and quantity sold
+            product.setQuantitySold(product.getQuantitySold() + quantity);
+            productRepository.save(product);
+
             // Create and associate a SaleItem with the Sale
             SaleItem saleItem = new SaleItem();
             saleItem.setProduct(product);
