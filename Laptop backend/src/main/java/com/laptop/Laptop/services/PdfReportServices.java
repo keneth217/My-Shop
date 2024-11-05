@@ -1,15 +1,11 @@
 package com.laptop.Laptop.services;
 
 import com.itextpdf.io.source.ByteArrayOutputStream;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.IBlockElement;
-import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfDocument;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.laptop.Laptop.dto.ShopUpdateRequestDto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.exceptions.ProductNotFoundException;
 import com.laptop.Laptop.repository.ProductRepository;
@@ -20,11 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -282,7 +275,7 @@ public class PdfReportServices {
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    public ByteArrayInputStream generateShopListReport(List<Shop> shops) {
+    public ByteArrayInputStream generateShopListReport(List<ShopUpdateRequestDto> shops) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -300,7 +293,7 @@ public class PdfReportServices {
             table.addCell("Phone");
             table.addCell("Owner");
 
-            for (Shop shop : shops) {
+            for (ShopUpdateRequestDto shop : shops) {
                 table.addCell(shop.getShopName());
                 table.addCell(shop.getAddress());
                 table.addCell(shop.getPhoneNumber());
@@ -327,9 +320,9 @@ public class PdfReportServices {
     // Helper method to add header with shop details and logo
     private void addHeader(Document document, Shop shop,User user) throws DocumentException {
         // Add the logo (if available)
-        if (shop.getLogo() != null) {
+        if (shop.getShopLogo() != null) {
             try {
-                Image logo = Image.getInstance(shop.getLogo()); // Assuming `shop.getLogo()` returns byte[]
+                Image logo = Image.getInstance(shop.getShopLogo()); // Assuming `shop.getLogo()` returns byte[]
                 logo.scaleAbsolute(50, 50); // Adjust the size as necessary
                 document.add(logo);
             } catch (Exception e) {
