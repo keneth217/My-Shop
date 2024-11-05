@@ -35,6 +35,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.Optional;
 
 @Service
@@ -220,7 +221,11 @@ public class AuthServiceImpl implements  AuthService{
             final String jwt = jwtUtils.generateToken(userDetails.getUsername(), user.getShop().getId(), authenticationRequest.getShopCode());
             System.out.println("token generated is:" + jwt);
             System.out.println("Success: Generated JWT token for user - " + userDetails.getUsername());
-
+            String logoUrl = null;
+            if (user.getShop().getShopLogo() != null) {
+                // Convert byte array to base64 or handle accordingly if you store it as a URL
+                logoUrl = "data:image/png;base64," + Base64.getEncoder().encodeToString(user.getShop().getShopLogo());
+            }
             // Return JWT response with token, username, role, and shopCode
             JWTAuthenticationResponse jwtAuthenticationResponse = JWTAuthenticationResponse.builder()
                     .message("Login success")
@@ -234,7 +239,7 @@ public class AuthServiceImpl implements  AuthService{
                     .shop(ShopResponse.builder()
                             .shopName(user.getShop().getShopName())
                             .shopAddress(user.getShop().getAddress())
-                            .shopLogo(user.getShop().getLogo())
+                            .shopLogo(logoUrl)
                             .shopCode(user.getShopCode())
                             .shopPhone(user.getShop().getPhoneNumber())
                             .build())
