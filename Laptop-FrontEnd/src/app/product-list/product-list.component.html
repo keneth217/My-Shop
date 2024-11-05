@@ -115,7 +115,7 @@
       <!-- Card layout for displaying products -->
       <div
         *ngFor="let product of products"
-        class="bg-white rounded-lg shadow-md p-4"
+        class="bg-white rounded-lg shadow-md p-4 outline-none border-2 border-green-300 hover:"
       >
         <img
           [src]="'data:image/jpeg;base64,' + product.productImagesList?.[0]"
@@ -214,12 +214,12 @@
         <button
           class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
           (click)="openCheckOut(totalInCart)"
+          [disabled]="totalInCart === 0" 
         >
           Checkout
         </button>
-
-    
       </div>
+      
     </div>
 
     <lib-toastify-toast-container></lib-toastify-toast-container>
