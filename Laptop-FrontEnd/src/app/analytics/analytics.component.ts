@@ -7,6 +7,7 @@ import { Chart, ChartOptions, registerables } from 'chart.js';
 import { ProductsService } from '../Services/products.service';
 import { CommonModule } from '@angular/common';
 import { TopProductsResponse } from '../model/top.model';
+import { LoaderComponent } from "../loader/loader.component";
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -14,11 +15,12 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [AngularToastifyModule,CommonModule],
+  imports: [AngularToastifyModule, CommonModule, LoaderComponent],
   templateUrl: './analytics.component.html',
   styleUrls: ['./analytics.component.css'],
 })
 export class AnalyticsComponent implements OnInit, OnDestroy {
+
   analytics: any;
 
   toProducts: any[] = [];
@@ -33,6 +35,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   private pieChart1: Chart<'bar', number[], string> | undefined;
   private pieChart2: Chart<'pie', number[], string> | undefined;
   private pieChart3: Chart<'pie', number[], string> | undefined; // Third chart
+isLoading: boolean=false;
 
   constructor(
     private dashboardService: DashboardService,
@@ -43,10 +46,13 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.isLoading=true;
     this.loaderService.show();
     Promise.all([this.fetchAnalytics(),this.fetchTopProducts(), this.fetchExpenseTotals()]).finally(() =>
       this.loaderService.hide()
+   
     );
+    this.isLoading=false;
   }
 
   ngOnDestroy(): void {
@@ -56,11 +62,13 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   fetchTopProducts(): Promise<void> {
+    this.isLoading=true;
     return new Promise((resolve, reject) => {
       this.productsService.getTopProducts().subscribe({
         next: (data:TopProductsResponse) => {
           console.log(data);
           this.toProducts = data.content;
+          this.isLoading=false;
       
           resolve();
         },
@@ -136,7 +144,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       this.pieChart1 = new Chart('pieChart1', {
         type: 'bar',
         data: {
-          labels: ['Sales', 'Net Profit', 'Gross Profit', 'Expenses'],
+          labels: ['Sales', 'N.Profit', 'G.Profit', 'Expenses'],
           datasets: [
             {
               data: [totalSales, netProfit, grossProfit, totalExpenses],
@@ -191,4 +199,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       });
     }
   }
+  deleteProduct(arg0: any) {
+    throw new Error('Method not implemented.');
+    }
 }
