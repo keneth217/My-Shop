@@ -1,0 +1,68 @@
+<div class="fixed inset-0 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full outline-none border-green-400 border-2 relative">
+      
+      <!-- Toastify Notification Container with z-index -->
+      <div class="z-50 absolute top-4 right-4">
+        <lib-toastify-toast-container></lib-toastify-toast-container>
+      </div>
+
+      <div>
+        <app-popup #popup></app-popup>
+       
+      </div>
+      
+      <div class="flex justify-center mb-2">
+        <h2 class="text-xl font-bold text-green-500">My Shop Details</h2>
+      </div>
+      <div class="text-green mb-3">
+        <hr class="border-0 border-t border-green-400 mb-2">
+      </div>
+  
+      <form [formGroup]="shopForm" (ngSubmit)="updateShop()">
+        <label class="block text-gray-700 font-bold mb-2">Upload Logo</label>
+        <input type="file" (change)="onImageSelect($event)" 
+               class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+        
+        <!-- Image Preview Section -->
+        <div class="h-24 flex justify-center items-center">
+          <!-- Display existing logo if available -->
+          <div *ngIf="shopLogo" class="relative">
+              <img [src]="shopLogo" class="w-24 h-24 object-cover rounded-full shadow-lg outline-none border-2 border-green-300 p-2">
+              <!-- <button type="button" (click)="removeExistingLogo()" 
+                      class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">✕</button> -->
+          </div>
+      
+          <!-- Display new logo if selected -->
+          <div *ngIf="newLogo?.preview" class="relative">
+              <img [src]="newLogo?.preview" class="w-24 h-24 object-cover rounded-full shadow-lg">
+              <button type="button" (click)="removeImage()" 
+                      class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">✕</button>
+          </div>
+      </div>
+      
+  
+        <!-- Form Fields -->
+        <label class="block text-gray-700 font-bold">Shop Code</label>
+        <input type="text" formControlName="shopCode" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+        
+    
+        <label class="block text-gray-700 font-bold">Shop Name</label>
+        <input type="text" formControlName="shopName" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+    
+        <label class="block text-gray-700 font-bold">Shop Owner</label>
+        <input type="text" formControlName="owner" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+    
+        <label class="block text-gray-700 font-bold">Shop Phone</label>
+        <input type="text" formControlName="phoneNumber" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+    
+        <label class="block text-gray-700 font-bold">Shop Address</label>
+        <input type="text" formControlName="address" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+    
+        <div class="flex justify-center">
+          <button type="submit" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">Update shop</button>
+         
+        </div>
+      </form>
+    </div>
+  </div>
+  
