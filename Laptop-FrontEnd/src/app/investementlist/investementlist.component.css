@@ -1,0 +1,4 @@
+::ng-deep .toastify {
+    z-index: 300; /* Higher than the modal z-index */
+  }
+  
