@@ -4,6 +4,7 @@ import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { NgIconComponent } from '@ng-icons/core';
 import { LoginComponent } from '../login/login.component';
 import { TokenService } from '../Services/token.service';
+import { ShopService } from '../Services/shop.service';
 
 // Interface for defining links
 interface Link {
@@ -34,11 +35,13 @@ export class DashboardComponent implements OnInit {
   userDetailsData: any; 
   userRole: string = ''; // Initialize with an empty string to avoid issues
   links: Link[] = []; // Holds the active links based on role
-
+  shopLogo: string | null = null; // For existing logo URL
   currentTime: string = '';
   private timerInterval: any;
 
-  constructor(private tokenService: TokenService,private router:Router) { }
+  constructor(private tokenService: TokenService,
+    private shopService: ShopService,
+    private router:Router) { }
 
 
   ngOnDestroy(): void {
@@ -46,6 +49,22 @@ export class DashboardComponent implements OnInit {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
+  }
+
+  loadShopDetails(): void {
+    this.shopService.getShopDetails().subscribe(
+      (data) => {
+        console.log(data);
+      
+        // Set the logo URL if it exists
+        if (data.shopLogoUrl) {
+          this.shopLogo = data.shopLogoUrl;
+        }
+      },
+      (error) => {
+        
+      }
+    );
   }
 
 
@@ -73,6 +92,7 @@ export class DashboardComponent implements OnInit {
   }
   // Fetch the user role after initialization
   ngOnInit(): void {
+    this.loadShopDetails();
     this.userRole = this.tokenService.getUserRole;
     this.links = this.getUserLinks(); // Set links based on the role
     this.shopDetails();
@@ -87,6 +107,7 @@ export class DashboardComponent implements OnInit {
   }
   shopDetails(): void{
    this.shopDetailsData= this.tokenService.getShopDetails
+   console.log(this.shopDetails)
   }
 
   userDetails(): void{
@@ -120,18 +141,20 @@ export class DashboardComponent implements OnInit {
         { label: 'Status Report', icon: 'heroSquares2x2', route: '/reports/status' },
       ],
     },
-    { label: 'Settings', icon: 'heroCog6Tooth', route: '/settings' },
+    { label: 'Settings', icon: 'heroCog6Tooth', route: '/' },
   ];
 
   // Cashier Links
   adminLinks: Link[] = [
-    { label: 'Analytics', icon: 'heroPlusCircle', route: '/dash' },
+    { label: 'Analytics', icon: 'heroChartBar', route: '/dash' },
     { label: 'Product', icon: 'heroPlusCircle', route: '/dash/product' },
     { label: 'Stocks', icon: 'heroPlusCircle', route: '/dash/stocks' },
     { label: 'Supplier', icon: 'heroPercentBadge', route: '/dash/supplier' },
     { label: 'Employee', icon: 'heroPercentBadge', route: '/dash/employee' },
     { label: 'Sales', icon: 'heroPercentBadge', route: '/dash/sale' },
     { label: 'Expense', icon: 'heroPercentBadge', route: '/dash/expense' },
+    { label: 'My-Shop', icon: 'heroPercentBadge', route: '/dash/shop' },
+    { label: 'Investment', icon: 'heroPercentBadge', route: '/dash/investment' },
     {
       label: 'Reports',
       icon: 'heroDocument',
@@ -140,7 +163,7 @@ export class DashboardComponent implements OnInit {
         { label: 'Monthly Report', icon: 'heroSquares2x2', route: '/reports/monthly' },
       ],
     },
-    { label: 'Settings', icon: 'heroCog6Tooth', route: '/settings' },
+    { label: 'Settings', icon: 'heroWrenchScrewdriver', route: '/settings' },
   ];
 
   // Admin Links
