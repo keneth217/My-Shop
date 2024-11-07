@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,4 +24,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByUsernameAndShopIdAndShopCode(String username, Long shopId, String shopCode);
     long countByShop(Shop shop);
     Optional<User> findByUsernameAndShop(String username, Shop shop);
+
+    List<User> findAllByShop(Shop shop);
 }
