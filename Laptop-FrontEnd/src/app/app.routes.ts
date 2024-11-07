@@ -18,6 +18,9 @@ import { InvestementlistComponent } from './investementlist/investementlist.comp
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { ConfigurationsComponent } from './configurations/configurations.component';
 import { ContactusComponent } from './contactus/contactus.component';
+import { UsersComponent } from './users/users.component';
+import { DailyReportComponent } from './daily-report/daily-report.component';
+import { MonthlyReportComponent } from './monthly-report/monthly-report.component';
 
 export const routes: Routes = [
 
@@ -39,6 +42,9 @@ export const routes: Routes = [
             { path: 'profile', component: UserProfileComponent },
             { path: 'tenant-conf', component: ConfigurationsComponent },
             { path: 'contact', component: ContactusComponent },
+            { path: 'users', component: UsersComponent },
+            { path: 'reports/daily', component: DailyReportComponent },
+            { path: 'reports/monthly', component: MonthlyReportComponent },
 
         ],
     },
