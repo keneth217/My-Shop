@@ -55,4 +55,6 @@ public interface BusinessService {
 
     List<StockPurchase> getStockPurchasesForShop(LocalDate startDate, LocalDate endDate) ;
 
+    Page<Sale> getSalesByYearMonthAndDateRange(int year, int month, LocalDate rangeStart, LocalDate rangeEnd, Pageable pageable);
+    Page<Sale> getSalesByYearAndMonth(int year, int month, Pageable pageable);
 }
