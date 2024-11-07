@@ -37,6 +37,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Roles role;
 
+    @Column(columnDefinition = "longblob")
+    private byte[] useImage;  // Storing images as byte arrays
+
     @ManyToOne
     @JoinColumn(name = "shop_id") // Ensure non-nullable FK
     @JsonBackReference // Prevent circular references during serialization
