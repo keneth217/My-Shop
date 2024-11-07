@@ -25,6 +25,7 @@ import { CheckoutComponent } from "../checkout/checkout.component";
 export class ProductListComponent implements OnInit {
 
 
+
   cartItems: {
     id: number;
     itemCosts: number;
@@ -48,6 +49,7 @@ export class ProductListComponent implements OnInit {
   selectedTotalCart: number = 0;
   selectedCartId: number=0; 
 isLoading: boolean=false;
+isRefreshing: boolean=false;
 
 
   // Store the selected product ID
@@ -65,6 +67,12 @@ isLoading: boolean=false;
     // Call the fetchProducts method on component initialization
 
   }
+  refresh() {
+    this.isRefreshing = true; 
+    this.fetchCartItems();
+    this.fetchProducts();
+    this.isRefreshing = false; 
+    }
 
  
 
