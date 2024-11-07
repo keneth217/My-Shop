@@ -17,6 +17,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
 
 
 @RestController
@@ -30,6 +32,15 @@ public class AuthenticationController {
     private final JwtUtils jwtUtil;
     private final UserRepository userRepository;
 
+    @GetMapping("/shop-users")
+    public ResponseEntity<List<UserUpdateRequestDto>> getUsersForLoggedInUserShop() {
+        try {
+            List<UserUpdateRequestDto> users = authService.getUsersForLoggedInUserShop();
+            return ResponseEntity.ok(users);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        }
+    }
     @PostMapping("/create-user")
     public ResponseEntity<Responsedto> createUser(@Valid @RequestBody SignUpRequestDto signUpRequest) {
         // The admin creating the user is already authenticated, so no need to pass admin info
@@ -41,11 +52,7 @@ public class AuthenticationController {
                 .body(new Responsedto(AuthConstants.ACCOUNT_CREATION_CODE,
                         userName + " ," + AuthConstants.ACCOUNT_CREATION));
     }
-    @PutMapping("/update-profile")
-    public ResponseEntity<User> updateUserDetails(@Valid @RequestBody UserUpdateRequestDto updateRequest) {
-        User updatedUser = authService.updateUserDetails(updateRequest);
-        return ResponseEntity.ok(updatedUser);
-    }
+
 
     // Login endpoint to authenticate the user and return a JWT
     @PostMapping("/login")
@@ -57,5 +64,30 @@ public class AuthenticationController {
     @PostMapping("/super/login")
     public ResponseEntity<JWTAuthenticationResponse> loginSuper(@RequestBody SignInRequestDto login) {
         return ResponseEntity.ok(authService.createSuperAuthToken(login));
+    }
+
+    // Endpoint for getting the details of the currently logged-in user
+    @GetMapping("/me")
+    public ResponseEntity<UserUpdateRequestDto> getLoggedInUser() {
+        UserUpdateRequestDto user = authService.getLoggedInUserDetails();
+        return ResponseEntity.ok(user);
+    }
+
+    // Endpoint for updating user details
+    @PutMapping("/me")
+    public ResponseEntity<UserUpdateRequestDto> updateUser(@ModelAttribute  UserUpdateRequestDto updateRequest) {
+        UserUpdateRequestDto updatedUser = authService.updateUserDetails(updateRequest);
+        return ResponseEntity.ok(updatedUser);
+    }
+    @PatchMapping("/{username}/role")
+    public ResponseEntity<UserUpdateRequestDto> updateUserRole(
+            @PathVariable String username,
+            @RequestBody UserRoleUpdateDto userRoleUpdateDto) {
+
+        // Update the user's role
+        UserUpdateRequestDto updatedUser = authService.updateUserRole(username, userRoleUpdateDto.getRole());
+
+        // Return the updated user details
+        return ResponseEntity.ok(updatedUser);
     }
 }
