@@ -1,1 +1,77 @@
-<p>user-profile works!</p>
+<div class="fixed inset-0 flex items-center justify-center">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full outline-none border-green-400 border-2 relative">
+  
+    <!-- Toastify Notification Container with z-index -->
+    <div class="z-50 absolute top-4 right-4">
+      <lib-toastify-toast-container></lib-toastify-toast-container>
+    </div>
+  
+    <div>
+      <app-popup #popup></app-popup>
+    </div>
+  
+    <div class="flex justify-center mb-2">
+      <h2 class="text-xl font-bold text-green-500">Update Profile</h2>
+    </div>
+    <div class="text-green mb-3">
+      <hr class="border-0 border-t border-green-400 mb-2">
+    </div>
+  
+    <form [formGroup]="userForm" (ngSubmit)="updateUser()">
+
+      <label class="block text-gray-700 font-bold mb-2">Upload Logo</label>
+      <input type="file" (change)="onImageSelect($event)" 
+             class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+      
+      <!-- Image Preview Section -->
+      <div class="h-24 flex justify-center items-center">
+        <!-- Display existing logo if available -->
+        <div *ngIf="userImage" class="relative">
+            <img [src]="userImage" class="w-24 h-24 object-cover rounded-full shadow-lg outline-none border-2 border-green-300 p-2">
+            <!-- <button type="button" (click)="removeExistingLogo()" 
+                    class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">✕</button> -->
+        </div>
+    
+        <!-- Display new logo if selected -->
+        <div *ngIf="newImage?.preview" class="relative">
+            <img [src]="newImage?.preview" class="w-24 h-24 object-cover rounded-full shadow-lg">
+            <button type="button" (click)="removeImage()" 
+                    class="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">✕</button>
+        </div>
+    </div>
+
+    <label class="block text-gray-700 font-bold">Shop Code</label>
+    <input type="text" formControlName="shopCode" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+  
+      <label class="block text-gray-700 font-bold">First Name</label>
+      <input type="text" formControlName="firstName" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+  
+      <label class="block text-gray-700 font-bold">Last Name</label>
+      <input type="text" formControlName="lastName" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+  
+      <label class="block text-gray-700 font-bold">Username</label>
+      <input type="text" formControlName="userName" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+  
+      <label class="block text-gray-700 font-bold">Phone Number</label>
+      <input type="text" formControlName="phone" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+  
+      <label class="block text-gray-700 font-bold">Current Password</label>
+      <input type="password" formControlName="currentPassword" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+  
+      <label class="block text-gray-700 font-bold">New Password</label>
+      <input type="password" formControlName="newPassword" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+  
+      <!-- <label class="block text-gray-700 font-bold">Role</label>
+      <select formControlName="role" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+        <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+      </select> -->
+
+      <label class="block text-gray-700 font-bold">Role</label>
+      <input formControlName="role" class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md">
+       
+      <div class="flex justify-center mt-4">
+        <button type="submit" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">Update Profile</button>
+      </div>
+    </form>
+  </div>
+</div>
