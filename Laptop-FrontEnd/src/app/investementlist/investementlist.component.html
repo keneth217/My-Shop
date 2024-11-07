@@ -36,6 +36,7 @@
     <table class="table-auto border-collapse border border-slate-500 w-full">
         <thead>
             <tr>
+                <th class="border border-slate-600 p-2">No.</th>
                 <th class="border border-slate-600 p-2">Date</th>
                
                 <th class="border border-slate-600 p-2">Amount</th>
@@ -51,7 +52,8 @@
                 </td>
               </tr>
                
-                <tr *ngFor="let invest of investments">
+                <tr *ngFor="let invest of investments;let i = index">
+                    <td class="border border-slate-600 p-2">{{i+1}}</td>
                 <td class="border border-slate-600 p-2">{{invest.date}}</td>
                 <td class="border border-slate-600 p-2">{{invest.amount}}</td>
                 <td class="border border-slate-600 p-2 ">{{invest.description}}</td>
