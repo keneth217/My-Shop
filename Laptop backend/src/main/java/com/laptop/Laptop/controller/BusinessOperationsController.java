@@ -7,7 +7,9 @@ import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.services.BusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,17 +65,40 @@ public class BusinessOperationsController {
         return ResponseEntity.ok(sales);
     }
 
-
-
     @GetMapping("/net-profit/{shopId}/{shopCode}")
     public ResponseEntity<Double> getNetProfit(@PathVariable  Long shopId,String shopCode) {
         double netProfit = businessService.calculateNetProfitForShop(shopId,shopCode);
         return ResponseEntity.ok(netProfit);
     }
-
     @GetMapping("/gross-profit/{shopId}/{shopCode}")
     public ResponseEntity<Double> getGrossProfit(@PathVariable  Long shopId,String shopCode) {
         double grossProfit = businessService.calculateGrossProfitForShop(shopId,shopCode);
         return ResponseEntity.ok(grossProfit);
     }
+    @GetMapping("/daily-sales")
+    public ResponseEntity<Page<Sale>> getSalesByYearMonthAndDateRange(
+            @RequestParam int year,
+            @RequestParam int month,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate rangeStart,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate rangeEnd,
+            Pageable pageable) {
+
+        Page<Sale> sales = businessService.getSalesByYearMonthAndDateRange(year, month, rangeStart, rangeEnd, pageable);
+        return ResponseEntity.ok(sales);
+    }
+
+    // Endpoint to retrieve sales by year and month
+    @GetMapping("/monthly-sales")
+    public ResponseEntity<Page<Sale>> getSalesByYearAndMonth(
+            @RequestParam int year,
+            @RequestParam int month,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Sale> sales = businessService.getSalesByYearAndMonth(year, month, pageable);
+
+        return ResponseEntity.ok(sales);
+    }
+
 }
