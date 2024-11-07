@@ -37,6 +37,7 @@
     <table class="table-auto border-collapse border border-slate-500 w-full">
       <thead>
         <tr>
+          <th class="border border-slate-600 p-2">No.</th>
           <th class="border border-slate-600 p-2">Transction Date</th>
           <th class="border border-slate-600 p-2">Seller</th>
           <th class="border border-slate-600 p-2">Customer Name</th>
@@ -52,7 +53,8 @@
            
           </td>
         </tr>
-        <tr *ngFor="let sale of sales">
+        <tr *ngFor="let sale of sales; let i = index">
+          <td class="border border-slate-600 p-2">{{ i+1 }}</td>
           <td class="border border-slate-600 p-2">{{ sale.date }}</td>
           <td class="border border-slate-600 p-2">{{ sale.salePerson }}</td>
           <td class="border border-slate-600 p-2">{{ sale.customerName }}</td>
