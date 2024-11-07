@@ -19,10 +19,13 @@ import com.laptop.Laptop.repository.EmployeeRepository;
 import com.laptop.Laptop.repository.ShopRepository;
 import com.laptop.Laptop.repository.UserRepository;
 import com.laptop.Laptop.services.Jwt.UserService;
+import com.laptop.Laptop.services.ProductService;
 import com.laptop.Laptop.util.JwtUtils;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 
@@ -35,8 +38,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +58,7 @@ public class AuthServiceImpl implements  AuthService{
     @Autowired
     private PasswordEncoder passwordEncoder; // For encoding passwords
 
-
+    private static final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
     @PostConstruct
     public void createAdmin() {
         User adminAccount = userRepository.findByRole(Roles.SUPER_USER); // Assuming Roles.ADMIN is the role
@@ -74,7 +80,6 @@ public class AuthServiceImpl implements  AuthService{
             System.out.println("Admin account already exists");
         }
     }
-
     public User createUser(SignUpRequestDto signUpRequest) {
         // Fetch the authenticated admin user from the SecurityContextHolder
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -132,7 +137,7 @@ public class AuthServiceImpl implements  AuthService{
 
         return user;
     }
-    public User updateUserDetails(UserUpdateRequestDto updateRequest) {
+    public UserUpdateRequestDto getLoggedInUserDetails() {
         // Fetch the authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName(); // Get the username of the authenticated user
@@ -141,24 +146,90 @@ public class AuthServiceImpl implements  AuthService{
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // Update phone if provided
-        if (updateRequest.getUserName() != null && !updateRequest.getUserName().isEmpty()) {
-            user.setPhone(updateRequest.getUserName());
+
+        String imageUrl = null;
+        if (user.getUseImage() != null) {
+            // Convert byte array to base64 or handle accordingly if you store it as a URL
+            imageUrl = "data:image/png;base64," + Base64.getEncoder().encodeToString(user.getUseImage());
+        }
+
+        // Return the user details as a DTO using builder pattern
+        return UserUpdateRequestDto.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(user.getPhone())
+                .userName(user.getUsername())
+                .shopCode(user.getShopCode())
+                .UserImageUrl(imageUrl)
+                .role(user.getRole()) // assuming the role is set in the User entity
+                .build(); // Build the DTO object
+    }
+    public UserUpdateRequestDto updateUserDetails(UserUpdateRequestDto updateRequest) {
+        // Fetch the authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName(); // Get the username of the authenticated user
+
+        // Fetch the user from the database
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Update user image if provided
+        if (updateRequest.getUserImage() != null && !updateRequest.getUserImage().isEmpty()) {
+            try {
+                // Get the image bytes from the uploaded file
+                byte[] logoBytes = updateRequest.getUserImage().getBytes(); // Assuming userImage is a MultipartFile in the request
+                user.setUseImage(logoBytes); // Set the byte array in the user entity
+            } catch (IOException e) {
+                logger.error("Error while uploading user image", e);
+                throw new RuntimeException("Failed to store user image", e);
+            }
+        }
+
+        // Update phone if provided and not empty
+        if (updateRequest.getPhone() != null && !updateRequest.getPhone().isEmpty()) {
+            user.setPhone(updateRequest.getPhone());
+        }
+
+        // Update first name if provided and not empty
+        if (updateRequest.getFirstName() != null && !updateRequest.getFirstName().isEmpty()) {
+            user.setFirstName(updateRequest.getFirstName());
+        }
+
+        // Update last name if provided and not empty
+        if (updateRequest.getLastName() != null && !updateRequest.getLastName().isEmpty()) {
+            user.setLastName(updateRequest.getLastName());
         }
 
         // Update password if provided and current password is correct
         if (updateRequest.getNewPassword() != null && !updateRequest.getNewPassword().isEmpty()) {
+            // Check if the current password is correct before updating
             if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), user.getPassword())) {
-                throw new RuntimeException("Current password is incorrect");
-
+                throw new RuntimeException("Current password you entered is incorrect");
             }
-            user.setFirstName(updateRequest.getFirstName());
-            user.setLastName(updateRequest.getLastName());
+            // Set the new password
             user.setPassword(passwordEncoder.encode(updateRequest.getNewPassword()));
         }
 
+        // Convert user image to base64 if available
+        String imageUrl = null;
+        if (user.getUseImage() != null) {
+            // Convert the byte array to base64
+            imageUrl = "data:image/png;base64," + Base64.getEncoder().encodeToString(user.getUseImage());
+        }
+
         // Save the updated user
-        return userRepository.save(user);
+        user = userRepository.save(user);
+
+        // Convert the saved User to UserUpdateRequestDto using the builder pattern
+        return UserUpdateRequestDto.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(user.getPhone())
+                .shopCode(user.getShopCode())
+                .userName(user.getUsername())
+                .UserImageUrl(imageUrl)
+                .role(user.getRole()) // Assuming the role is set in the User entity
+                .build(); // Build and return the DTO object
     }
     public JWTAuthenticationResponse createAuthToken(AuthenticationRequestDto authenticationRequest) {
         System.out.println("Received authentication request: " + authenticationRequest);
@@ -311,5 +382,72 @@ public class AuthServiceImpl implements  AuthService{
                 throw new RuntimeException("Authentication failed", e);
             }
         }
+
+    public List<UserUpdateRequestDto> getUsersForLoggedInUserShop() {
+        // Fetch the authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName(); // Get the username of the authenticated user
+
+        // Fetch the user from the database
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Retrieve the shop associated with the user
+        Shop shop = user.getShop();
+        if (shop == null) {
+            throw new RuntimeException("The logged-in user is not associated with any shop.");
+        }
+
+        // Find all users associated with the same shop
+        List<User> users = userRepository.findAllByShop(shop);
+
+        // Convert each user to UserUpdateRequestDto
+        List<UserUpdateRequestDto> userDtos = users.stream().map(u -> {
+            String imageUrl = null;
+            if (u.getUseImage() != null) {
+                imageUrl = "data:image/png;base64," + Base64.getEncoder().encodeToString(u.getUseImage());
+            }
+            return UserUpdateRequestDto.builder()
+                    .firstName(u.getFirstName())
+                    .lastName(u.getLastName())
+                    .phone(u.getPhone())
+                    .userName(u.getUsername())
+                    .shopCode(shop.getShopCode()) // Shop code is the same for all users in this shop
+                    .UserImageUrl(imageUrl)
+                    .role(u.getRole())
+                    .build();
+        }).collect(Collectors.toList());
+
+        return userDtos;
+    }
+
+    public UserUpdateRequestDto updateUserRole(String username, String newRole) {
+        // Fetch the user by username
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Check if the provided role is valid (if using an enum for roles)
+        Roles role;
+        try {
+            role = Roles.valueOf(newRole.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid role specified");
+        }
+
+        // Update the user's role
+        user.setRole(role);
+        user = userRepository.save(user);
+
+        // Map the updated user to a DTO to return updated details
+        return UserUpdateRequestDto.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(user.getPhone())
+                .userName(user.getUsername())
+                .shopCode(user.getShopCode())
+                .role(user.getRole())
+                .build();
+    }
+
 
 }
