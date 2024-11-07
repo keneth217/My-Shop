@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit {
                 this.router.navigateByUrl('/dash');
                 break;
               case 'CASHIER':
-                this.router.navigateByUrl('/cash');
+                this.router.navigateByUrl('/dash');
                 break;
               case 'SUPER_USER':
                 this.router.navigateByUrl('/super');
