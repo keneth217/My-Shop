@@ -5,6 +5,7 @@ import { NgIconComponent } from '@ng-icons/core';
 import { LoginComponent } from '../login/login.component';
 import { TokenService } from '../Services/token.service';
 import { ShopService } from '../Services/shop.service';
+import { UserService } from '../Services/user.service';
 
 // Interface for defining links
 interface Link {
@@ -36,11 +37,13 @@ export class DashboardComponent implements OnInit {
   userRole: string = ''; // Initialize with an empty string to avoid issues
   links: Link[] = []; // Holds the active links based on role
   shopLogo: string | null = null; // For existing logo URL
+  userLogo: string | null = null; // For existing logo URL
   currentTime: string = '';
   private timerInterval: any;
 
   constructor(private tokenService: TokenService,
     private shopService: ShopService,
+    private userService:UserService,
     private router:Router) { }
 
 
@@ -50,6 +53,23 @@ export class DashboardComponent implements OnInit {
       clearInterval(this.timerInterval);
     }
   }
+
+  loadUserDetails(): void {
+    this.userService.getUserDetails().subscribe(
+      (data) => {
+        console.log(data);
+      
+        // Set the logo URL if it exists
+        if (data.userImageUrl) {
+          this.userLogo = data.userImageUrl;
+        }
+      },
+      (error) => {
+        
+      }
+    );
+  }
+
 
   loadShopDetails(): void {
     this.shopService.getShopDetails().subscribe(
@@ -92,6 +112,8 @@ export class DashboardComponent implements OnInit {
   }
   // Fetch the user role after initialization
   ngOnInit(): void {
+   
+    this.loadUserDetails()
     this.loadShopDetails();
     this.userRole = this.tokenService.getUserRole;
     this.links = this.getUserLinks(); // Set links based on the role
@@ -105,9 +127,10 @@ export class DashboardComponent implements OnInit {
     this.router.navigateByUrl('/');
     
   }
+
   shopDetails(): void{
    this.shopDetailsData= this.tokenService.getShopDetails
-   console.log(this.shopDetails)
+  // console.log(this.shopDetails)
   }
 
   userDetails(): void{
@@ -155,15 +178,16 @@ export class DashboardComponent implements OnInit {
     { label: 'Expense', icon: 'heroPercentBadge', route: '/dash/expense' },
     { label: 'My-Shop', icon: 'heroPercentBadge', route: '/dash/shop' },
     { label: 'Investment', icon: 'heroPercentBadge', route: '/dash/investment' },
+    { label: 'Users', icon: 'heroUsers', route: '/dash/users' },
     {
       label: 'Reports',
       icon: 'heroDocument',
       children: [
-        { label: 'Sales', icon: 'heroSquares2x2', route: '/reports/daily' },
-        { label: 'Monthly Report', icon: 'heroSquares2x2', route: '/reports/monthly' },
+        { label: 'Daily Report', icon: 'heroSquares2x2', route: 'reports/daily' },
+        { label: 'Monthly Report', icon: 'heroSquares2x2', route: 'reports/monthly' },
       ],
     },
-    { label: 'Settings', icon: 'heroWrenchScrewdriver', route: '/settings' },
+    { label: 'Settings', icon: 'heroWrenchScrewdriver', route: '/dash/tenant-conf' },
   ];
 
   // Admin Links
