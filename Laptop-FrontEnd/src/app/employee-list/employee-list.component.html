@@ -36,8 +36,8 @@
     <table class="table-auto border-collapse border border-slate-500 w-full">
         <thead>
             <tr>
+                <th class="border border-slate-600 p-2">No.</th>
                 <th class="border border-slate-600 p-2">Name</th>
-               
                 <th class="border border-slate-600 p-2">phone</th>
                 <th class="border border-slate-600 p-2">salary</th>
                 <th class="border border-slate-600 p-2">Role</th>
@@ -52,7 +52,8 @@
                 </td>
               </tr>
                
-                <tr *ngFor="let employee of employees">
+                <tr *ngFor="let employee of employees;let i = index">
+                    <td class="border border-slate-600 p-2">{{i+1}}</td>
                 <td class="border border-slate-600 p-2">{{employee.name}}</td>
                 <td class="border border-slate-600 p-2">{{employee.phoneNumber}}</td>
                 <td class="border border-slate-600 p-2 ">{{employee.salary}}</td>
