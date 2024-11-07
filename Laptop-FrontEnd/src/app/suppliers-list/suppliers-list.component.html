@@ -35,6 +35,7 @@
     <table class="table-auto border-collapse border border-slate-500 w-full">
       <thead>
         <tr>
+          <th class="border border-slate-600 p-2">No.</th>
           <th class="border border-slate-600 p-2">Supplier Name</th>
           <th class="border border-slate-600 p-2">Phone</th>
           <th class="border border-slate-600 p-2">Address</th>
@@ -49,7 +50,8 @@
             No supplier found .
           </td>
         </tr>
-        <tr *ngFor="let supplier of suppliers">
+        <tr *ngFor="let supplier of suppliers; let i = index">
+          <td class="border border-slate-600 p-2">{{i+1}}</td>
           <td class="border border-slate-600 p-2">{{supplier.supplierName}}</td>
           <td class="border border-slate-600 p-2">{{supplier.supplierPhone}}</td>
           <td class="border border-slate-600 p-2 ">{{supplier.supplierAddress}}</td>
