@@ -26,7 +26,7 @@ public class CustomerShopService {
     @Autowired
     private  UserRepository userRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CustomerShopService.class);
 
 
     @Transactional
