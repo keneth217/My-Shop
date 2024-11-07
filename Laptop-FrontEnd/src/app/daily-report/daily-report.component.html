@@ -1,0 +1,108 @@
+<div class="container mx-auto relative my-6">
+  <h2 class="text-xl font-bold mb-4">Filter Daily Sales reports</h2>
+
+  <div class="flex mb-4 items-center justify-center">
+    <!-- Form to filter sales -->
+    <form
+    class="w-80 shadow-lg shadow-gray-200 rounded-sm border-2 border-green-400 p-4 m-4 bg-white"
+    (ngSubmit)="fetchSales()"
+  >
+  
+    <!-- Year Selection -->
+    <label for="year" class="block text-gray-700 font-bold mb-2">Select Year</label>
+    <select
+      id="year"
+      [(ngModel)]="selectedYear"
+      (change)="onMonthOrYearChange()"
+      name="selectedYear"
+      class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+    >
+      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+    </select>
+  
+    <!-- Month Selection -->
+    <label for="month" class="block text-gray-700 font-bold mb-2">Select Month</label>
+    <select
+      id="month"
+      [(ngModel)]="selectedMonth"
+      (change)="onMonthOrYearChange()"
+      name="selectedMonth"
+      class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+    >
+      <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+    </select>
+  
+    <!-- Start Date (auto-updated based on selected month and year) -->
+    <label for="startDate" class="block text-gray-700 font-bold mb-2">Start Date</label>
+    <input
+      id="startDate"
+      type="date"
+      [(ngModel)]="startDate"
+      name="startDate"
+      class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+    />
+  
+    <!-- End Date (auto-updated based on selected month and year) -->
+    <label for="endDate" class="block text-gray-700 font-bold mb-2">End Date</label>
+    <input
+      id="endDate"
+      type="date"
+      [(ngModel)]="endDate"
+      name="endDate"
+      class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+    />
+  
+    <!-- Submit Button -->
+    <button type="submit" class="bg-green-500 text-white p-2 rounded-md w-full">
+      Fetch Sales
+    </button>
+  </form>
+  
+
+    <!-- Display loader if data is loading -->
+    <app-loader *ngIf="isLoading"></app-loader>
+
+    <!-- Table displaying sales -->
+    <table class="table-auto border-collapse border border-slate-500 w-full shadow-lg bg-white shadow-gray-200 rounded-sm  p-4 ">
+      <thead>
+        <tr>
+          <th class="border border-slate-600 p-2">No.</th>
+          <th class="border border-slate-600 p-2">Transaction Date</th>
+          <th class="border border-slate-600 p-2">Seller</th>
+          <th class="border border-slate-600 p-2">Customer Name</th>
+          <th class="border border-slate-600 p-2">Customer Phone</th>
+          <th class="border border-slate-600 p-2">Total</th>
+          <th class="border border-slate-600 p-2">Receipt</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="sales.length === 0">
+          <td colspan="6" class="border border-slate-600 p-4 text-center">
+            No sales found for the selected date range.
+          </td>
+        </tr>
+        <tr *ngFor="let sale of sales; let i = index">
+          <td class="border border-slate-600 p-2">{{ i+1 }}</td>
+          <td class="border border-slate-600 p-2">{{ sale.date }}</td>
+          <td class="border border-slate-600 p-2">{{ sale.salePerson }}</td>
+          <td class="border border-slate-600 p-2">{{ sale.customerName }}</td>
+          <td class="border border-slate-600 p-2">{{ sale.customerPhone }}</td>
+          <td class="border border-slate-600 p-2 text-right">{{ sale.totalPrice }}</td>
+          <td class="border border-slate-600 p-2">
+            <div class="flex justify-between">
+              <button class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+                (click)="downloadReceipt(sale.id)">
+                Download
+              </button>
+              <button class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+                (click)="previewPdf(sale.id)">
+                Preview
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>
