@@ -25,12 +25,21 @@ export class UserService {
     });
   }
 
-  changeRole(username: string, userRoleUpdateDto: { role: string }): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/${username}/role`, userRoleUpdateDto, {
-      headers: this.createAuthorizationHeaders(),
+  adduser(userData:any): Observable<UserUpdateRequestDto> {
+    return this.http.post<UserUpdateRequestDto>(`${this.apiUrl}/create-user`,userData, {
+      headers: this.createAuthorizationHeaders()
     });
   }
+
+  changeRole(username: string, newRole: string): Observable<any> {
+    // Make sure apiUrl is set to 'http://localhost:9091/api/v1/auth'
+    const url = 'http://localhost:9091/api/v1/auth'; 
   
+    // Use the correct URL structure and send the 'role' as a JSON body
+    return this.http.put<any>(`${url}/${username}/role`, { role: newRole }, {
+      headers: this.createAuthorizationHeaders()
+    });
+  }
 
 
   // Update user details
