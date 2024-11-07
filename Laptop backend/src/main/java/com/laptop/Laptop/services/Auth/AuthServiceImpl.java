@@ -436,6 +436,7 @@ public class AuthServiceImpl implements  AuthService{
 
         // Update the user's role
         user.setRole(role);
+        System.out.println( "role changed to"+role);
         user = userRepository.save(user);
 
         // Map the updated user to a DTO to return updated details
