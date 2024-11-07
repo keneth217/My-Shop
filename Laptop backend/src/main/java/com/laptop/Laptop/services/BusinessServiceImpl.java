@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,6 +201,35 @@ public double getTotalInvestments() {
         Shop shop = getUserShop();  // Get the logged-in user's shop
         return saleRepository.findAllByShopAndDateBetween(shop, startDate, endDate, pageable);
     }
+
+    public Page<Sale> getSalesByYearMonthAndDateRange(int year, int month, LocalDate rangeStart, LocalDate rangeEnd, Pageable pageable) {
+        Shop shop = getUserShop();  // Get the logged-in user's shop
+
+        // Define the start and end of the selected month
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate monthStart = yearMonth.atDay(1);
+        LocalDate monthEnd = yearMonth.atEndOfMonth();
+
+        // Adjust startDate and endDate based on the given date range, constrained within the month
+        LocalDate startDate = (rangeStart != null && !rangeStart.isBefore(monthStart)) ? rangeStart : monthStart;
+        LocalDate endDate = (rangeEnd != null && !rangeEnd.isAfter(monthEnd)) ? rangeEnd : monthEnd;
+        System.out.println("getting sales.......................... for" +yearMonth);
+        return saleRepository.findAllByShopAndDateBetween(shop, startDate, endDate, pageable);
+    }
+    public Page<Sale> getSalesByYearAndMonth(int year, int month, Pageable pageable) {
+        Shop shop = getUserShop();  // Get the logged-in user's shop
+
+        // Define the start and end of the selected month
+        YearMonth yearMonth = YearMonth.of(year, month);
+        LocalDate monthStart = yearMonth.atDay(1);
+        LocalDate monthEnd = yearMonth.atEndOfMonth();
+
+        System.out.println("Getting sales for " + yearMonth);
+        // Query for all sales in the specified month and year for the shop
+        return saleRepository.findAllByShopAndDateBetween(shop, monthStart, monthEnd, pageable);
+    }
+
+
 
     public Page<Expense> getExpensesByType(ExpenseType type, Pageable pageable) {
         Shop shop = getUserShop();  // Get the logged-in user's shop
