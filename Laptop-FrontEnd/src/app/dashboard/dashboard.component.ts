@@ -192,7 +192,7 @@ export class DashboardComponent implements OnInit {
 
   // Admin Links
   cashierLinks: Link[] = [
-
+    { label: 'Analytics', icon: 'heroChartBar', route: '/dash/cash-analytics' },
     { label: 'Product', icon: 'heroPlusCircle', route: '/dash/product' },
     { label: 'Supplier', icon: 'heroPercentBadge', route: '/dash/supplier' },
     { label: 'Employee', icon: 'heroPercentBadge', route: '/dash/employee' },
