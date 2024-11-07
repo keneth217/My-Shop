@@ -39,6 +39,29 @@
     </div>
   </div>
 
+  <div
+    *ngIf="showChangeRole"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
+  >
+    <div class="bg-white p-6 rounded-lg shadow-lg relative">
+
+   
+      <app-change-role
+      [userName]="selectedUser"
+      (roleUpdated)="refreshUsers()"
+      (close)="closeChangeRole()"
+    ></app-change-role>
+
+      <!-- Close button for change role  modal -->
+      <button
+        (click)="closeChangeRole()"
+        class="absolute top-2 right-2 text-red-500 hover:text-red-800"
+      >
+        <ng-icon name="heroXMark" class="mr-3 text-2xl text-red-600"></ng-icon>
+      </button>
+    </div>
+  </div>
+
   <!-- Display loader if data is loading -->
   <app-loader *ngIf="isLoading"></app-loader>
   <div class="shadow-sm rounded-sm bg-white p-4">
@@ -58,7 +81,7 @@
       <tbody>
         <tr *ngIf="users?.length === 0">
           <td colspan="4" class="border border-slate-600 p-4 text-center">
-            No  User.
+            No User.
           </td>
         </tr>
         <tr *ngFor="let user of users; let i = index">
@@ -76,18 +99,13 @@
           </td>
 
           <td class="border border-slate-600 p-2">
-            <div class="flex justify-between">
-                <select
-                (change)="onRoleChange(user?.userName, $event)"
-                class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-              >
-                <option *ngFor="let role of roles" [value]="role" [selected]="role === user?.role">
-                  {{ role }}
-                </option>
-              </select>
-            </div>
+            <button
+              class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+              (click)="OpenChangeRole(user.userName)"
+            >
+              Role
+            </button>
           </td>
-          
         </tr>
       </tbody>
     </table>
