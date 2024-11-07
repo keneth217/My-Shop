@@ -1,0 +1,45 @@
+<div class="fixed inset-0 flex items-center justify-center">
+  <div
+    class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full outline-none border-green-400 border-2"
+  >
+    <div>
+      <lib-toastify-toast-container></lib-toastify-toast-container>
+    </div>
+    <div class="flex justify-center mb-2">
+      <h2 class="text-xl font-bold text-green-500">
+        Change User Role for: <span class=" uppercase ml-4 text-blue-700">{{userName}}</span>
+      </h2>
+    </div>
+    <div class="text-green mb-3">
+      <hr class="border-0 border-t border-green-400 mb-2" />
+    </div>
+
+    <!-- Form for Changing Role -->
+    <form [formGroup]="roleForm" (ngSubmit)="submitRoleChange()">
+      <select
+        id="role"
+        formControlName="role"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+      >
+        <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+      </select>
+
+      <div class="flex justify-between">
+        <button
+          type="submit"
+          class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+          [disabled]="isSubmitting || roleForm.invalid"
+        >
+          Change Role
+        </button>
+        <button
+          type="button"
+          (click)="closeForm()"
+          class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+        >
+          Close
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
