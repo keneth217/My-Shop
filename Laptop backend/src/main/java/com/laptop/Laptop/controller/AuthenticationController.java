@@ -79,7 +79,7 @@ public class AuthenticationController {
         UserUpdateRequestDto updatedUser = authService.updateUserDetails(updateRequest);
         return ResponseEntity.ok(updatedUser);
     }
-    @PatchMapping("/{username}/role")
+    @PutMapping("/{username}/role")
     public ResponseEntity<UserUpdateRequestDto> updateUserRole(
             @PathVariable String username,
             @RequestBody UserRoleUpdateDto userRoleUpdateDto) {
@@ -90,4 +90,6 @@ public class AuthenticationController {
         // Return the updated user details
         return ResponseEntity.ok(updatedUser);
     }
+
+    
 }
