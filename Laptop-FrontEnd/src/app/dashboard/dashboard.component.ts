@@ -194,15 +194,19 @@ export class DashboardComponent implements OnInit {
   cashierLinks: Link[] = [
 
     { label: 'Product', icon: 'heroPlusCircle', route: '/dash/product' },
+    { label: 'Supplier', icon: 'heroPercentBadge', route: '/dash/supplier' },
+    { label: 'Employee', icon: 'heroPercentBadge', route: '/dash/employee' },
+    { label: 'Sales', icon: 'heroPercentBadge', route: '/dash/sale' },
+    { label: 'Expense', icon: 'heroPercentBadge', route: '/dash/expense' },
     {
       label: 'Reports',
       icon: 'heroDocument',
       children: [
-        { label: 'Sales', icon: 'heroSquares2x2', route: '/reports/daily' },
-        { label: 'Monthly Report', icon: 'heroSquares2x2', route: '/reports/monthly' },
+        { label: 'Sales', icon: 'heroSquares2x2', route: '/dash/reports/daily' },
+        { label: 'Monthly Report', icon: 'heroSquares2x2', route: '/dash/reports/monthly' },
       ],
     },
-    { label: 'Settings', icon: 'heroCog6Tooth', route: '/settings' },
+    { label: 'Settings', icon: 'heroCog6Tooth', route: 'dash/tenant-conf' },
   ];
 
   // Sidebar toggle functionality
