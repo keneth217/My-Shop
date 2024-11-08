@@ -20,4 +20,9 @@ public interface StockPurchaseRepository extends JpaRepository<StockPurchase, Lo
     List<StockPurchase> findByShop(Shop shop);
 
     List<StockPurchase> findByShopAndPurchaseDateBetween(Shop shop, LocalDate startDate, LocalDate endDate);
+
+    List<StockPurchase> findByShopAndSupplierIdAndPurchaseDateBetween(
+            Shop shop, Long supplierId, LocalDate startDate, LocalDate endDate
+    );
+
 }
