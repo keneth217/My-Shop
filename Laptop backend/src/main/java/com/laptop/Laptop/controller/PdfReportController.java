@@ -1,5 +1,6 @@
 package com.laptop.Laptop.controller;
 
+import com.laptop.Laptop.dto.StockPurchaseDto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.repository.ShopRepository;
 import com.laptop.Laptop.services.BusinessService;
@@ -96,7 +97,7 @@ public class PdfReportController {
         Shop shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new IllegalArgumentException("Shop not found"));  // Ensure shop exists
         // Fetch stock purchases for the shop within the date range
-        List<StockPurchase> stockPurchases = businessService.getStockPurchasesForShop(startDate, endDate);
+        List<StockPurchaseDto> stockPurchases = businessService.getStockPurchasesForShop(startDate, endDate);
 
         // Generate the PDF report
         ByteArrayInputStream pdfStream = pdfReportServices.generateStockPurchaseReport(stockPurchases, loggedInUser.getShop(), loggedInUser);
