@@ -179,12 +179,14 @@ export class DashboardComponent implements OnInit {
     { label: 'My-Shop', icon: 'heroPercentBadge', route: '/dash/shop' },
     { label: 'Investment', icon: 'heroPercentBadge', route: '/dash/investment' },
     { label: 'Users', icon: 'heroUsers', route: '/dash/users' },
+    { label: 'Purchases', icon: 'heroUsers', route: '/dash/purchases' },
     {
       label: 'Reports',
       icon: 'heroDocument',
       children: [
         { label: 'Daily Report', icon: 'heroSquares2x2', route: 'reports/daily' },
         { label: 'Monthly Report', icon: 'heroSquares2x2', route: 'reports/monthly' },
+        { label: 'Stock Report', icon: 'heroSquares2x2', route: 'reports/stock' },
       ],
     },
     { label: 'Settings', icon: 'heroWrenchScrewdriver', route: '/dash/tenant-conf' },
