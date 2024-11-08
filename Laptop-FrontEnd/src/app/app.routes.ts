@@ -22,6 +22,8 @@ import { UsersComponent } from './users/users.component';
 import { DailyReportComponent } from './daily-report/daily-report.component';
 import { MonthlyReportComponent } from './monthly-report/monthly-report.component';
 import { CashAAnalyticsComponent } from './cash-aanalytics/cash-aanalytics.component';
+import { StockPurchasesComponent } from './stock-purchases/stock-purchases.component';
+import { StockreportComponent } from './stockreport/stockreport.component';
 
 export const routes: Routes = [
 
@@ -44,9 +46,11 @@ export const routes: Routes = [
             { path: 'tenant-conf', component: ConfigurationsComponent },
             { path: 'contact', component: ContactusComponent },
             { path: 'users', component: UsersComponent },
+            { path: 'purchases', component: StockPurchasesComponent },
             { path: 'cash-analytics', component: CashAAnalyticsComponent },
             { path: 'reports/daily', component: DailyReportComponent },
             { path: 'reports/monthly', component: MonthlyReportComponent },
+            { path: 'reports/stock', component: StockreportComponent },
 
         ],
     },
