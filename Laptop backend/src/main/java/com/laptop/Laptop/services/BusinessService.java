@@ -53,8 +53,9 @@ public interface BusinessService {
 
    List<Sale> getSalesForShop(LocalDate startDate, LocalDate endDate);
 
-    List<StockPurchase> getStockPurchasesForShop(LocalDate startDate, LocalDate endDate) ;
+    List<StockPurchaseDto> getStockPurchasesForShop(LocalDate startDate, LocalDate endDate);
 
     Page<Sale> getSalesByYearMonthAndDateRange(int year, int month, LocalDate rangeStart, LocalDate rangeEnd, Pageable pageable);
     Page<Sale> getSalesByYearAndMonth(int year, int month, Pageable pageable);
+    List<StockPurchaseDto> getStockPurchasesForShopBySupplierName(LocalDate startDate, LocalDate endDate, Long supplierId);
 }
