@@ -128,6 +128,18 @@ isRefreshing: boolean=false;
     });
 }
 
+previewproductsPdf(): void {
+  this.productService.generatePrintabProductList().subscribe(
+    (response: Blob) => {
+      const fileURL = URL.createObjectURL(response);
+      window.open(fileURL); // Open PDF in a new tab for preview
+    },
+    (error: any) => {
+      console.error('Error generating PDF for preview:', error);
+    }
+  );
+}
+
 
   checkOut() {
     throw new Error('Method not implemented.');
