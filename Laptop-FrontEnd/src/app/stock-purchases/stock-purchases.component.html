@@ -1,0 +1,125 @@
+<div class="container mx-auto my-6">
+  <div class="flex justify-between">
+    <h2 class="text-xl font-bold mb-4">Filter Purchases</h2>
+    <button
+      type="submit"
+      class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+      (click)="previewPdf()"
+    >
+    
+      Preview stock pdf
+    </button>
+    <button
+    type="submit"
+    class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+    (click)="downloadpdf()"
+  >
+  
+    Download stock pdf
+  </button>
+  </div>
+  <div class="flex mb-4 items-center justify-center">
+    <!-- Form to filter sales -->
+    <form
+      class="w-80 shadow-lg shadow-gray-200 rounded-sm outline-none border-green-400 p-4 m-4 bg-white"
+      (ngSubmit)="fetchStockList()"
+    >
+      <label for="startDate" class="block text-gray-700 font-bold mb-2"
+        >Start Date</label
+      >
+      <input
+        id="startDate"
+        type="date"
+        [(ngModel)]="startDate"
+        name="startDate"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+      />
+
+      <label for="endDate" class="block text-gray-700 font-bold mb-2"
+        >End Date</label
+      >
+      <input
+        id="endDate"
+        type="date"
+        [(ngModel)]="endDate"
+        name="endDate"
+        class="border p-2 w-full mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+      />
+
+      <button
+        type="submit"
+        class="bg-green-500 text-white p-2 rounded-md w-full"
+      >
+        Fetch Sales
+      </button>
+    </form>
+
+    <!-- Display loader if data is loading -->
+    <app-loader *ngIf="isLoading"></app-loader>
+    <div class="flex-1 hadow-sm rounded-sm bg-white p-4">
+      <!-- Table displaying sales -->
+      <table class="table-auto border-collapse border border-slate-500 w-full">
+        <thead>
+          <tr>
+            <th class="border border-slate-600 p-2">No.</th>
+            <th class="border border-slate-600 p-2">Purchase Date</th>
+            <th class="border border-slate-600 p-2">Stock By</th>
+            <th class="border border-slate-600 p-2">product</th>
+            <th class="border border-slate-600 p-2">Supplier</th>
+            <th class="border border-slate-600 p-2">Item Cost</th>
+            <th class="border border-slate-600 p-2">stock</th>
+            <th class="border border-slate-600 p-2">Total Cost</th>
+
+            <th class="border border-slate-600 p-2">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="stocks.length === 0">
+            <td colspan="4" class="border border-slate-600 p-4 text-center">
+              No stocks found for the selected date range.
+            </td>
+          </tr>
+          <tr *ngFor="let stock of stocks; let i = index">
+            <td class="border border-slate-600 p-2">{{ i + 1 }}</td>
+            <td class="border border-slate-600 p-2">
+              {{ stock.purchaseDate }}
+            </td>
+            <td class="border border-slate-600 p-2">
+              {{ stock.stockBy }}
+            </td>
+            <td class="border border-slate-600 p-2">
+              {{ stock.productName }}
+            </td>
+            <td class="border border-slate-600 p-2">{{ stock.supplierName}}</td>
+            <td class="border border-slate-600 p-2">
+              {{ stock.buyingPrice }}
+            </td>
+
+            <td class="border border-slate-600 p-2">
+              {{ stock.quantity }}
+            </td>
+            <td class="border border-slate-600 p-2 text-right">
+              {{ stock.totalCost }}
+            </td>
+            <td class="border border-slate-600 p-2">
+              <div class="flex justify-between">
+                <button
+                  class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+                 
+                >
+                  Download
+                </button>
+                <button
+                  class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+                
+                >
+                  Preview
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
