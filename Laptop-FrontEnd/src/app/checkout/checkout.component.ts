@@ -22,6 +22,8 @@ export class CheckoutComponent {
   checkOutForm!: FormGroup;
 isSubmitting:boolean=false;
 
+payments: string[] = ['CASH', 'M-PESA'];
+
   constructor(
     private fb: FormBuilder,
     private saleService: SalesService,
