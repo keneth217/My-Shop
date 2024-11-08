@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/business")
@@ -50,6 +51,11 @@ public class BusinessOperationsController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/stock-purchases")
+    public ResponseEntity<List<StockPurchaseDto>> getTopStockPurchases(LocalDate startDate, LocalDate endDate) {
+       List<StockPurchaseDto> stockPurchase  = businessService.getStockPurchasesForShop(startDate,endDate);
+        return ResponseEntity.ok(stockPurchase);
+    }
     @GetMapping("/stock-alerts")
     public ResponseEntity<PaginatedResponse<Product>> getStockAlerts( Pageable pageable) {
         Page<Product> stockAlerts = businessService.getStockAlerts(pageable);
@@ -99,6 +105,15 @@ public class BusinessOperationsController {
         Page<Sale> sales = businessService.getSalesByYearAndMonth(year, month, pageable);
 
         return ResponseEntity.ok(sales);
+    }
+
+    @GetMapping("/by-supplier")
+    public List<StockPurchaseDto> getStockPurchasesBySupplier(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam("supplierId") Long supplierId) {
+
+        return businessService.getStockPurchasesForShopBySupplierName(startDate, endDate, supplierId);
     }
 
 }
