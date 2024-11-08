@@ -1,91 +1,157 @@
-<header class="h-20 flex items-center outline-none border-none p-2 z-50 fixed top-0 cursor-pointer bg-green-500 w-full">
-  <div class=" container flex items-center justify-around w-full px-4">
+<header
+  class="h-20 flex items-center outline-none border-none p-2 z-50 fixed top-0 cursor-pointer bg-green-500 w-full"
+>
+  <div class="container flex items-center justify-around w-full px-4">
     <div class="text-2xl text-white cursor-pointer" (click)="toggleSidebar()">
       <ng-icon name="heroBars4"></ng-icon>
     </div>
     <div class="text-white">
-      <p class="text-2xl bold uppercase">{{shopDetailsData.shopName}}</p>
-
+      <p class="text-2xl bold uppercase">{{ shopDetailsData.shopName }}</p>
     </div>
 
     <div class="text-white">
-      <p class="text-2xl bold">{{currentTime}}</p>
-
+      <p class="text-2xl bold">{{ currentTime }}</p>
     </div>
-    <div class="text-white flex items-center cursor-pointer relative" (click)="toggleUserDropdown()">
-      <img src={{userLogo}} alt="User avatar" class="w-10 h-10 rounded-full mr-2" />
-      <p class="uppercase">{{userDetailsData.username}}</p>
+    <div
+      class="text-white flex items-center cursor-pointer relative"
+      (click)="toggleUserDropdown()"
+    >
+      <img
+        src="{{ userLogo }}"
+        alt="User avatar"
+        class="w-10 h-10 rounded-full mr-2"
+      />
+      <p class="uppercase">{{ userDetailsData.username }}</p>
       <ng-icon name="heroChevronDown" class="ml-2"></ng-icon>
-      <ul [ngClass]="{
+      <ul
+        [ngClass]="{
           'max-h-0 opacity-0': !isUserDropdownOpen,
           'max-h-40 opacity-100': isUserDropdownOpen
         }"
-        class="absolute right-0 top-full mt-2 bg-white text-black rounded shadow-md py-2 w-40 transition-all duration-300 ease-out overflow-hidden z-50">
-        <li class="block px-4 py-2 hover:bg-gray-200" routerLink="/dash/profile">Profile</li>
-        <li class="block px-4 py-2 hover:bg-gray-200" routerLink="/dash/tenant-conf">Settings</li>
-        <li class="block px-4 py-2 hover:bg-gray-200" (click)="logout()">Logout</li>
+        class="absolute right-0 top-full mt-2 bg-white text-black rounded shadow-md py-2 w-40 transition-all duration-300 ease-out overflow-hidden z-50"
+      >
+        <li
+          class="block px-4 py-2 hover:bg-gray-200"
+          routerLink="/dash/profile"
+        >
+          Profile
+        </li>
+        <li
+          class="block px-4 py-2 hover:bg-gray-200"
+          routerLink="/dash/tenant-conf"
+        >
+          Settings
+        </li>
+        <li class="block px-4 py-2 hover:bg-gray-200" (click)="logout()">
+          Logout
+        </li>
       </ul>
     </div>
-
-   
   </div>
 </header>
 
-<div class="flex h-screen mt-20 ">
-  <div [ngClass]="isSidebarCollapsed ? 'w-16' : 'w-60'" class="transition-all duration-300 outline-none border-none
-    cursor-pointer bg-green-500 shadow-md h-full fixed top-20 left-0 z-40 font-serif">
+<div class="flex h-screen mt-20">
+  <div
+    [ngClass]="isSidebarCollapsed ? 'w-16' : 'w-60'"
+    class="transition-all duration-300 outline-none border-none cursor-pointer bg-green-500 shadow-md h-full fixed top-20 left-0 z-40 font-serif"
+  >
     <div class="mt-0">
-      <hr class="border-0 border-t border-white ">
+      <hr class="border-0 border-t border-white" />
     </div>
-    <div class=" flex mt-2 justify-center cursor-pointer relative">
-      <img src={{shopLogo}}  alt="User avatar" class="w-20 h-20 rounded-full" />
+    <div class="flex mt-2 justify-center cursor-pointer relative">
+      <img
+        src="{{ shopLogo }}"
+        alt="User avatar"
+        class="w-20 h-20 rounded-full"
+      />
     </div>
 
     <div class="mt-3">
-      <hr class="border-0 border-t border-white mb-2">
+      <hr class="border-0 border-t border-white mb-2" />
     </div>
-    
-      <ul class="space-y-4  w-full ml-4 mb-10">
-        <li *ngFor="let link of links" class="text-2xl flex flex-col" [routerLink]="link.route"
-          routerLinkActive="active">
-          <div class="flex items-center cursor-pointer  hover:bg-gray-200" (click)="handleLinkClick(link)">
-            <ng-icon [name]="link.icon" class="mr-3"></ng-icon>
-            <span *ngIf="!isSidebarCollapsed">{{ link.label }}</span>
-            <ng-icon *ngIf="link.children" name="heroChevronDown" class="ml-3"></ng-icon>
-          </div>
 
-          <!-- Dropdown menu for nested links -->
-          <ul *ngIf="link.children" [ngClass]="{
-              'max-h-0 opacity-0': !link.isOpen,
-              'max-h-40 opacity-100': link.isOpen
-            }" class="transition-all duration-300 ease-out overflow-hidden">
-            <li *ngFor="let child of link.children" class="text-lg pl-8 py-2 hover:bg-gray-200 cursor-pointer"
-              [routerLink]="child.route">
-              <ng-icon [name]="link.icon" class="mr-3 text-black"></ng-icon>
-              {{ child.label }}
-            </li>
-          </ul>
-        </li>
-      </ul>
-      <div class="mt-3">
-        <hr class="border-0 border-t border-white mb-2">
-      </div>
- 
-      <ul class="space-y-2 text-2xl uppercase  w-full ml-3">
-        <li class="block px-4 text-white py-2  font-bold">Contact Us</li>
-        <li class="block px-4 py-2 hover:bg-gray-200  cursor-pointer" routerLink="/dash/contact">
-          <ng-icon name="heroChatBubbleOvalLeft" class="mr-2 items-center justify-center"></ng-icon>
-          
-          Help</li>
-      </ul>
-      <div class="mt-3">
-        <hr class="border-0 border-t border-white mb-2">
-      </div>
-      
+    <ul class="space-y-4 w-full ml-4 mb-10">
+      <li
+        *ngFor="let link of links"
+        class="text-2xl flex flex-col"
+        [routerLink]="link.route"
+        routerLinkActive="active"
+      >
+        <div
+          class="flex items-center cursor-pointer hover:bg-gray-200"
+          (click)="handleLinkClick(link)"
+        >
+          <ng-icon [name]="link.icon" class="mr-3"></ng-icon>
+          <span *ngIf="!isSidebarCollapsed">{{ link.label }}</span>
+          <ng-icon
+            *ngIf="link.children"
+            name="heroChevronDown"
+            class="ml-3"
+          ></ng-icon>
+        </div>
+
+        <!-- Dropdown menu for nested links -->
+        <ul
+          *ngIf="link.children"
+          [ngClass]="{
+            'max-h-0 opacity-0': !link.isOpen,
+            'max-h-40 opacity-100': link.isOpen
+          }"
+          class="transition-all duration-300 ease-out overflow-hidden"
+        >
+          <li
+            *ngFor="let child of link.children"
+            class="text-lg pl-8 py-2 hover:bg-gray-200 cursor-pointer"
+            [routerLink]="child.route"
+          >
+            <ng-icon [name]="link.icon" class="mr-3 text-black"></ng-icon>
+            {{ child.label }}
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <div class="mt-3">
+      <hr class="border-0 border-t border-white mb-2" />
+    </div>
+
+    <ul class="space-y-2 text-2xl uppercase w-full ml-3">
+      <li class="block px-4 text-white py-2 font-bold">Contact Us</li>
+      <li
+        class="block px-4 py-2 hover:bg-gray-200 cursor-pointer"
+        routerLink="/dash/contact"
+      >
+        <ng-icon
+          name="heroChatBubbleOvalLeft"
+          class="mr-2 items-center justify-center"
+        ></ng-icon>
+
+        Help
+      </li>
+    </ul>
+    <div class="mt-3">
+      <hr class="border-0 border-t border-white mb-2" />
+    </div>
   </div>
 
-  <div [ngClass]="isSidebarCollapsed ? 'ml-16' : 'ml-60'"
-    class="flex-1 bg-slate-200 h-full  mr-4 p-4 transition-all duration-300 font-serif  rounded-sm shadow-md">
+  <div
+    [ngClass]="isSidebarCollapsed ? 'ml-16' : 'ml-60'"
+    class="flex-1 bg-slate-200 h-full mr-4 p-4 transition-all duration-300 font-serif rounded-sm shadow-md"
+  >
+ 
+
+    <!-- Floating WhatsApp Button -->
+    <a
+      href="https://wa.me/254711766223"
+      target="_blank"
+      class="fixed bottom-5 right-5 bg-green-500 p-3 rounded-full shadow-lg transform transition-transform hover:scale-110 z-50"
+    >
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+        alt="WhatsApp"
+        class="w-12 h-12"
+      />
+    </a>
+
     <router-outlet></router-outlet>
   </div>
 </div>
