@@ -117,7 +117,6 @@ public class SalesServices {
     }
 
 
-
     @Transactional
     public Sale checkoutCart(User user, Sale customer) throws IOException {
         User loggedInUser = getLoggedInUser();
@@ -207,14 +206,6 @@ public class SalesServices {
     }
 
 
-
-
-
-
-
-
-
-
     // Extracted method to create a Receipt
     private Receipt createReceipt(Sale savedSale) {
         Receipt receipt = new Receipt();
@@ -229,8 +220,6 @@ public class SalesServices {
         receipt.setReceiptNo(receiptNo);
         return receipt;
     }
-
-
 
     @Transactional(readOnly = true)
     public List<Sale> getSalesForShop(User user) {
