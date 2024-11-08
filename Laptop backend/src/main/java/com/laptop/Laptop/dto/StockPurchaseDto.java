@@ -14,6 +14,8 @@ public class StockPurchaseDto {
     private Long id;
     private LocalDate purchaseDate;
     private int quantity;
+    private String productName;
+    private  String stockBy;
     private double buyingPrice;
     private double sellingPrice;
     private double totalCost;
