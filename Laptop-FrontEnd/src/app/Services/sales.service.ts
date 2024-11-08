@@ -24,6 +24,7 @@ interface CartResponse {
 export class SalesService {
   private apiUrl = 'http://localhost:9091/api/business';
   private baseUrl = 'http://localhost:9091/api/sales';
+  private pdfUrl='http://localhost:9091/api/pdf/reports';
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
@@ -81,6 +82,7 @@ export class SalesService {
     });
   }
 
+   
   // Create authorization headers
   private createAuthorizationHeaders(): HttpHeaders {
     const token = this.tokenService.getToken;
