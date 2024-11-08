@@ -1,6 +1,8 @@
 package com.laptop.Laptop.services;
 
+import com.laptop.Laptop.dto.InvestmentDto;
 import com.laptop.Laptop.dto.StockPurchaseDto;
+import com.laptop.Laptop.dto.SupplierDto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.enums.ExpenseType;
 
@@ -19,6 +21,7 @@ import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -81,17 +84,19 @@ public class BusinessServiceImpl implements BusinessService {
         double stockCost = stockPurchaseDto.getQuantity() * stockPurchaseDto.getBuyingPrice();
 
         // Create and set stock purchase details
-        StockPurchase stockPurchase = new StockPurchase();
-        stockPurchase.setTotalCost(stockCost);
-        stockPurchase.setProduct(product);
-        stockPurchase.setSupplier(supplier);
-        stockPurchase.setPurchaseDate(LocalDate.now());
-        stockPurchase.setUser(loggedInUser);
-        stockPurchase.setShopCode(loggedInUser.getShopCode());
-        stockPurchase.setShop(userShop);
-        stockPurchase.setQuantity(stockPurchaseDto.getQuantity());
-        stockPurchase.setBuyingPrice(stockPurchaseDto.getBuyingPrice());
-        stockPurchase.setSellingPrice(stockPurchaseDto.getSellingPrice());
+        StockPurchase stockPurchase = StockPurchase.builder()
+                .totalCost(stockCost)
+                .product(product)
+                .supplier(supplier)  // Assign the supplier to stock purchase
+                .purchaseDate(LocalDate.now())
+                .user(loggedInUser)
+                .shopCode(loggedInUser.getShopCode())
+                .shop(userShop)
+                .supplierName(supplier.getSupplierName()) // Set supplier name here
+                .quantity(stockPurchaseDto.getQuantity())
+                .buyingPrice(stockPurchaseDto.getBuyingPrice())
+                .sellingPrice(stockPurchaseDto.getSellingPrice())
+                .build();
 
         stockPurchaseRepository.save(stockPurchase);
 
@@ -114,10 +119,12 @@ public class BusinessServiceImpl implements BusinessService {
                 .buyingPrice(stockPurchase.getBuyingPrice())
                 .sellingPrice(stockPurchase.getSellingPrice())
                 .totalCost(stockCost)
-                .supplierName(supplier.getSupplierName())  // Assuming Supplier has a getName() method
+                .productName(stockPurchase.getProduct().getName())
+                .supplierName(stockPurchase.getSupplierName())  // Assuming Supplier has a getSupplierName() method
                 .shopCode(userShop.getShopCode())
                 .build();
     }
+
 
     @Override
     public long totalUsersByShop() {
@@ -241,9 +248,43 @@ public double getTotalInvestments() {
         return saleRepository.findByShopAndDateBetween(shop, startDate, endDate);
     }
 
-    public List<StockPurchase> getStockPurchasesForShop(LocalDate startDate, LocalDate endDate) {
+    public List<StockPurchaseDto> getStockPurchasesForShop(LocalDate startDate, LocalDate endDate) {
+
+
         Shop shop = getUserShop();  // Get the logged-in user's shop
-        return stockPurchaseRepository.findByShopAndPurchaseDateBetween(shop, startDate, endDate);
+
+        List<StockPurchase> stockPurchases=stockPurchaseRepository.findByShopAndPurchaseDateBetween(shop, startDate, endDate);
+        return stockPurchases.stream()
+                .map(this::convertToDto) // Convert each Investment to InvestmentDto
+                .collect(Collectors.toList());
+    }
+
+    // Method to get stock purchases by shop and supplier name
+    public List<StockPurchaseDto> getStockPurchasesForShopBySupplierName(LocalDate startDate, LocalDate endDate, Long supplierId) {
+        Shop shop = getUserShop(); // Get the logged-in user's shop
+
+        // Find stock purchases by shop, supplier name, and date range
+        List<StockPurchase> stockPurchases = stockPurchaseRepository.findByShopAndSupplierIdAndPurchaseDateBetween(shop, supplierId, startDate, endDate);
+
+        // Convert stock purchases to DTOs
+        return stockPurchases.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+    private StockPurchaseDto convertToDto(StockPurchase stockPurchase) {
+        return StockPurchaseDto.builder()
+                .stockBy(stockPurchase.getUser().getUsername())
+                .id(stockPurchase.getId())
+                .productName(stockPurchase.getProduct().getName())
+                .buyingPrice(stockPurchase.getBuyingPrice())
+                .sellingPrice(stockPurchase.getSellingPrice())
+                .purchaseDate(stockPurchase.getPurchaseDate())
+                .shopCode(stockPurchase.getSupplierName())
+                .quantity(stockPurchase.getQuantity())
+                .totalCost(stockPurchase.getTotalCost())
+                .buyingPrice(stockPurchase.getBuyingPrice())
+                .shopCode(stockPurchase.getShopCode())
+                .build();
     }
 
     @Override
