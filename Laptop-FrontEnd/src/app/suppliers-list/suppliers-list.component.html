@@ -1,37 +1,143 @@
-<div class="container mx-auto relative my-6">
+<!-- Wrapper for the entire section, not using fixed positioning anymore -->
+<div class="container mx-auto my-6">
+  <!-- Form Title and Button -->
+  <div class="flex justify-between items-center mb-6">
+    <!-- Button to toggle the visibility of the form -->
+    <button
+      (click)="toggleFormVisibility()"
+      class="bg-green-400 p-2  text-white  rounded-md text-2xl flex items-center justify-center font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
+      type="button"
+    >
+      <span
+        ><ng-icon
+          name="heroPlusCircle"
+          class="mr-3 text-2xl"
+        ></ng-icon></span
+      >Add Supplier
+    </button>
+  </div>
 
-    <div class="text-white my-4 flex justify-around items-center">
-      <!-- Button for adding product -->
-      <button (click)="openAddSupplier()"
-        class="bg-green-400 p-2 rounded-md text-2xl flex items-center justify-center font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
-        type="button">
-        <span><ng-icon name="heroPlusCircle" class="mr-3 text-2xl"></ng-icon></span>Add Supplier
-      </button>
-  
-      <!-- Buttons for PDF and Excel, aligned to the far end -->
-      <div class="flex space-x-2">
-        <button
-          class="bg-green-400 p-2 rounded-md text-white font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
-          type="button">PDF</button>
-  
-      </div>
+  <!-- Form displayed only if showAddSupplierForm is true -->
+  <div
+    *ngIf="showAddSupplierForm"
+    class="bg-white p-6 rounded-lg shadow-lg mb-6 w-1/2"
+  >
+    <lib-toastify-toast-container></lib-toastify-toast-container>
+    <div class="text-xl font-bold text-green-500">
+      <h2>Add New Supplier</h2>
     </div>
-    <!-- Modal for Add product form -->
-    <div *ngIf="showAddSupplier"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm">
-      <div class="bg-white p-6 rounded-lg shadow-lg relative">
-        <app-add-supplier (close)="closeAddSupplier()"></app-add-supplier>
-  
-        <!-- Close button for Add product modal -->
-        <button (click)="closeAddSupplier()" class="absolute top-2 right-2 text-red-500 hover:text-red-800">
-          <ng-icon name="heroXMark" class="mr-3 text-2xl text-red-600"></ng-icon>
+    <hr class="border-0 border-t border-green-400 mb-4" />
+
+    <form [formGroup]="supplierForm" (ngSubmit)="submitSupplierData()">
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700 font-bold mb-1"
+          >Supplier Name</label
+        >
+        <input
+          id="name"
+          type="text"
+          formControlName="supplierName"
+          placeholder="Enter Supplier Name"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div
+          *ngIf="
+            supplierForm.get('supplierName')?.invalid &&
+            supplierForm.get('supplierName')?.touched
+          "
+          class="text-red-500"
+        >
+          Supplier name is required.
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="phone" class="block text-gray-700 font-bold mb-1"
+          >Supplier Phone</label
+        >
+        <input
+          id="phone"
+          type="text"
+          formControlName="supplierPhone"
+          placeholder="Enter Phone Number"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div
+          *ngIf="
+            supplierForm.get('supplierPhone')?.invalid &&
+            supplierForm.get('supplierPhone')?.touched
+          "
+          class="text-red-500"
+        >
+          Valid phone number is required.
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="address" class="block text-gray-700 font-bold mb-1"
+          >Supplier Address</label
+        >
+        <input
+          id="address"
+          type="text"
+          formControlName="supplierAddress"
+          placeholder="Enter Address"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div
+          *ngIf="
+            supplierForm.get('supplierAddress')?.invalid &&
+            supplierForm.get('supplierAddress')?.touched
+          "
+          class="text-red-500"
+        >
+          Address is required.
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="location" class="block text-gray-700 font-bold mb-1"
+          >Supplier Location</label
+        >
+        <input
+          id="location"
+          type="text"
+          formControlName="supplierLocation"
+          placeholder="Enter Location"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div
+          *ngIf="
+            supplierForm.get('supplierLocation')?.invalid &&
+            supplierForm.get('supplierLocation')?.touched
+          "
+          class="text-red-500"
+        >
+          Location is required.
+        </div>
+      </div>
+
+      <div class="flex justify-between mt-4">
+        <button
+          type="submit"
+          class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+        >
+          Add
+        </button>
+        <button
+          type="button"
+          (click)="closeForm()"
+          class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+        >
+          Close
         </button>
       </div>
-    </div>
-        <!-- Display loader if data is loading -->
-        <app-loader *ngIf="isLoading"></app-loader>
-        <div class="shadow-sm rounded-sm bg-white p-4">
-    <!-- Table displaying payments -->
+    </form>
+  </div>
+
+  <!-- Table or additional content goes here -->
+  <!-- Example of a table displaying suppliers -->
+  <div class="bg-white p-4 shadow-sm rounded-sm">
     <table class="table-auto border-collapse border border-slate-500 w-full">
       <thead>
         <tr>
@@ -41,37 +147,46 @@
           <th class="border border-slate-600 p-2">Address</th>
           <th class="border border-slate-600 p-2">Location</th>
           <th class="border border-slate-600 p-2">Action</th>
-  
         </tr>
       </thead>
       <tbody>
         <tr *ngIf="suppliers?.length === 0">
-          <td colspan="4" class="border border-slate-600 p-4 text-center">
-            No supplier found .
+          <td colspan="6" class="border border-slate-600 p-4 text-center">
+            No supplier found.
           </td>
         </tr>
         <tr *ngFor="let supplier of suppliers; let i = index">
-          <td class="border border-slate-600 p-2">{{i+1}}</td>
-          <td class="border border-slate-600 p-2">{{supplier.supplierName}}</td>
-          <td class="border border-slate-600 p-2">{{supplier.supplierPhone}}</td>
-          <td class="border border-slate-600 p-2 ">{{supplier.supplierAddress}}</td>
-          <td class="border border-slate-600 p-2 ">{{supplier.supplierLocation}}</td>
+          <td class="border border-slate-600 p-2">{{ i + 1 }}</td>
           <td class="border border-slate-600 p-2">
-  
+            {{ supplier.supplierName }}
+          </td>
+          <td class="border border-slate-600 p-2">
+            {{ supplier.supplierPhone }}
+          </td>
+          <td class="border border-slate-600 p-2">
+            {{ supplier.supplierAddress }}
+          </td>
+          <td class="border border-slate-600 p-2">
+            {{ supplier.supplierLocation }}
+          </td>
+          <td class="border border-slate-600 p-2">
             <div class="flex justify-around">
-              <button type="submit" class="bg-green-400 text-white p-2 
-                rounded-md font-bold hover:bg-green-500">View</button>
-                <button type="submit" class="bg-red-400 text-white p-2 
-                rounded-md font-bold hover:bg-red-500">Delete</button>
+              <button
+                type="submit"
+                class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+              >
+                View
+              </button>
+              <button
+                type="submit"
+                class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+              >
+                Delete
+              </button>
             </div>
           </td>
-  
         </tr>
       </tbody>
     </table>
-        </div>
-  
-    <lib-toastify-toast-container></lib-toastify-toast-container>
-  
-  
   </div>
+</div>
