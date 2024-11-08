@@ -6,6 +6,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.laptop.Laptop.dto.ShopUpdateRequestDto;
+import com.laptop.Laptop.dto.StockPurchaseDto;
 import com.laptop.Laptop.entity.*;
 import com.laptop.Laptop.exceptions.ProductNotFoundException;
 import com.laptop.Laptop.repository.ProductRepository;
@@ -45,8 +46,8 @@ public class PdfReportServices {
         Sale sale = saleRepository.findById(saleId)
                 .orElseThrow(() -> new ProductNotFoundException("Sale not found"));
 
-        // Create a new Document and ByteArrayOutputStream
-        Document document = new Document();
+        // Create a new Document with A5 page size and ByteArrayOutputStream
+        Document document = new Document(PageSize.A5); // Set the page size to A5
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
@@ -58,47 +59,63 @@ public class PdfReportServices {
             addHorizontalLine(document); // Add a horizontal line after the header
 
             // Empty line for spacing
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 10)));
 
             // Add "RECEIPT" title, centered and bold
-            Paragraph receiptTitle = new Paragraph("RECEIPT", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 24));
+            Paragraph receiptTitle = new Paragraph("RECEIPT", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18));
             receiptTitle.setAlignment(Element.ALIGN_CENTER);
             document.add(receiptTitle);
 
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            //addHorizontalLine(document); // Line below title
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 10)));
 
-            // Receipt information
-            document.add(new Paragraph("Receipt No: " + sale.getId(), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(new Paragraph("Date: " + sale.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(new Paragraph("Sale Person: " + sale.getSalePerson(), FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            // Create a table for right-aligned receipt information with 2 columns
+            PdfPTable infoTable = new PdfPTable(2);
+            infoTable.setWidthPercentage(100);
+            infoTable.setWidths(new float[]{3, 1}); // Adjust the column widths to align to the right
 
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            // Empty cell in the first column to "push" the content to the right
+            PdfPCell emptyCell = new PdfPCell(new Phrase(" "));
+            emptyCell.setBorder(Rectangle.NO_BORDER);
+            infoTable.addCell(emptyCell);
+
+            // Right-aligned receipt details in the second column
+            PdfPCell receiptInfoCell = new PdfPCell();
+            receiptInfoCell.setBorder(Rectangle.ALIGN_CENTER);
+            receiptInfoCell.addElement(new Paragraph("Receipt No: " + sale.getId(), FontFactory.getFont(FontFactory.HELVETICA, 10)));
+            receiptInfoCell.addElement(new Paragraph("Date: " + sale.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                    FontFactory.getFont(FontFactory.HELVETICA, 10)));
+            receiptInfoCell.addElement(new Paragraph("Seller: " + sale.getSalePerson(), FontFactory.getFont(FontFactory.HELVETICA, 10)));
+            infoTable.addCell(receiptInfoCell);
+
+            document.add(infoTable);
+
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 10)));
             addHorizontalLine(document); // Line
 
             // Received from section
-            document.add(new Paragraph("RECEIVED FROM", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16)));
-            document.add(new Paragraph("Name: " + sale.getCustomerName(), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(new Paragraph("Phone: " + sale.getCustomerPhone(), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(new Paragraph("ID: " + sale.getUser().getId(), FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(new Paragraph("PAID VIA: Cash", FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            document.add(new Paragraph("RECEIVED FROM", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
+            document.add(new Paragraph("Name: " + sale.getCustomerName(), FontFactory.getFont(FontFactory.HELVETICA, 10)));
+            document.add(new Paragraph("Phone: " + sale.getCustomerPhone(), FontFactory.getFont(FontFactory.HELVETICA, 10)));
+            document.add(new Paragraph("ID: " + sale.getUser().getId(), FontFactory.getFont(FontFactory.HELVETICA, 10)));
+            document.add(new Paragraph("PAID VIA: Cash", FontFactory.getFont(FontFactory.HELVETICA, 10)));
 
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
-           // addHorizontalLine(document); // Line
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 10)));
 
             // Total amount in words
-            document.add(new Paragraph("RECEIVED SUM OF " + NumberToWordsConverter.convert(sale.getTotalPrice()) + " ONLY", FontFactory.getFont(FontFactory.HELVETICA, 12)));
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            document.add(new Paragraph("RECEIVED SUM OF " + NumberToWordsConverter.convert(sale.getTotalPrice()) + " ONLY",
+                    FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 10)));
+
             // Table for product details
             PdfPTable table = new PdfPTable(4);
             table.setWidthPercentage(100);
             table.setWidths(new float[]{3, 2, 1, 1});
 
             // Table headers
-            table.addCell(new PdfPCell(new Phrase("PRODUCT NAME", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
-            table.addCell(new PdfPCell(new Phrase("FEATURES", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
-            table.addCell(new PdfPCell(new Phrase("QUANTITY", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
-            table.addCell(new PdfPCell(new Phrase("TOTAL", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
+            table.addCell(new PdfPCell(new Phrase("PRODUCT NAME", FontFactory.getFont(FontFactory.HELVETICA))));
+            table.addCell(new PdfPCell(new Phrase("FEATURES", FontFactory.getFont(FontFactory.HELVETICA))));
+            table.addCell(new PdfPCell(new Phrase("QUANTITY", FontFactory.getFont(FontFactory.HELVETICA))));
+            table.addCell(new PdfPCell(new Phrase("TOTAL", FontFactory.getFont(FontFactory.HELVETICA))));
 
             // Add SaleItem details to table
             for (SaleItem item : sale.getSaleItems()) {
@@ -111,10 +128,10 @@ public class PdfReportServices {
             document.add(table);
 
             // Subtotal and total sections
-            document.add(new Paragraph("SUBTOTAL: " + sale.getTotalPrice(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
-            document.add(new Paragraph("TOTAL: " + sale.getTotalPrice(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+            document.add(new Paragraph("SUBTOTAL: " + sale.getTotalPrice(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
+            document.add(new Paragraph("TOTAL: " + sale.getTotalPrice(), FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
 
-            document.add(new Paragraph("Thank you for your business", FontFactory.getFont(FontFactory.HELVETICA, 12)));
+            document.add(new Paragraph("Thank you for your business", FontFactory.getFont(FontFactory.HELVETICA, 10)));
         } catch (DocumentException e) {
             e.printStackTrace();
         } finally {
@@ -124,6 +141,8 @@ public class PdfReportServices {
         // Return the generated PDF
         return new ByteArrayInputStream(out.toByteArray());
     }
+
+
 
 
     // Method to generate product stock report
@@ -144,7 +163,7 @@ public class PdfReportServices {
             // Create table with columns: No., Product Name, Stock, Price
             PdfPTable table = new PdfPTable(5); // 4 columns
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{1, 3, 1, 1}); // Set column widths
+            table.setWidths(new float[]{1, 2, 1, 1,1}); // Set column widths
             table.addCell(createCell("No.", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
             table.addCell(createCell("Product Name", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
             table.addCell(createCell("Stock", FontFactory.getFont(FontFactory.HELVETICA_BOLD)));
@@ -232,7 +251,7 @@ public class PdfReportServices {
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    public ByteArrayInputStream generateStockPurchaseReport(List<StockPurchase> stockPurchases, Shop shop, User user) {
+    public ByteArrayInputStream generateStockPurchaseReport(List<StockPurchaseDto> stockPurchases, Shop shop, User user) {
         Document document = new Document();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -245,18 +264,20 @@ public class PdfReportServices {
             document.add(new Paragraph("Stock Purchase Report"));
             document.add(new Paragraph(" "));
 
-            PdfPTable table = new PdfPTable(6); // Columns: Date, Supplier, Quantity, Total
+            PdfPTable table = new PdfPTable(7); // Columns: Date, Supplier, Quantity, Total
             table.setWidthPercentage(100);
             table.addCell("Date");
             table.addCell("Supplier");
+            table.addCell("Item");
             table.addCell("Quantity");
             table.addCell("Buy");
             table.addCell("Sell");
             table.addCell("Total");
 
-            for (StockPurchase stockPurchase : stockPurchases) {
+            for (StockPurchaseDto stockPurchase : stockPurchases) {
                 table.addCell(stockPurchase.getPurchaseDate().toString());
                 table.addCell(String.valueOf(stockPurchase.getSupplierName()));
+                table.addCell(String.valueOf(stockPurchase.getProductName()));
                 table.addCell(String.valueOf(stockPurchase.getQuantity()));
                 table.addCell(String.valueOf(stockPurchase.getBuyingPrice()));
                 table.addCell(String.valueOf(stockPurchase.getSellingPrice()));
@@ -318,32 +339,49 @@ public class PdfReportServices {
     }
 
     // Helper method to add header with shop details and logo
-    private void addHeader(Document document, Shop shop,User user) throws DocumentException {
-        // Add the logo (if available)
+    private void addHeader(Document document, Shop shop, User user) throws DocumentException {
+        // Create a table with two columns: one for the logo and one for the shop details
+        PdfPTable table = new PdfPTable(2); // 2 columns
+        table.setWidthPercentage(100); // Set table width to 100% of the page
+
+        // Add the logo (if available) in the first column
         if (shop.getShopLogo() != null) {
             try {
                 Image logo = Image.getInstance(shop.getShopLogo()); // Assuming `shop.getLogo()` returns byte[]
-                logo.scaleAbsolute(50, 50); // Adjust the size as necessary
-                document.add(logo);
+                logo.scaleAbsolute(100, 100); // Adjust the size as necessary
+                PdfPCell logoCell = new PdfPCell(logo);
+                logoCell.setBorder(Rectangle.NO_BORDER); // No border for logo cell
+                logoCell.setHorizontalAlignment(Element.ALIGN_LEFT); // Align logo to the left
+                table.addCell(logoCell);
             } catch (Exception e) {
                 // Handle logo loading error
+                e.printStackTrace();
             }
+        } else {
+            // If no logo, add an empty cell to maintain alignment
+            table.addCell(new PdfPCell(new Phrase("")));
         }
 
-        // Add the shop details
-        Paragraph shopDetails = new Paragraph(
-                shop.getShopName() + "\n" +
-                        "P.O BOX-"+ shop.getAddress() + "\n" +
-                         shop.getPhoneNumber(),
-                FontFactory.getFont(FontFactory.HELVETICA, 12)
-        );
-        shopDetails.setAlignment(Element.ALIGN_CENTER);
-        document.add(shopDetails);
-        document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Add space
+        // Add the shop details in the second column
+        PdfPCell shopDetailsCell = new PdfPCell();
+        String shopDetailsText = shop.getShopName() + "\n" +
+                "P.O BOX-" + shop.getAddress() + "\n" +
+                shop.getPhoneNumber();
+        shopDetailsCell.setPhrase(new Phrase(shopDetailsText, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
+        shopDetailsCell.setBorder(Rectangle.NO_BORDER); // No border for shop details cell
+        shopDetailsCell.setHorizontalAlignment(Element.ALIGN_LEFT); // Align text to the right
+        shopDetailsCell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Vertically center the text
+        table.addCell(shopDetailsCell);
+
+        // Add the table to the document
+        document.add(table);
+        document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Add space after the table
     }
+
 
     // Helper method to add footer
     private void addFooter(Document document, User user) throws DocumentException {
+        document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Add space after the table
         Paragraph footer = new Paragraph(
                 "Generated on: " + java.time.LocalDate.now() + " by " + user.getUsername(),
                 FontFactory.getFont(FontFactory.HELVETICA, 10)
