@@ -12,6 +12,7 @@ export class ProductsService {
 
   private baseUrl = 'http://localhost:9091/api/admin/products';
   private topUrl='http://localhost:9091/api/business/top-products';
+  private pdfUrl='http://localhost:9091/api/pdf/reports';
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
 
@@ -60,6 +61,11 @@ export class ProductsService {
     );
   }
 
+    // New method to generate a PDF receipt
+    generatePrintabProductList(): Observable<Blob> {
+      const url = `${this.pdfUrl}/products`; // Adjust this endpoint to return PDF
+      return this.http.get(url, { responseType: 'blob', headers: this.createAuthorizationHeaders() });
+    }
   // Create authorization headers
   private createAuthorizationHeaders(): HttpHeaders {
     const token = this.tokenService.getToken;
