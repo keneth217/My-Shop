@@ -62,7 +62,7 @@ public class PdfReportServices {
             document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 10)));
 
             // Add "RECEIPT" title, centered and bold
-            Paragraph receiptTitle = new Paragraph("RECEIPT", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18));
+            Paragraph receiptTitle = new Paragraph("RECEIPT", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16));
             receiptTitle.setAlignment(Element.ALIGN_CENTER);
             document.add(receiptTitle);
 
@@ -70,36 +70,44 @@ public class PdfReportServices {
 
             // Create a table for right-aligned receipt information with 2 columns
             PdfPTable infoTable = new PdfPTable(2);
-            infoTable.setWidthPercentage(100);
-            infoTable.setWidths(new float[]{3, 1}); // Adjust the column widths to align to the right
+            infoTable.setWidthPercentage(50); // Set the table width to 50% of the page width (small table)
+            infoTable.setWidths(new float[]{1, 2}); // Adjust the column widths to align to the right
 
-            // Empty cell in the first column to "push" the content to the right
+// Add an empty cell in the first column to "push" the content to the right
             PdfPCell emptyCell = new PdfPCell(new Phrase(" "));
-            emptyCell.setBorder(Rectangle.NO_BORDER);
+            emptyCell.setBorder(Rectangle.NO_BORDER); // No border for the empty cell
             infoTable.addCell(emptyCell);
 
-            // Right-aligned receipt details in the second column
+// Right-aligned receipt details in the second column (database content)
             PdfPCell receiptInfoCell = new PdfPCell();
-            receiptInfoCell.setBorder(Rectangle.ALIGN_CENTER);
-            receiptInfoCell.addElement(new Paragraph("Receipt No: " + sale.getId(), FontFactory.getFont(FontFactory.HELVETICA, 10)));
+            receiptInfoCell.setBorder(Rectangle.BOX); // Adding border around the info cell
+            receiptInfoCell.setPadding(5); // Adding some padding for better readability
+            receiptInfoCell.setHorizontalAlignment(Element.ALIGN_RIGHT); // Right-align the content in this cell
+
+// Hardcoded content on the left (like "Receipt No", etc.)
+// These elements will be in the first column but aligned to the left.
+            receiptInfoCell.addElement(new Paragraph("Receipt No: " + sale.getId(), FontFactory.getFont(FontFactory.HELVETICA, 8)));
             receiptInfoCell.addElement(new Paragraph("Date: " + sale.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                     FontFactory.getFont(FontFactory.HELVETICA, 10)));
-            receiptInfoCell.addElement(new Paragraph("Seller: " + sale.getSalePerson(), FontFactory.getFont(FontFactory.HELVETICA, 10)));
+            receiptInfoCell.addElement(new Paragraph("Seller: " + sale.getSalePerson(), FontFactory.getFont(FontFactory.HELVETICA, 8)));
+
+// Add the receipt info cell to the second column (database details side)
             infoTable.addCell(receiptInfoCell);
 
+// Add the table to the document
             document.add(infoTable);
 
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 10)));
-            addHorizontalLine(document); // Line
+
+
 
             // Received from section
-            document.add(new Paragraph("RECEIVED FROM", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10)));
-            document.add(new Paragraph("Name: " + sale.getCustomerName(), FontFactory.getFont(FontFactory.HELVETICA, 10)));
-            document.add(new Paragraph("Phone: " + sale.getCustomerPhone(), FontFactory.getFont(FontFactory.HELVETICA, 10)));
-            document.add(new Paragraph("ID: " + sale.getUser().getId(), FontFactory.getFont(FontFactory.HELVETICA, 10)));
-            document.add(new Paragraph("PAID VIA: Cash", FontFactory.getFont(FontFactory.HELVETICA, 10)));
+            document.add(new Paragraph("RECEIVED FROM", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8)));
+            document.add(new Paragraph("Name: " + sale.getCustomerName(), FontFactory.getFont(FontFactory.HELVETICA, 8)));
+            document.add(new Paragraph("Phone: " + sale.getCustomerPhone(), FontFactory.getFont(FontFactory.HELVETICA, 8)));
+            document.add(new Paragraph("ID: " + sale.getUser().getId(), FontFactory.getFont(FontFactory.HELVETICA, 8)));
+            document.add(new Paragraph("PAID VIA: Cash", FontFactory.getFont(FontFactory.HELVETICA, 8)));
 
-            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 10)));
+            document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 8)));
 
             // Total amount in words
             document.add(new Paragraph("RECEIVED SUM OF " + NumberToWordsConverter.convert(sale.getTotalPrice()) + " ONLY",
@@ -107,24 +115,40 @@ public class PdfReportServices {
             document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 10)));
 
             // Table for product details
-            PdfPTable table = new PdfPTable(4);
+            PdfPTable table = new PdfPTable(5);
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{3, 2, 1, 1});
+            table.setWidths(new float[]{2, 2,1, 1, 1});
 
             // Table headers
-            table.addCell(new PdfPCell(new Phrase("PRODUCT NAME", FontFactory.getFont(FontFactory.HELVETICA))));
-            table.addCell(new PdfPCell(new Phrase("FEATURES", FontFactory.getFont(FontFactory.HELVETICA))));
-            table.addCell(new PdfPCell(new Phrase("QUANTITY", FontFactory.getFont(FontFactory.HELVETICA))));
-            table.addCell(new PdfPCell(new Phrase("TOTAL", FontFactory.getFont(FontFactory.HELVETICA))));
+            table.addCell(new PdfPCell(new Phrase(" NAME", FontFactory.getFont(FontFactory.HELVETICA,8))));
+            table.addCell(new PdfPCell(new Phrase("FEATURES", FontFactory.getFont(FontFactory.HELVETICA,8))));
+            table.addCell(new PdfPCell(new Phrase("QTY", FontFactory.getFont(FontFactory.HELVETICA,8))));
+            table.addCell(new PdfPCell(new Phrase("COST", FontFactory.getFont(FontFactory.HELVETICA,8))));
+            table.addCell(new PdfPCell(new Phrase("TOTAL", FontFactory.getFont(FontFactory.HELVETICA,8))));
 
-            // Add SaleItem details to table
+            // Create a font with size 6
+            Font smallFont = FontFactory.getFont(FontFactory.HELVETICA, 6);
+
+// Add SaleItem details to table
             for (SaleItem item : sale.getSaleItems()) {
                 Product product = item.getProduct();
-                table.addCell(new PdfPCell(new Phrase(product.getName())));
-                table.addCell(new PdfPCell(new Phrase(String.join(", ", product.getProductFeatures()))));
-                table.addCell(new PdfPCell(new Phrase(String.valueOf(item.getQuantity()))));
-                table.addCell(new PdfPCell(new Phrase(String.valueOf(item.getQuantity() * item.getSalePrice()))));
+
+                // Add product name with font size 6
+                table.addCell(new PdfPCell(new Phrase(product.getName(), smallFont)));
+
+                // Add product features with font size 6
+                table.addCell(new PdfPCell(new Phrase(String.join(", ", product.getProductFeatures()), smallFont)));
+
+                // Add quantity with font size 6
+                table.addCell(new PdfPCell(new Phrase(String.valueOf(item.getQuantity()), smallFont)));
+
+                // Add sale price with font size 6
+                table.addCell(new PdfPCell(new Phrase(String.valueOf(item.getSalePrice()), smallFont)));
+
+                // Add total price (quantity * sale price) with font size 6
+                table.addCell(new PdfPCell(new Phrase(String.valueOf(item.getQuantity() * item.getSalePrice()), smallFont)));
             }
+
             document.add(table);
 
             // Subtotal and total sections
@@ -343,6 +367,7 @@ public class PdfReportServices {
         // Create a table with two columns: one for the logo and one for the shop details
         PdfPTable table = new PdfPTable(2); // 2 columns
         table.setWidthPercentage(100); // Set table width to 100% of the page
+        table.setSpacingBefore(10); // Adds some space before the table (optional, you can adjust it)
 
         // Add the logo (if available) in the first column
         if (shop.getShopLogo() != null) {
@@ -352,6 +377,7 @@ public class PdfReportServices {
                 PdfPCell logoCell = new PdfPCell(logo);
                 logoCell.setBorder(Rectangle.NO_BORDER); // No border for logo cell
                 logoCell.setHorizontalAlignment(Element.ALIGN_LEFT); // Align logo to the left
+                logoCell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Vertically align logo in the cell
                 table.addCell(logoCell);
             } catch (Exception e) {
                 // Handle logo loading error
@@ -359,7 +385,9 @@ public class PdfReportServices {
             }
         } else {
             // If no logo, add an empty cell to maintain alignment
-            table.addCell(new PdfPCell(new Phrase("")));
+            PdfPCell emptyCell = new PdfPCell(new Phrase(""));
+            emptyCell.setBorder(Rectangle.NO_BORDER);
+            table.addCell(emptyCell);
         }
 
         // Add the shop details in the second column
@@ -369,13 +397,15 @@ public class PdfReportServices {
                 shop.getPhoneNumber();
         shopDetailsCell.setPhrase(new Phrase(shopDetailsText, FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12)));
         shopDetailsCell.setBorder(Rectangle.NO_BORDER); // No border for shop details cell
-        shopDetailsCell.setHorizontalAlignment(Element.ALIGN_LEFT); // Align text to the right
+        shopDetailsCell.setHorizontalAlignment(Element.ALIGN_LEFT); // Align text to the left
         shopDetailsCell.setVerticalAlignment(Element.ALIGN_MIDDLE); // Vertically center the text
         table.addCell(shopDetailsCell);
 
         // Add the table to the document
         document.add(table);
-        document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Add space after the table
+
+        // Add some space after the table (optional)
+        document.add(new Paragraph(" ", FontFactory.getFont(FontFactory.HELVETICA, 12))); // Add an empty space (this can be customized)
     }
 
 
