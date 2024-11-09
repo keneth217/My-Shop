@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4.1.0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4.1.0
         with:
           node-version: '18'
 
@@ -24,10 +24,10 @@ jobs:
         working-directory: ./Laptop-FrontEnd
 
       - name: Install Angular CLI
-        run: npm install -g @angular/cli  # Installs Angular CLI globally
+        run: npm install -g @angular/cli
 
-      - name: Run tests
-        run: npx ng test --watch=false --browsers=ChromeHeadless --no-sandbox
+      - name: Set Chrome to run with --no-sandbox
+        run: export CHROME_BIN=google-chrome-stable && npx ng test --watch=false --browsers=ChromeHeadless
         working-directory: ./Laptop-FrontEnd
 
       - name: Build project
