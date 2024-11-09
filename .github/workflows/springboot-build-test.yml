@@ -1,4 +1,4 @@
-name: Spring Boot Build and Test
+name: Spring Boot My Shop Build and Test
 
 on:
   push:
