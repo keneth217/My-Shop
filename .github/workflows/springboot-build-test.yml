@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'
-          distribution: 'adoptopenjdk' # You can use other distributions like 'zulu', 'openjdk', etc.
+          distribution: 'temurin' # Use 'temurin' instead of 'adoptopenjdk'
           java-package: 'jdk'
           architecture: 'x64'
           check-latest: false
