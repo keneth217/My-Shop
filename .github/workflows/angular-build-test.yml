@@ -23,10 +23,13 @@ jobs:
         run: npm install
         working-directory: ./Laptop-FrontEnd
 
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli  # Installs Angular CLI globally
+
       - name: Run tests
-        run: ng test --watch=false --browsers=ChromeHeadless --no-sandbox
+        run: npx ng test --watch=false --browsers=ChromeHeadless --no-sandbox
         working-directory: ./Laptop-FrontEnd
 
       - name: Build project
-        run: npm run build -- --prod
+        run: npx ng build --prod
         working-directory: ./Laptop-FrontEnd
