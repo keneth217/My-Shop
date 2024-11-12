@@ -24,4 +24,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
    Page<Product> findTopSellingProductsByShop(@Param("shopId") Long shopId, Pageable pageable);
 
     Page<Product> findAllByShopAndStockLessThanEqual(Shop shop, int lowStockThreshold, Pageable pageable);
+
+    @Query("SELECT p FROM Product p WHERE p.name LIKE %:query%")
+    List<Product> findByName(@Param("query") String query, Pageable pageable);
+
+    List<Product> findByNameContainingIgnoreCase(String query, Pageable pageable);
+
+
+    List<Product> findByShopId(String query, Pageable pageable);
 }
