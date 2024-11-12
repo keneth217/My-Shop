@@ -25,10 +25,21 @@
         type="button"
         (click)="previewproductsPdf()"
       >
-       Products PDF
+        Products PDF
       </button>
     </div>
   </div>
+
+  <!-- <div class="justify-between">
+
+    <input type="text" [formControl]="searchTerm" placeholder="Search..." 
+    class="border p-2 w-1/4 mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+    />
+    <ul *ngIf="results" class="text-green-600 p-2 w-1/4 mb-2 bg-white shadow-sm rounded-sm">
+      <li 
+       *ngFor="let result of results">{{ result.name }}:{{result.sellingPrice}}</li>
+    </ul>
+  </div> -->
 
   <!-- Modal for Add product form -->
   <div
@@ -98,59 +109,126 @@
       ></app-addcart>
     </div>
   </div>
+  <!-- Centered Search Box Outside Product Container -->
+<div class="p-4 mb-4 bg-white rounded-sm w-1/3 mx-auto text-center">
+  <input
+    type="text"
+    [formControl]="searchTerm"
+    placeholder="Search products..."
+    class="w-full p-2 border rounded-md outline-none focus:ring-2 focus:ring-green-300"
+  />
+</div>
+
 
   <div class="flex flex-1">
-    <!-- Table displaying products -->
+    <!--  displaying products -->
     <div
-      class="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 shadow-sm rounded-sm bg-white p-4"
+      class=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 shadow-sm rounded-sm bg-white p-4"
     >
-      <div *ngIf="!products || products.length === 0">
-        <p class="p-4 text-center">
-          No products found whose stock is more than one.
-        </p>
+      <div *ngIf="!products?.length && results.length < 0">
+        <p class="p-4 text-center">No products found,click add buttton to add some.</p>
       </div>
 
       <!-- Display loader if data is loading -->
       <app-loader *ngIf="isLoading"></app-loader>
       <!-- Card layout for displaying products -->
+
+      <!-- Display Search Results if there is a search term -->
+      <div *ngIf="searchTerm.value && results.length > 0">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div
+            *ngFor="let product of results"
+            class="bg-white rounded-lg shadow-md p-4 border-2 border-green-300 hover:shadow-2xl hover:bg-green-100 transition-all duration-300"
+          >
+            <img
+              [src]="'data:image/jpeg;base64,' + product.productImagesList?.[0]"
+              alt="Product Image"
+              class="w-full h-50 object-cover mb-2"
+              *ngIf="product.productImagesList?.length > 0"
+            />
+            <h3 class="text-lg font-semibold">{{ product.name }}</h3>
+            <h3 class="text-lg text-green-500 font-semibold">
+              Kshs:{{ product.sellingPrice }}
+            </h3>
+            <p class="text-gray-600">Stock: {{ product.stock }}</p>
+            <div class="flex justify-between mt-4">
+              <button
+                type="button"
+                class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+                (click)="openStockProduct(product.id, product.name)"
+              >
+                Add Stock
+              </button>
+              <button
+                type="button"
+                class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+                (click)="openAddToCart(product.id)"
+              >
+                Cart
+              </button>
+              <button
+                type="button"
+                class="bg-pink-400 text-white p-2 rounded-md font-bold hover:bg-pink-500"
+                (click)="openViewProduct(product.id)"
+              >
+                View
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Show 'No results found' message if search term is present but no results -->
       <div
-        *ngFor="let product of products"
-        class="bg-white rounded-lg shadow-md p-4 outline-none border-2 border-green-300  hover:shadow-2xl hover:bg-green-100 transition-all duration-300"
+        *ngIf="searchTerm.value && results.length === 0"
+        class="text-gray-600"
       >
-        <img
-          [src]="'data:image/jpeg;base64,' + product.productImagesList?.[0]"
-          alt="Product Image"
-          class="w-full h-50 object-cover mb-2"
-          *ngIf="product.productImagesList?.length > 0"
-        />
-        <h3 class="text-lg font-semibold">{{ product.name }}</h3>
-        <h3 class="text-lg text-green-500 font-semibold">
-          Kshs:{{ product.sellingPrice }}
-        </h3>
-        <p class="text-gray-600">Stock: {{ product.stock }}</p>
-        <!-- <p class="text-gray-600">Quantity Sold: {{ product.quantitySold }}</p> -->
-        <div class="flex justify-between mt-4">
-          <button
-            type="button"
-            class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
-            (click)="openStockProduct(product.id, product.name)"
+        <p>No Serch results found for search item.</p>
+      </div>
+
+      <!-- Display Full Product List if no search term is present -->
+      <div *ngIf="!searchTerm.value" class="">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        >
+          <div
+            *ngFor="let product of products"
+            class="bg-white rounded-lg gap-6 shadow-md p-4 border-2 border-green-300 hover:shadow-2xl hover:bg-green-100 transition-all duration-300"
           >
-            Add Stock
-          </button>
-          <button
-            type="button"
-            class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
-            (click)="openAddToCart(product.id)"
-          >
-            Cart
-          </button>
-          <button
-            type="button"
-            class="bg-pink-400 text-white p-2 rounded-md font-bold hover:bg-pink-500"
-            (click)="openViewProduct(product.id)"
-          >
-            View
-          </button>
+            <img
+              [src]="'data:image/jpeg;base64,' + product.productImagesList?.[0]"
+              alt="Product Image"
+              class="w-full h-50 object-cover mb-2"
+              *ngIf="product.productImagesList?.length > 0"
+            />
+            <h3 class="text-lg font-semibold">{{ product.name }}</h3>
+            <h3 class="text-lg text-green-500 font-semibold">
+              Kshs:{{ product.sellingPrice }}
+            </h3>
+            <p class="text-gray-600">Stock: {{ product.stock }}</p>
+            <div class="flex justify-between mt-4">
+              <button
+                type="button"
+                class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+                (click)="openStockProduct(product.id, product.name)"
+              >
+                Add Stock
+              </button>
+              <button
+                type="button"
+                class="bg-red-400 text-white p-2 rounded-md font-bold hover:bg-red-500"
+                (click)="openAddToCart(product.id)"
+              >
+                Cart
+              </button>
+              <button
+                type="button"
+                class="bg-pink-400 text-white p-2 rounded-md font-bold hover:bg-pink-500"
+                (click)="openViewProduct(product.id)"
+              >
+                View
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
