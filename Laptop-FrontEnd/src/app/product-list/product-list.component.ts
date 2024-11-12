@@ -13,12 +13,14 @@ import { SalesService } from '../Services/sales.service';
 import { AddcartComponent } from "../addcart/addcart.component";
 import { CartResponse } from '../model/cartResponse';
 import { CheckoutComponent } from "../checkout/checkout.component";
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [AngularToastifyModule, CommonModule, NgIconsModule, AddproductComponent, AddProductStockComponent, ViewSingleProductComponent, LoaderComponent, AddcartComponent, CheckoutComponent],
+  imports: [AngularToastifyModule,ReactiveFormsModule, CommonModule, NgIconsModule, AddproductComponent, AddProductStockComponent, ViewSingleProductComponent, LoaderComponent, AddcartComponent, CheckoutComponent],
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css'] // Note the corrected property here
 })
@@ -50,6 +52,10 @@ export class ProductListComponent implements OnInit {
   selectedCartId: number=0; 
 isLoading: boolean=false;
 isRefreshing: boolean=false;
+isSearching: boolean=false;
+
+searchTerm = new FormControl();
+results: any[] = [];
 
 
   // Store the selected product ID
@@ -59,14 +65,42 @@ isRefreshing: boolean=false;
     private toastService: ToastService,
     private saleService: SalesService,
     private loaderService: LoaderService,
-  ) { }
-
+  ) { 
+   
+  }
   ngOnInit(): void {
     this.fetchCartItems();
     this.fetchProducts();
-    // Call the fetchProducts method on component initialization
-
+    
+    // Listen for search term changes with debounce
+    this.searchTerm.valueChanges
+      .pipe(
+        debounceTime(300), // Wait 300ms after typing stops
+        switchMap((term: string) => {
+          if (term) {
+            this.isLoading = true;
+            return this.productService.searchItem(term); // Fetch filtered products if search term is provided
+          } else {
+            this.isLoading = true;
+            return this.productService.getProducts(); // Fetch all products if no search term
+          }
+        })
+      )
+      .subscribe((data) => {
+        if (this.searchTerm.value) {
+          this.results = data; // Display search results
+          this.products = [];  // Clear full product list when displaying search results
+        } else {
+          this.products = data; // Display full product list when no search term
+          this.results = [];    // Clear search results
+        }
+        this.isLoading = false;
+      });
   }
+  
+  
+   
+  
   refresh() {
     this.isRefreshing = true; 
     this.fetchCartItems();
@@ -74,7 +108,6 @@ isRefreshing: boolean=false;
     this.isRefreshing = false; 
     }
 
- 
 
   fetchProducts(): void {
     this.isLoading=true;
