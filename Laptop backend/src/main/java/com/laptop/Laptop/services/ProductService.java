@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -73,7 +74,7 @@ public class ProductService {
         List<Product> products = productRepository.findByShopId(shopId);
 
         return products.stream()
-                .filter(product -> product.getStock()  < 1) // Filter products with stock equal to 0
+                .filter(product -> product.getStock() < 1) // Filter products with stock equal to 0
                 .map(product -> {
                     ProductCreationRequestDto dto = new ProductCreationRequestDto();
                     dto.setId(product.getId());
@@ -137,7 +138,7 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-   // @Cacheable(value = "products", key = "'product:' + #productId")
+    // @Cacheable(value = "products", key = "'product:' + #productId")
     public ProductCreationRequestDto getProductById(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalStateException("Product not found"));
@@ -160,7 +161,7 @@ public class ProductService {
         return dto;
     }
 
-   // @CacheEvict(value = {"products", "productsByShop"}, allEntries = true)
+    // @CacheEvict(value = {"products", "productsByShop"}, allEntries = true)
     public void updateProduct(Long productId, ProductCreationRequestDto request) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalStateException("Product not found"));
@@ -188,7 +189,7 @@ public class ProductService {
         productRepository.save(product);
     }
 
-   // @CacheEvict(value = {"products", "productsByShop"}, allEntries = true)
+    // @CacheEvict(value = {"products", "productsByShop"}, allEntries = true)
     public void deleteProduct(Long productId) {
         if (!productRepository.existsById(productId)) {
             throw new ProductNotFoundException("Product not found");
@@ -196,4 +197,33 @@ public class ProductService {
 
         productRepository.deleteById(productId);
     }
+
+    public List<ProductCreationRequestDto> search(String query, Pageable pageable) {
+        // Fetch products that match the query, case-insensitive
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(query, pageable);
+
+        return products.stream()
+                .filter(product -> product.getStock() > 0) // Only include products with stock > 0
+                .map(product -> {
+                    ProductCreationRequestDto dto = new ProductCreationRequestDto();
+                    dto.setId(product.getId());
+                    dto.setName(product.getName());
+                    dto.setProductFeatures(product.getProductFeatures());
+                    dto.setStock(product.getStock());
+                    dto.setBuyingPrice(product.getCost());
+                    dto.setSellingPrice(product.getSellingPrice());
+
+                    // Convert product images to Base64 strings
+                    List<String> productImagesAsBase64 = product.getProductImages().stream()
+                            .map(image -> Base64.getEncoder().encodeToString(image))
+                            .collect(Collectors.toList());
+                    dto.setProductImagesList(productImagesAsBase64);
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 }
+
+
+
