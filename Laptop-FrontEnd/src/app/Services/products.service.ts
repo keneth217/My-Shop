@@ -66,6 +66,21 @@ export class ProductsService {
       const url = `${this.pdfUrl}/products`; // Adjust this endpoint to return PDF
       return this.http.get(url, { responseType: 'blob', headers: this.createAuthorizationHeaders() });
     }
+
+    searchItem(term: string): Observable<any[]> {
+      let params: any = {};
+      if (term) params.q = term;
+    
+      return this.http.get<any[]>(`${this.baseUrl}/search`, {
+        headers: this.createAuthorizationHeaders(),
+        params,
+      });
+    }
+
+
+    search(term: string): Observable<any[]> {
+      return this.http.get<any[]>(`${this.baseUrl}?q=${term}`, { headers: this.createAuthorizationHeaders() });
+    }
   // Create authorization headers
   private createAuthorizationHeaders(): HttpHeaders {
     const token = this.tokenService.getToken;
