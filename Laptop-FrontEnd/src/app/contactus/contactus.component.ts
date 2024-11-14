@@ -30,7 +30,7 @@ submitEmail() {
     const emailData = this.contactForm.value;
     
     // Call the service method and handle the observable
-    this.emailService.sendEmail(emailData).subscribe({
+    this.emailService.receiveEmailfromCustomer(emailData).subscribe({
       next: response => {
         this.toastService.success('Email sent successfully:');
         console.log('Email sent successfully:', response);
