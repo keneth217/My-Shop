@@ -13,7 +13,11 @@ public class SendEmails {
 
     // Method to send email using EmailService
     //accept email sent to,subject and messege body
-    public void sendEmailToRecipient(EmailDetails emailDetails) {
-        emailService.sendEmail(emailDetails);
+    public void sendEmailToCustomer(EmailDetails emailDetails) {
+        emailService.sendEmailToCustomer(emailDetails);
+    }
+
+    public void receiveEmailFromCustomer(EmailDetails emailDetails) {
+        emailService.receiveEmailFromCustomer(emailDetails);
     }
 }
