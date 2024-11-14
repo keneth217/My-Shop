@@ -29,6 +29,7 @@ public class Shop {
     private String shopCode;
     private String phoneNumber;
     private String address;
+    private String email;
     private String description;
     private LocalDate registrationDate;
     private LocalDate expiryDate;
