@@ -28,6 +28,7 @@ export class SuperAddShopComponent {
       adminUsername: ['', Validators.required],
       phoneNumber: ['', Validators.required],
       address: ['', Validators.required],
+      email: ['', Validators.required],
     });
   }
 
