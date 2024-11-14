@@ -9,15 +9,23 @@ import { TokenService } from './token.service';
 export class EmailService {
   private apiUrl = 'http://localhost:9091/api/email/send';
 
-  constructor(private http: HttpClient,private tokenService: TokenService)  {}
-  sendEmail(emailData: any): Observable<any> {
-    return this.http.post(this.apiUrl, emailData, {
+  constructor(private http: HttpClient, private tokenService: TokenService) { }
+  sendEmailToCustomer(emailData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/send`, emailData, {
       headers: this.createAuthorizationHeaders(),
       responseType: 'text' as 'json'  // Handle response as plain text
     });
-}
-   // Create authorization headers
-   private createAuthorizationHeaders(): HttpHeaders {
+  }
+
+  receiveEmailfromCustomer(emailData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/receive`, emailData, {
+      headers: this.createAuthorizationHeaders().set('Content-Type', 'application/json'),
+      responseType: 'text' as 'json'  // Handle response as plain text
+    });
+  }
+  
+  // Create authorization headers
+  private createAuthorizationHeaders(): HttpHeaders {
     const token = this.tokenService.getToken;
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
