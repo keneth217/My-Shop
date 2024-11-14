@@ -16,7 +16,16 @@ public class EmailController {
     @PostMapping("/send")
     public String sendEmail(@RequestBody EmailDetails emailDetails) {
         try {
-            sendEmails.sendEmailToRecipient(emailDetails);
+            sendEmails.sendEmailToCustomer(emailDetails);
+            return "Email sent successfully!";
+        } catch (Exception e) {
+            return "Error sending email: " + e.getMessage();
+        }
+    }
+    @PostMapping("/receive")
+    public String receiveEmail(@RequestBody EmailDetails emailDetails) {
+        try {
+            sendEmails.receiveEmailFromCustomer(emailDetails);
             return "Email sent successfully!";
         } catch (Exception e) {
             return "Error sending email: " + e.getMessage();
