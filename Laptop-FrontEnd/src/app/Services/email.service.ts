@@ -7,7 +7,7 @@ import { TokenService } from './token.service';
   providedIn: 'root'
 })
 export class EmailService {
-  private apiUrl = 'http://localhost:9091/api/email/send';
+  private apiUrl = 'http://localhost:9091/api/email';
 
   constructor(private http: HttpClient, private tokenService: TokenService) { }
   sendEmailToCustomer(emailData: any): Observable<any> {
