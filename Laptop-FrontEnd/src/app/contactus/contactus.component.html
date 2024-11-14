@@ -1,88 +1,76 @@
 <div class="fixed inset-0 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full outline-none border-green-400 border-2">
-      <lib-toastify-toast-container></lib-toastify-toast-container>
-  
-      <div class="flex justify-center mb-2">
-        <h2 class="text-xl font-bold text-green-500">Contact Us</h2>
-      </div>
-  
-      <hr class="border-0 border-t border-green-400 mb-4">
-  
-      <form [formGroup]="contactForm" (ngSubmit)="submitData()">
-        <div class="mb-4">
-          <label for="name" class="block text-gray-700 font-bold mb-1">Name</label>
-          <input 
-            id="name" 
-            type="text" 
-            formControlName="name" 
-            placeholder="Enter Your Name"
-            class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-          />
-          <div *ngIf="contactForm.get('name')?.invalid && contactForm.get('name')?.touched" class="text-red-500">
-            Name is required.
-          </div>
-        </div>
-  
-        <div class="mb-4">
-          <label for="phone" class="block text-gray-700 font-bold mb-1">Phone</label>
-          <input 
-            id="phone" 
-            type="text" 
-            formControlName="phone" 
-            placeholder="Enter Phone Number"
-            class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-          />
-          <div *ngIf="contactForm.get('phone')?.invalid && contactForm.get('phone')?.touched" class="text-red-500">
-            Valid phone number is required.
-          </div>
-        </div>
-        <div class="mb-4">
-            <label for="email" class="block text-gray-700 font-bold mb-1">Email</label>
-            <input 
-              id="email" 
-              type="text" 
-              formControlName="email" 
-              placeholder="Enter email "
-              class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-            />
-            <div *ngIf="contactForm.get('email')?.invalid && contactForm.get('email')?.touched" class="text-red-500">
-              Valid email number is required.
-            </div>
-          </div>
-  
-        <div class="mb-4">
-          <label for="title" class="block text-gray-700 font-bold mb-1">Title</label>
-          <input 
-            id="title" 
-            type="text" 
-            formControlName="title" 
-            placeholder="Enter Title"
-            class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-          />
-          <div *ngIf="contactForm.get('title')?.invalid && contactForm.get('title')?.touched" class="text-red-500">
-            Title is required.
-          </div>
-        </div>
-  
-        <div class="mb-4">
-          <label for="message" class="block text-gray-700 font-bold mb-1">Message</label>
-          <textarea
-            id="message" 
-            formControlName="message" 
-            placeholder="Enter Your Message"
-            class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-          ></textarea>
-          <div *ngIf="contactForm.get('message')?.invalid && contactForm.get('message')?.touched" class="text-red-500">
-            Message is required.
-          </div>
-        </div>
-  
-        <div class="flex justify-between mt-4">
-          <button type="submit" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
-            Submit
-          </button>
-        </div>
-      </form>
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full outline-none border-green-400 border-2">
+   
+
+    <div class="flex justify-center mb-2">
+      <h2 class="text-xl font-bold text-green-500">Contact Us</h2>
     </div>
+
+    <hr class="border-0 border-t border-green-400 mb-4">
+
+    <form [formGroup]="contactForm" (ngSubmit)="submitEmail()">
+      <lib-toastify-toast-container></lib-toastify-toast-container>
+      <!-- Hardcoded Our Email field -->
+      <div class="mb-4">
+        <label class="block text-gray-700 font-bold mb-1">Our Email</label>
+        <input 
+          type="text" 
+          value="kipyegonkeneth03@gmail.com"  
+          disabled
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md bg-gray-100"
+        />
+      </div>
+
+      <!-- Your Email field -->
+      <div class="mb-4">
+        <label for="yourEmail" class="block text-gray-700 font-bold mb-1">Your Email</label>
+        <input 
+          id="recipient" 
+          type="recipient" 
+          formControlName="recipient" 
+          placeholder="Enter your email"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div *ngIf="contactForm.get('recipient')?.invalid && contactForm.get('recipient')?.touched" class="text-red-500">
+          Valid email is required.
+        </div>
+      </div>
+
+      <!-- Subject field -->
+      <div class="mb-4">
+        <label for="subject" class="block text-gray-700 font-bold mb-1">Subject</label>
+        <input 
+          id="subject" 
+          type="text" 
+          formControlName="subject" 
+          placeholder="Enter subject"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div *ngIf="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched" class="text-red-500">
+          Subject is required.
+        </div>
+      </div>
+
+      <!-- Message field -->
+      <div class="mb-4">
+        <label for="message" class="block text-gray-700 font-bold mb-1">Message</label>
+        <textarea
+          id="message" 
+          formControlName="messageBody" 
+          placeholder="Enter Your Message"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        ></textarea>
+        <div *ngIf="contactForm.get('message')?.invalid && contactForm.get('message')?.touched" class="text-red-500">
+          Message is required.
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-between mt-4">
+        <button type="submit" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
+          Submit
+        </button>
+      </div>
+    </form>
   </div>
-  
+</div>
