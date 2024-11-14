@@ -26,7 +26,7 @@ public class EmailServiceImpl implements EmailService{
 
 
     @Override
-    public void sendEmail(EmailDetails emailDetails) {
+    public void sendEmailToCustomer(EmailDetails emailDetails) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setFrom(senderEmail);
@@ -41,9 +41,23 @@ public class EmailServiceImpl implements EmailService{
         }
     }
 
-    /**
-     * @param emailDetails
-     */
+    @Override
+    public void receiveEmailFromCustomer(EmailDetails emailDetails) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+
+            // Set the 'from' and 'to' as the senderEmail to send the email to itself
+            mailMessage.setFrom(senderEmail);
+            mailMessage.setTo(senderEmail);  // Sending to the sender's email
+            mailMessage.setText(emailDetails.getMessageBody());
+            mailMessage.setSubject(emailDetails.getSubject());
+
+            javaMailSender.send(mailMessage);
+            System.out.println("Mail sent successfully to sender email");
+        } catch (MailException e) {
+            throw new RuntimeException("Error sending email to sender", e);
+        }
+    }
     @Override
     public void sendEmailAlertWithAttachment(EmailDetails emailDetails) {
         File pdfFile = new File("src/main/resources/shop.pdf");
