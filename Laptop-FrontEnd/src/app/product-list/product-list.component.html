@@ -5,9 +5,10 @@
       class="bg-green-400 p-2 rounded-md text-2xl flex items-center justify-center font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
       type="button"
     >
-      <span
-        ><ng-icon name="heroPlusCircle" class="mr-3 text-2xl"></ng-icon></span
-      >Add Product
+      <span>
+        <ng-icon name="heroPlusCircle" class="mr-3 text-2xl"></ng-icon>
+      </span>
+      Add Product
     </button>
     <div class="flex space-x-2">
       <button
@@ -17,9 +18,6 @@
       >
         Refresh
       </button>
-    </div>
-
-    <div class="flex space-x-2">
       <button
         class="bg-green-400 p-2 rounded-md text-white font-bold hover:bg-green-500 focus:ring-2 focus:ring-green-300"
         type="button"
@@ -30,110 +28,30 @@
     </div>
   </div>
 
-  <!-- <div class="justify-between">
-
-    <input type="text" [formControl]="searchTerm" placeholder="Search..." 
-    class="border p-2 w-1/4 mb-4 focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+  <!-- Search Box -->
+  <div class="p-4 mb-4 bg-white rounded-sm w-1/3 mx-auto text-center">
+    <input
+      type="text"
+      [formControl]="searchTerm"
+      placeholder="Search products..."
+      class="w-full p-2 border rounded-md outline-none focus:ring-2 focus:ring-green-300"
     />
-    <ul *ngIf="results" class="text-green-600 p-2 w-1/4 mb-2 bg-white shadow-sm rounded-sm">
-      <li 
-       *ngFor="let result of results">{{ result.name }}:{{result.sellingPrice}}</li>
-    </ul>
-  </div> -->
-
-  <!-- Modal for Add product form -->
-  <div
-    *ngIf="showAddProduct"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
-  >
-    <div class="bg-white p-6 rounded-lg shadow-lg relative">
-      <app-addproduct (close)="closeAddProduct()"></app-addproduct>
-      <button
-        (click)="closeAddProduct()"
-        class="absolute top-2 right-2 text-red-500 hover:text-red-800"
-      >
-        <ng-icon name="heroXMark" class="mr-3 text-2xl text-red-600"></ng-icon>
-      </button>
-    </div>
   </div>
 
-  <!-- Modal for stock product form -->
-  <div
-    *ngIf="showAStockProduct"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
-  >
-    <div class="bg-white p-6 rounded-lg shadow-lg relative">
-      <app-add-product-stock
-        [productId]="selectedProductId"
-        [productName]="selectedProductName"
-        (close)="closeStockProduct()"
-      ></app-add-product-stock>
-    </div>
-  </div>
-
-  <!-- Modal for view product form -->
-  <div
-    *ngIf="showViewProduct"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
-  >
-    <div class="bg-white p-6 rounded-lg shadow-lg relative">
-      <app-view-single-product
-        [productId]="selectedProductId"
-        (close)="closeViewProduct()"
-      ></app-view-single-product>
-    </div>
-  </div>
-
-  <!-- Modal for view product form -->
-  <div
-    *ngIf="showCheckOutForm"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
-  >
-    <div class="bg-white p-6 rounded-lg shadow-lg relative">
-      <app-checkout
-        [totalInCart]="selectedTotalCart"
-        (close)="closeCheckOut()"
-      ></app-checkout>
-    </div>
-  </div>
-
-  <!-- Modal for view product form -->
-  <div
-    *ngIf="showCartForm"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-green-300 bg-opacity-50 backdrop-blur-sm"
-  >
-    <div class="bg-white p-6 rounded-lg shadow-lg relative">
-      <app-addcart
-        [productId]="selectedProductId"
-        (close)="closeCart()"
-      ></app-addcart>
-    </div>
-  </div>
-  <!-- Centered Search Box Outside Product Container -->
-<div class="p-4 mb-4 bg-white rounded-sm w-1/3 mx-auto text-center">
-  <input
-    type="text"
-    [formControl]="searchTerm"
-    placeholder="Search products..."
-    class="w-full p-2 border rounded-md outline-none focus:ring-2 focus:ring-green-300"
-  />
-</div>
-
-
-  <div class="flex flex-1">
-    <!--  displaying products -->
+  <!-- Main Content -->
+  <div class="flex flex-col lg:flex-row gap-6">
+    <!-- Product Grid -->
     <div
-      class=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 shadow-sm rounded-sm bg-white p-4"
+      class="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 bg-white p-4 shadow-sm rounded-sm"
     >
       <div *ngIf="!products?.length && results.length < 0">
-        <p class="p-4 text-center">No products found,click add buttton to add some.</p>
+        <p class="p-4 text-center">No products found, click add button to add some.</p>
       </div>
 
-      <!-- Display loader if data is loading -->
+      <!-- Loader for data loading -->
       <app-loader *ngIf="isLoading"></app-loader>
-      <!-- Card layout for displaying products -->
 
-      <!-- Display Search Results if there is a search term -->
+      <!-- Display Search Results if search term is present -->
       <div *ngIf="searchTerm.value && results.length > 0">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
@@ -177,22 +95,13 @@
           </div>
         </div>
       </div>
-      <!-- Show 'No results found' message if search term is present but no results -->
-      <div
-        *ngIf="searchTerm.value && results.length === 0"
-        class="text-gray-600"
-      >
-        <p>No Serch results found for search item.</p>
-      </div>
 
       <!-- Display Full Product List if no search term is present -->
-      <div *ngIf="!searchTerm.value" class="">
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-        >
+      <div *ngIf="!searchTerm.value">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <div
             *ngFor="let product of products"
-            class="bg-white rounded-lg gap-6 shadow-md p-4 border-2 border-green-300 hover:shadow-2xl hover:bg-green-100 transition-all duration-300"
+            class="bg-white rounded-lg shadow-md p-4 border-2 border-green-300 hover:shadow-2xl hover:bg-green-100 transition-all duration-300"
           >
             <img
               [src]="'data:image/jpeg;base64,' + product.productImagesList?.[0]"
@@ -234,7 +143,7 @@
     </div>
 
     <!-- Cart Table -->
-    <div class="w-full lg:w-1/3 shadow-sm rounded-sm bg-white ml-2 p-4">
+    <div class="lg:w-1/3 shadow-sm rounded-sm bg-white p-4">
       <table class="table-auto border-collapse border border-slate-500 w-full">
         <thead>
           <tr>
@@ -260,7 +169,6 @@
             <td class="border border-slate-600 p-2 text-right">
               {{ cart.quantity * cart.itemCosts }}
             </td>
-            <!-- Assuming this is how you want to calculate item total -->
             <td class="border border-slate-600 p-2">
               <div class="flex justify-between">
                 <button
@@ -272,21 +180,14 @@
               </div>
             </td>
           </tr>
-
-          <!-- Total Row -->
           <tr>
-            <td
-              colspan="3"
-              class="border border-slate-600 p-2 text-right font-bold"
-            >
+            <td colspan="3" class="border border-slate-600 p-2 text-right font-bold">
               Total:
             </td>
             <td class="border border-slate-600 p-2 text-right font-bold">
               {{ totalInCart }}
             </td>
-            <!-- Function to calculate total -->
             <td class="border border-slate-600 p-2"></td>
-            <!-- Empty cell for action column -->
           </tr>
         </tbody>
       </table>
@@ -300,7 +201,7 @@
         </button>
       </div>
     </div>
-
-    <lib-toastify-toast-container></lib-toastify-toast-container>
   </div>
+
+  <lib-toastify-toast-container></lib-toastify-toast-container>
 </div>
