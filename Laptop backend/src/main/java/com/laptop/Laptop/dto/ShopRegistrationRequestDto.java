@@ -19,6 +19,7 @@ public class ShopRegistrationRequestDto {
     private String shopUniqueIdentifier;
     private String adminUsername;
     private String adminPassword;
+    private String email;
     private LocalDate registrationDate;
     @Future(message = "Expiry date must be in the future")
     private LocalDate expiryDate;
