@@ -165,6 +165,7 @@ export class DashboardComponent implements OnInit {
       ],
     },
     { label: 'Settings', icon: 'heroCog6Tooth', route: '/' },
+    { label: 'Contacts', icon: 'heroUsers', route: '/contact' },
   ];
 
   // Cashier Links
