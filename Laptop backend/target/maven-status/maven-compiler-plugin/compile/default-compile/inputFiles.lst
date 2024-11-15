@@ -11,7 +11,9 @@
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/constants/ProductConstants.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/controller/AuthenticationController.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/controller/BusinessOperationsController.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/controller/CustomerShopController.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/controller/DashboardController.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/controller/EmailController.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/controller/EmployeeController.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/controller/ExpenseController.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/controller/InvestmentController.java
@@ -24,9 +26,12 @@
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/controller/TenantConfigurationController.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/AuditTrailDTO.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/AuthenticationRequestDto.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/CartDto.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/CartItemDeleteRequestDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/DashboardDTO.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/DetailedLog.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/DetailedMetric.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/EmailDetails.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/EmployeeDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/ExpenseDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/InvestmentDto.java
@@ -44,12 +49,16 @@
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/SalaryDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/SaleRequest.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/ShopRegistrationRequestDto.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/ShopUpdateRequestDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/SignInRequestDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/SignUpRequestDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/StockPurchaseDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/SupplierDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/UserDto.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/UserRoleUpdateDto.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/dto/UserUpdateRequestDto.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/emails/EmailService.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/emails/EmailServiceImpl.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/entity/AuditTrail.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/entity/Cart.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/entity/CartItem.java
@@ -71,6 +80,7 @@
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/enums/ExpenseType.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/enums/Roles.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/enums/ShopStatus.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/exceptions/CartAlreadySoldException.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/exceptions/CartItemNotFoundException.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/exceptions/CartNotFoundException.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/exceptions/CustomerAlreadyExistException.java
@@ -103,6 +113,7 @@
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/Auth/AuthServiceImpl.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/BusinessService.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/BusinessServiceImpl.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/CustomerShopService.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/DashboardService.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/EmployeeService.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/ExpenseServices.java
@@ -114,6 +125,7 @@
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/PdfReportServices.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/ProductService.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/SalesServices.java
+/home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/SendEmails.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/ShopService.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/SupplierService.java
 /home/korir/WorkSpace/FullStack/My-Shop/Laptop backend/src/main/java/com/laptop/Laptop/services/TenantConfigurationService.java
