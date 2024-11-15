@@ -17,6 +17,10 @@ public class SendEmails {
         emailService.sendEmailToCustomer(emailDetails);
     }
 
+    public void sendBulkEmailToCustomers(EmailDetails emailDetails) {
+        emailService.sendBulkEmailToCustomers(emailDetails);
+    }
+
     public void receiveEmailFromCustomer(EmailDetails emailDetails) {
         emailService.receiveEmailFromCustomer(emailDetails);
     }

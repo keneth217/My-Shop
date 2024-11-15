@@ -17,6 +17,13 @@ export class EmailService {
     });
   }
 
+  sendBulkEmailToCustomer(emailData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/send/bulk`, emailData, {
+      headers: this.createAuthorizationHeaders(),
+      responseType: 'text' as 'json'   // Expecting plain text response
+    });
+  }
+
   receiveEmailfromCustomer(emailData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/receive`, emailData, {
       headers: this.createAuthorizationHeaders().set('Content-Type', 'application/json'),

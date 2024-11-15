@@ -118,7 +118,7 @@ public class ShopService {
                 "Registration Date: " + registerDate + "\n" +
                 "Expiry Date: " + expiryDate + "\n\n" +
                 "Your login credentials are:\n" +
-                "Shop Code: " + uniqueCode + "\n"  +
+                "Shop Code: " + uniqueCode + "\n" +
                 "Username: " + request.getAdminUsername() + "\n" +
                 "Password: admin\n\n" +
                 "Please find the Shop Management PDF attached.\n\n" +
@@ -142,137 +142,138 @@ public class ShopService {
         return shop;
     }
 
-// Generate a unique 6-digit code starting with the letter 'S'
-private String generateUniqueCode() {
-Random random = new Random();
+    // Generate a unique 6-digit code starting with the letter 'S'
+    private String generateUniqueCode() {
+        Random random = new Random();
 // Generate a random 6-digit number
-int number = random.nextInt(1000000); // Generate a number between 0 and 999999
+        int number = random.nextInt(1000000); // Generate a number between 0 and 999999
 // Format the number to ensure it has 5 digits with leading zeros if necessary
-String formattedNumber = String.format("%05d", number);
+        String formattedNumber = String.format("%05d", number);
 // Combine 'S' with the 5-digit number
-return "S" + formattedNumber;
-}
+        return "S" + formattedNumber;
+    }
 
-// Activate a shop by changing its status to active
-public Shop activateShop(Long shopId, ShopRegistrationRequestDto request) {
+    // Activate a shop by changing its status to active
+    public Shop activateShop(Long shopId, ShopRegistrationRequestDto request) {
 // Validate the request expiry date before proceeding
-if (request.getExpiryDate() == null || request.getExpiryDate().isBefore(LocalDate.now())) {
-throw new IllegalArgumentException("Expiry date must be a future date.");
-}
+        if (request.getExpiryDate() == null || request.getExpiryDate().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Expiry date must be a future date.");
+        }
 
-Shop shop = shopRepository.findById(shopId)
-.orElseThrow(() -> new ShopNotFoundException("Shop not found"));
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new ShopNotFoundException("Shop not found"));
 
 // Check if the current date is past the expiry date
-if (LocalDate.now().isAfter(shop.getExpiryDate())) {
-shop.setShopStatus(ShopStatus.INACTIVE);
-System.out.println("Shop status set to INACTIVE due to expiry date.");
-} else {
-shop.setShopStatus(ShopStatus.ACTIVE);
-System.out.println("Shop status set to ACTIVE.");
-}
+        if (LocalDate.now().isAfter(shop.getExpiryDate())) {
+            shop.setShopStatus(ShopStatus.INACTIVE);
+            System.out.println("Shop status set to INACTIVE due to expiry date.");
+        } else {
+            shop.setShopStatus(ShopStatus.ACTIVE);
+            System.out.println("Shop status set to ACTIVE.");
+        }
 
 // Update the expiry date based on the request
-shop.setExpiryDate(request.getExpiryDate());
-shop.setDescription(request.getDescription());
+        shop.setExpiryDate(request.getExpiryDate());
+        shop.setDescription(request.getDescription());
 
 // Save and return the updated shop
-return shopRepository.save(shop);
-}
+        return shopRepository.save(shop);
+    }
 
 
-public Shop deactiveShop(Long shopId) {
-Shop shop = shopRepository.findById(shopId)
-.orElseThrow(() -> new ShopNotFoundException("Shop not found"));
+    public Shop deactiveShop(Long shopId) {
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new ShopNotFoundException("Shop not found"));
 
 // Deactivate the shop
-shop.setExpiryDate(LocalDate.now());
-shop.setShopStatus(ShopStatus.INACTIVE);
-System.out.println("Shop status set to INACTIVE.");
+        shop.setExpiryDate(LocalDate.now());
+        shop.setShopStatus(ShopStatus.INACTIVE);
+        System.out.println("Shop status set to INACTIVE.");
 
 // Save and return the updated shop
-return shopRepository.save(shop);
-}
+        return shopRepository.save(shop);
+    }
 
 
-
-// List all registered shops
-public List<ShopUpdateRequestDto> getAllShops() {
+    // List all registered shops
+    public List<ShopUpdateRequestDto> getAllShops() {
 // Fetch all shops from the repository
-List<Shop> shops = shopRepository.findAll();
+        List<Shop> shops = shopRepository.findAll();
 
 // Map each Shop entity to ShopUpdateRequestDto
-return shops.stream()
-.map(shop -> ShopUpdateRequestDto.builder()
-        .id(shop.getId())
-        .shopName(shop.getShopName())
-        .address(shop.getAddress())
-        .owner(shop.getOwner())
-        .shopCode(shop.getShopCode())
-        .phoneNumber(shop.getPhoneNumber())
-        .description(shop.getDescription())
-        .registrationDate(shop.getRegistrationDate())
-        .expiryDate(shop.getExpiryDate())
-        .status(shop.getShopStatus())
+        return shops.stream()
+                .map(shop -> ShopUpdateRequestDto.builder()
+                        .id(shop.getId())
+                        .shopName(shop.getShopName())
+                        .address(shop.getAddress())
+                        .owner(shop.getOwner())
+                        .email(shop.getEmail())
+                        .shopCode(shop.getShopCode())
+                        .phoneNumber(shop.getPhoneNumber())
+                        .description(shop.getDescription())
+                        .registrationDate(shop.getRegistrationDate())
+                        .expiryDate(shop.getExpiryDate())
+                        .status(shop.getShopStatus())
 
-        .build())
-.collect(Collectors.toList());
-}
+                        .build())
+                .collect(Collectors.toList());
+    }
 
 
-// Get all shops by status
-public List<Shop> getAllShopsByStatus(ShopStatus status) {
-List<Shop> shops=shopRepository.findByShopStatus(status);
-return  shops; // Fetch shops by status
-}
+    // Get all shops by status
+    public List<Shop> getAllShopsByStatus(ShopStatus status) {
+        List<Shop> shops = shopRepository.findByShopStatus(status);
+        return shops; // Fetch shops by status
+    }
 
-@Transactional
-public ShopUpdateRequestDto updateShopDetails(Long shopId, ShopUpdateRequestDto request) {
+    @Transactional
+    public ShopUpdateRequestDto updateShopDetails(Long shopId, ShopUpdateRequestDto request) {
 
 // Fetch the shop by its ID
-Shop shop = shopRepository.findById(shopId)
-.orElseThrow(() -> new ShopNotFoundException("Shop not found with ID: " + shopId));
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new ShopNotFoundException("Shop not found with ID: " + shopId));
 
 // Update shop details
-shop.setShopName(request.getShopName());
-shop.setAddress(request.getAddress());
-shop.setOwner(request.getOwner());
+        shop.setShopName(request.getShopName());
+        shop.setAddress(request.getAddress());
+        shop.setOwner(request.getOwner());
 
-shop.setPhoneNumber(request.getPhoneNumber());
-shop.setDescription(request.getDescription());
+        shop.setPhoneNumber(request.getPhoneNumber());
+        shop.setDescription(request.getDescription());
 
 // Update logo URL if provided
-String logoUrl = null;
-if (shop.getShopLogo() != null) {
+        String logoUrl = null;
+        if (shop.getShopLogo() != null) {
 // Convert byte array to base64 or handle accordingly if you store it as a URL
-logoUrl = "data:image/png;base64," + Base64.getEncoder().encodeToString(shop.getShopLogo());
-}
+            logoUrl = "data:image/png;base64," + Base64.getEncoder().encodeToString(shop.getShopLogo());
+        }
 
 // Convert and store logo as byte array if a new logo file is provided
-if (request.getShopLogo() != null && !request.getShopLogo().isEmpty()) {
-try {
-byte[] logoBytes = request.getShopLogo().getBytes();
-shop.setShopLogo(logoBytes);
-} catch (IOException e) {
-throw new RuntimeException("Failed to store shop logo", e);
-}
-}
+        if (request.getShopLogo() != null && !request.getShopLogo().isEmpty()) {
+            try {
+                byte[] logoBytes = request.getShopLogo().getBytes();
+                shop.setShopLogo(logoBytes);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to store shop logo", e);
+            }
+        }
 
 // Save updated shop details
-shopRepository.save(shop);
+        shopRepository.save(shop);
 
 // Map the updated shop to ShopUpdateRequestDto to return
-ShopUpdateRequestDto response = ShopUpdateRequestDto.builder()
-.shopName(shop.getShopName())
-.address(shop.getAddress())
-.owner(shop.getOwner())
-.phoneNumber(shop.getPhoneNumber())
-.description(shop.getDescription())
-.shopLogoUrl(logoUrl)
-.build();
+        ShopUpdateRequestDto response = ShopUpdateRequestDto.builder()
+                .shopName(shop.getShopName())
+                .address(shop.getAddress())
+                .email(shop.getEmail())
+                .owner(shop.getOwner())
+                .phoneNumber(shop.getPhoneNumber())
+                .description(shop.getDescription())
+                .shopLogoUrl(logoUrl)
+                .build();
 
-return response;
-}
+        return response;
+    }
 
 }
 

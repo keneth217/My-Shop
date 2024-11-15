@@ -24,6 +24,7 @@ private Long id;
     private MultipartFile shopLogo;  // Logo file for upload
     private String shopLogoUrl;
     private ShopStatus status;
+    private String email;
     private LocalDate expiryDate;
     private LocalDate registrationDate;
 

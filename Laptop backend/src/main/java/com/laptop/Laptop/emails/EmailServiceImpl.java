@@ -58,6 +58,24 @@ public class EmailServiceImpl implements EmailService{
             throw new RuntimeException("Error sending email to sender", e);
         }
     }
+
+
+    @Override
+    public void sendBulkEmailToCustomers(EmailDetails emailDetails) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom(senderEmail); // Set the sender email
+            mailMessage.setTo(emailDetails.getCustomerEmails().toArray(new String[0])); // Set multiple recipients
+            mailMessage.setText(emailDetails.getMessageBody());
+            mailMessage.setSubject(emailDetails.getSubject());
+
+            javaMailSender.send(mailMessage);  // Send email to all recipients
+            System.out.println("Mail sent successfully to customers: " + String.join(", ", emailDetails.getCustomerEmails()));
+        } catch (MailException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void sendEmailAlertWithAttachment(EmailDetails emailDetails) {
         File pdfFile = new File("src/main/resources/shop.pdf");

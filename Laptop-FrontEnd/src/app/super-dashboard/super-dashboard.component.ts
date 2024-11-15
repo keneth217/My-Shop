@@ -74,6 +74,8 @@ export class SuperDashboardComponent {
   superUserLinks: Link[] = [
     { label: 'Analytics', icon: 'heroSquares2x2', route: '/admin' },
     { label: 'Shops', icon: 'heroUsers', route: '/admin/shops' },
+    { label: 'Email', icon: 'heroUsers', route: '/admin/mail' },
+    { label: 'bulk Email', icon: 'heroUsers', route: '/admin/bulk' },
     {
       label: 'Reports',
       icon: 'heroDocument',
@@ -84,6 +86,7 @@ export class SuperDashboardComponent {
       ],
     },
     { label: 'Settings', icon: 'heroCog6Tooth', route: '/settings' },
+
   ];
 
   // Cashier Links
