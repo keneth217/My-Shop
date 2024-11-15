@@ -13,6 +13,7 @@ import { EmailService } from '../Services/email.service';
 })
 export class ContactusComponent {
 contactForm!: FormGroup;
+isSending:boolean=false;
 
 
 constructor(private fb: FormBuilder,private emailService:EmailService, private toastService: ToastService) {}
@@ -30,8 +31,10 @@ submitEmail() {
     const emailData = this.contactForm.value;
     
     // Call the service method and handle the observable
+    this.isSending=true;
     this.emailService.receiveEmailfromCustomer(emailData).subscribe({
       next: response => {
+        this.isSending=false;
         this.toastService.success('Email sent successfully:');
         console.log('Email sent successfully:', response);
         // You could add toast notifications here or redirect if needed
