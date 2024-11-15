@@ -17,7 +17,7 @@ public class EmailController {
     public String sendEmail(@RequestBody EmailDetails emailDetails) {
         try {
             sendEmails.sendEmailToCustomer(emailDetails);
-            return "Email sent successfully!";
+            return "Email sent successfully! to customer";
         } catch (Exception e) {
             return "Error sending email: " + e.getMessage();
         }
@@ -26,7 +26,7 @@ public class EmailController {
     public String receiveEmail(@RequestBody EmailDetails emailDetails) {
         try {
             sendEmails.receiveEmailFromCustomer(emailDetails);
-            return "Email sent successfully!";
+            return "Email received successfully!  from customer";
         } catch (Exception e) {
             return "Error sending email: " + e.getMessage();
         }
