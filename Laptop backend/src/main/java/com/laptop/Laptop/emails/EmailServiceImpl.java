@@ -29,13 +29,13 @@ public class EmailServiceImpl implements EmailService{
     public void sendEmailToCustomer(EmailDetails emailDetails) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom(senderEmail);
+            mailMessage.setFrom(senderEmail);//send to customer from sender
             mailMessage.setTo(emailDetails.getRecipient());
             mailMessage.setText(emailDetails.getMessageBody());
             mailMessage.setSubject(emailDetails.getSubject());
 
             javaMailSender.send(mailMessage);
-            System.out.println("Mail sent successfully");
+            System.out.println("Mail sent successfully to customer of email:"+ emailDetails.getRecipient() );
         } catch (MailException e) {
             throw new RuntimeException(e);
         }
@@ -47,13 +47,13 @@ public class EmailServiceImpl implements EmailService{
             SimpleMailMessage mailMessage = new SimpleMailMessage();
 
             // Set the 'from' and 'to' as the senderEmail to send the email to itself
-            mailMessage.setFrom(senderEmail);
-            mailMessage.setTo(senderEmail);  // Sending to the sender's email
+            mailMessage.setFrom(emailDetails.getRecipient());
+            mailMessage.setTo(senderEmail);  // Sending to the sender's email from customer
             mailMessage.setText(emailDetails.getMessageBody());
             mailMessage.setSubject(emailDetails.getSubject());
 
             javaMailSender.send(mailMessage);
-            System.out.println("Mail sent successfully to sender email");
+            System.out.println("Mail sent successfully to sender email from:"+ emailDetails.getRecipient());
         } catch (MailException e) {
             throw new RuntimeException("Error sending email to sender", e);
         }
