@@ -18,9 +18,9 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 
-//@EntityListeners(value = {AuditLogListener.class})
-//public class Product implements Serializable, AuditAware {
-public class Product {
+@EntityListeners(value = {AuditLogListener.class})
+public class Product implements Serializable, AuditAware {
+//public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
