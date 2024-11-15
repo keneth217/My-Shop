@@ -120,6 +120,8 @@ export class DashboardComponent implements OnInit {
     this.shopDetails();
     this.userDetails();
     this.startTimer();
+    console.log(this.userRole)
+    console.log(this.links)
   }
 
   logout(): void {
@@ -151,10 +153,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Super User Links
   superUserLinks: Link[] = [
     { label: 'Dashboard', icon: 'heroSquares2x2', route: '/dash' },
     { label: 'Shops', icon: 'heroUsers', route: '/shop' },
+    { label: 'Email', icon: 'heroEnvelope', route: '/mail' }, // Fixed icon name
+    { label: 'Admin Mail', icon: 'heroEnvelope', route: '/admin/mail' }, // Updated label
     {
       label: 'Reports',
       icon: 'heroDocument',
@@ -164,15 +167,17 @@ export class DashboardComponent implements OnInit {
         { label: 'Status Report', icon: 'heroSquares2x2', route: '/reports/status' },
       ],
     },
-    { label: 'Settings', icon: 'heroCog6Tooth', route: '/' },
-    { label: 'Contacts', icon: 'heroUsers', route: '/contact' },
+    { label: 'Email', icon: 'heroCog6Tooth', route: '/mail' }, // Fixed route
+    { label: 'Email', icon: 'heroCog6Tooth', route: '/settings' }, // Fixed route
   ];
+  
 
-  // Cashier Links
+  // admin Links
   adminLinks: Link[] = [
     { label: 'Analytics', icon: 'heroChartBar', route: '/dash' },
     { label: 'Product', icon: 'heroPlusCircle', route: '/dash/product' },
     { label: 'Stocks', icon: 'heroPlusCircle', route: '/dash/stocks' },
+    { label: 'Cart', icon: 'heroPlusCircle', route: '/dash/cart' },
     { label: 'Supplier', icon: 'heroPercentBadge', route: '/dash/supplier' },
     { label: 'Employee', icon: 'heroPercentBadge', route: '/dash/employee' },
     { label: 'Sales', icon: 'heroPercentBadge', route: '/dash/sale' },
@@ -193,7 +198,7 @@ export class DashboardComponent implements OnInit {
     { label: 'Settings', icon: 'heroWrenchScrewdriver', route: '/dash/tenant-conf' },
   ];
 
-  // Admin Links
+  // cashier Links
   cashierLinks: Link[] = [
     { label: 'Analytics', icon: 'heroChartBar', route: '/dash/cash-analytics' },
     { label: 'Product', icon: 'heroPlusCircle', route: '/dash/product' },
