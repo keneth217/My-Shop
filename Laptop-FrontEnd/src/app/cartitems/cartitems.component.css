@@ -1,0 +1,10 @@
+button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+  }
+
+  /* In your component CSS file (e.g., refresh-example.component.css) */
+.blurred {
+  filter: blur(5px);  /* Apply blur effect */
+  pointer-events: none; /* Optionally, disable interactions with blurred content */
+}
