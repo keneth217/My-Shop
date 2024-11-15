@@ -24,6 +24,9 @@ import { MonthlyReportComponent } from './monthly-report/monthly-report.componen
 import { CashAAnalyticsComponent } from './cash-aanalytics/cash-aanalytics.component';
 import { StockPurchasesComponent } from './stock-purchases/stock-purchases.component';
 import { StockreportComponent } from './stockreport/stockreport.component';
+import { SendEmailComponent } from './send-email/send-email.component';
+import { SendbulkemailComponent } from './sendbulkemail/sendbulkemail.component';
+import { CartitemsComponent } from './cartitems/cartitems.component';
 
 export const routes: Routes = [
 
@@ -45,6 +48,7 @@ export const routes: Routes = [
             { path: 'profile', component: UserProfileComponent },
             { path: 'tenant-conf', component: ConfigurationsComponent },
             { path: 'contact', component: ContactusComponent },
+            { path: 'cart', component: CartitemsComponent },
             { path: 'users', component: UsersComponent },
             { path: 'purchases', component: StockPurchasesComponent },
             { path: 'cash-analytics', component: CashAAnalyticsComponent },
@@ -61,6 +65,8 @@ export const routes: Routes = [
         children: [
             { path: '', component: SuperAnalyticsComponent },
             { path: 'shops', component: ShoplistsComponent },
+            { path: 'mail', component: SendEmailComponent },
+            { path: 'bulk', component: SendbulkemailComponent },
         
         ],
     },
