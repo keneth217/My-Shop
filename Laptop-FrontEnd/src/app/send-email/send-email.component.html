@@ -1,68 +1,94 @@
 <div class="fixed inset-0 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full outline-none border-green-400 border-2">
-     
-  
-      <div class="flex justify-center mb-2">
-        <h2 class="text-xl font-bold text-green-500">Send Email To Customer</h2>
-      </div>
-  
-      <hr class="border-0 border-t border-green-400 mb-4">
-  
-      <form [formGroup]="contactForm" (ngSubmit)="submitEmail()">
-        <lib-toastify-toast-container></lib-toastify-toast-container>
-        
-  
-        <!-- Your Email field -->
-        <div class="mb-4">
-          <label for="yourEmail" class="block text-gray-700 font-bold mb-1">Customer Email</label>
-          <input 
-            id="recipient" 
-            type="recipient" 
-            formControlName="recipient" 
-            placeholder="Enter your email"
-            class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-          />
-          <div *ngIf="contactForm.get('recipient')?.invalid && contactForm.get('recipient')?.touched" class="text-red-500">
-            Valid email is required.
-          </div>
-        </div>
-  
-        <!-- Subject field -->
-        <div class="mb-4">
-          <label for="subject" class="block text-gray-700 font-bold mb-1">Subject</label>
-          <input 
-            id="subject" 
-            type="text" 
-            formControlName="subject" 
-            placeholder="Enter subject"
-            class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-          />
-          <div *ngIf="contactForm.get('subject')?.invalid && contactForm.get('subject')?.touched" class="text-red-500">
-            Subject is required.
-          </div>
-        </div>
-  
-        <!-- Message field -->
-        <div class="mb-4">
-          <label for="message" class="block text-gray-700 font-bold mb-1">Message</label>
-          <textarea
-            id="message" 
-            formControlName="messageBody" 
-            placeholder="Enter Your Message"
-            class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
-          ></textarea>
-          <div *ngIf="contactForm.get('message')?.invalid && contactForm.get('message')?.touched" class="text-red-500">
-            Message is required.
-          </div>
-        </div>
-  
-        <!-- Submit Button -->
-        <div class="flex justify-between mt-4">
-          <button type="submit" class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500">
-            Submit
-          </button>
-        </div>
-      </form>
+  <div
+    class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full outline-none border-green-400 border-2"
+  >
+    <div class="flex justify-center mb-2">
+      <h2 class="text-xl font-bold text-green-500">Send Email To Customer</h2>
     </div>
+
+    <hr class="border-0 border-t border-green-400 mb-4" />
+
+    <form [formGroup]="contactForm" (ngSubmit)="submitEmail()">
+      <lib-toastify-toast-container></lib-toastify-toast-container>
+
+      <!-- Your Email field -->
+      <div class="mb-4">
+        <label for="yourEmail" class="block text-gray-700 font-bold mb-1"
+          >Customer Email</label
+        >
+        <input
+          id="recipient"
+          type="recipient"
+          formControlName="recipient"
+          placeholder="Enter your email"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div
+          *ngIf="
+            contactForm.get('recipient')?.invalid &&
+            contactForm.get('recipient')?.touched
+          "
+          class="text-red-500"
+        >
+          Valid email is required.
+        </div>
+      </div>
+
+      <!-- Subject field -->
+      <div class="mb-4">
+        <label for="subject" class="block text-gray-700 font-bold mb-1"
+          >Subject</label
+        >
+        <input
+          id="subject"
+          type="text"
+          formControlName="subject"
+          placeholder="Enter subject"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        />
+        <div
+          *ngIf="
+            contactForm.get('subject')?.invalid &&
+            contactForm.get('subject')?.touched
+          "
+          class="text-red-500"
+        >
+          Subject is required.
+        </div>
+      </div>
+
+      <!-- Message field -->
+      <div class="mb-4">
+        <label for="message" class="block text-gray-700 font-bold mb-1"
+          >Message</label
+        >
+        <textarea
+          id="message"
+          formControlName="messageBody"
+          placeholder="Enter Your Message"
+          class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+        ></textarea>
+        <div
+          *ngIf="
+            contactForm.get('message')?.invalid &&
+            contactForm.get('message')?.touched
+          "
+          class="text-red-500"
+        >
+          Message is required.
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="flex justify-between mt-4">
+        <button
+          type="submit"
+          class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+          [disabled]="isSending"
+        >
+          {{ isSending ? "Sending Email..." : "Submit" }}
+        </button>
+      </div>
+    </form>
   </div>
-  
+</div>
