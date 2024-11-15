@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class SendEmailComponent {
   contactForm!: FormGroup;
+  isSending:boolean=false;
 
 
   constructor(private fb: FormBuilder,private emailService:EmailService, private toastService: ToastService) {}
@@ -30,8 +31,10 @@ export class SendEmailComponent {
       const emailData = this.contactForm.value;
       
       // Call the service method and handle the observable
-      this.emailService.receiveEmailfromCustomer(emailData).subscribe({
+      this.isSending=true;
+      this.emailService.sendEmailToCustomer(emailData).subscribe({
         next: response => {
+          this.isSending=false;
           this.toastService.success('Email sent successfully:');
           console.log('Email sent successfully:', response);
           // You could add toast notifications here or redirect if needed
