@@ -3,27 +3,18 @@
      
   
       <div class="flex justify-center mb-2">
-        <h2 class="text-xl font-bold text-green-500">Contact Us</h2>
+        <h2 class="text-xl font-bold text-green-500">Send Email To Customer</h2>
       </div>
   
       <hr class="border-0 border-t border-green-400 mb-4">
   
       <form [formGroup]="contactForm" (ngSubmit)="submitEmail()">
         <lib-toastify-toast-container></lib-toastify-toast-container>
-        <!-- Hardcoded Our Email field -->
-        <div class="mb-4">
-          <label class="block text-gray-700 font-bold mb-1">Our Email</label>
-          <input 
-            type="text" 
-            value="kipyegonkeneth03@gmail.com"  
-            disabled
-            class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md bg-gray-100"
-          />
-        </div>
+        
   
         <!-- Your Email field -->
         <div class="mb-4">
-          <label for="yourEmail" class="block text-gray-700 font-bold mb-1">Your Email</label>
+          <label for="yourEmail" class="block text-gray-700 font-bold mb-1">Customer Email</label>
           <input 
             id="recipient" 
             type="recipient" 
