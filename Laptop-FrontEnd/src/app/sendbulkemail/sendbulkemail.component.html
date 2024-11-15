@@ -1,0 +1,73 @@
+<div class="justify-center items-center">
+    <p class="text-center font-bold text-2 mb-4">Send Bulk Emails to Customers</p>
+  
+    <div class="flex flex-col md:flex-row gap-10">
+  
+      <!-- Email Form Section (Message Card) -->
+      <div class="p-4 shadow-sm rounded-md w-full bg-white">
+        <form [formGroup]="emailForm" (ngSubmit)="submitBulkEmail()">
+          <lib-toastify-toast-container></lib-toastify-toast-container>
+  
+          <!-- Subject Field -->
+          <div class="mb-4">
+            <label for="subject" class="block text-gray-700 font-bold mb-1">Subject</label>
+            <input
+              id="subject"
+              type="text"
+              formControlName="subject"
+              placeholder="Enter subject"
+              class="border p-2 w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+            />
+            <div *ngIf="emailForm.get('subject')?.invalid && emailForm.get('subject')?.touched" class="text-red-500">
+              Subject is required.
+            </div>
+          </div>
+  
+          <!-- Message Field (Rich Text Editor) -->
+          <div class="mb-4">
+            <label for="message" class="block text-gray-700 font-bold mb-1">Message</label>
+            <div class="border p-2 w-full rounded-md">
+              <textarea
+                id="message"
+                formControlName="messageBody"
+                placeholder="Enter your message"
+                class="w-full focus:outline-none focus:border-green-500 focus:border-2 rounded-md"
+              ></textarea>
+            </div>
+            <div *ngIf="emailForm.get('messageBody')?.invalid && emailForm.get('messageBody')?.touched" class="text-red-500">
+              Message is required.
+            </div>
+          </div>
+  
+          <!-- Submit Button -->
+          <div class="flex justify-between mt-4">
+            <button
+              type="submit"
+              class="bg-green-400 text-white p-2 rounded-md font-bold hover:bg-green-500"
+              [disabled]="isSending || emailForm.invalid"
+            >
+              {{ isSending ? "Sending Email..." : "Submit" }}
+            </button>
+          </div>
+        </form>
+      </div>
+  
+      <!-- Customer List Section (Below the Message Card on Small Screens) -->
+      <div class="p-4 shadow-sm rounded-md w-full bg-white">
+        <p class="mb-8">Select the customers you want to send the message to.</p>
+  
+        <!-- Displaying the list of customers' emails with checkboxes -->
+        <div *ngFor="let customer of customers">
+          <input
+            type="checkbox"
+            [value]="customer.email"
+            (change)="onEmailSelection($event)"
+            [checked]="selectedEmails.includes(customer.email)"
+          />
+          {{ customer.owner }} - {{ customer.email }}
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
