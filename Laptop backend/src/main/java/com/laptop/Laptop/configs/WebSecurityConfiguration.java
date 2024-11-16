@@ -53,6 +53,8 @@ public class WebSecurityConfiguration {
             "/swagger-ui/**",
             "api/logs",
             "api/metrics",
+            "http://localhost:9091/actuator/**",
+            "/actuator/**",
             "/swagger-ui.html"
     };
     @Bean
